@@ -1,1 +1,17 @@
 .vendor/
+adtj/.vendor/
+cookie/.vendor/
+httpproxy/.vendor/
+ipku/.vendor/
+jhstj/.vendor/
+lib/.vendor/
+mgrab/.vendor/
+monitor/.vendor/
+mtags/.vendor/
+README.md/.vendor/
+rpc/.vendor/
+rtb/.vendor/
+tags/.vendor/
+tool/.vendor/
+transpond/.vendor/
+webp/.vendor/
