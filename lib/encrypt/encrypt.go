@@ -7,6 +7,13 @@ const (
 	TYPE_AES    = "aes"
 )
 
+var (
+	DefaultBase64  Base64
+	DefaultMd5     Md5
+	DefaultUrlcode UrlCode
+	DefaultAes     Aes
+)
+
 //不可逆加密
 type Encoder interface {
 	Encode(source string) string
