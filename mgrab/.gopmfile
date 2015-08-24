@@ -1,0 +1,12 @@
+[deps]
+github.com/astaxie/beego = 
+github.com/bitly/go-nsq = 
+goclass/convert = 
+goclass/encrypt = 
+gopkg.in/ini.v1 = 
+gopkg.in/mgo.v2 = 
+gopro/lib/grab = 
+
+[res]
+include = 
+
