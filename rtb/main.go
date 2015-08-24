@@ -166,9 +166,9 @@ func reponsePrice(param map[string]string) {
 		adurl = adurl + "?cox=" + param["ad"]
 	}
 
-	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s",
+	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
-		"03", "reBkYQmESMs=")
+		"03", "reBkYQmESMs=", "10")
 
 	//	res, err := redis.Bytes(conn.Do("GET", "name"))
 	//	if err != nil {
