@@ -1,0 +1,8 @@
+[deps]
+github.com/garyburd/redigo = 
+gopkg.in/ini.v1 = 
+gopkg.in/mgo.v2 = 
+
+[res]
+include = 
+

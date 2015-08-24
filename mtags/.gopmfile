@@ -1,0 +1,10 @@
+[deps]
+github.com/PuerkitoBio/goquery = 
+github.com/bitly/go-nsq = 
+github.com/qiniu/iconv = 
+gopkg.in/ini.v1 = 
+gopkg.in/mgo.v2 = 
+
+[res]
+include = 
+

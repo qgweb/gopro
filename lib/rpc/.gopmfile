@@ -1,0 +1,7 @@
+[deps]
+github.com/hprose/hprose-go = 
+goclass/encrypt = 
+
+[res]
+include = 
+
