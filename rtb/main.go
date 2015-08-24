@@ -6,6 +6,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/goweb/gopro/lib/convert"
+	"github.com/goweb/gopro/lib/encrypt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -15,9 +17,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	"goclass/convert"
-	"goclass/encrypt"
 
 	_ "net/http/pprof"
 

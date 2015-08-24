@@ -2,9 +2,9 @@ package main
 
 import (
 	"errors"
+	"github.com/goweb/gopro/lib/grab"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"gopro/lib/grab"
 	"regexp"
 	"strings"
 )

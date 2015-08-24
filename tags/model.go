@@ -2,12 +2,10 @@
 package main
 
 import (
-	"gopro/lib/grab"
+	"github.com/goweb/gopro/lib/grab"
 	"log"
 	"strings"
 	"time"
-
-	gs "goclass/grab"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -174,7 +172,7 @@ func tagFrequencyRecord(cookie string, cids string) {
 	}
 
 	//排序
-	s := gs.NewMapSorter(tagsMap)
+	s := grab.NewMapSorter(tagsMap)
 	s.Sort()
 
 	bms := make([]bson.M, 0, 20)

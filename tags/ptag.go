@@ -14,7 +14,7 @@ import (
 	"github.com/Unknwon/goconfig"
 	"github.com/garyburd/redigo/redis"
 
-	"goclass/encrypt"
+	"github.com/goweb/gopro/lib/encrypt"
 
 	"github.com/astaxie/beego/httplib"
 	"gopkg.in/mgo.v2"

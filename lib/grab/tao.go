@@ -235,3 +235,24 @@ func GetShopBossByShop(h string) (boss string) {
 	}
 	return ""
 }
+
+func In_Array(list []string, k string) bool {
+	for _, v := range list {
+		if v == k {
+			return true
+		}
+	}
+	return false
+}
+
+func In_Array_Array(list []string, k []string) []string {
+	var plist []string = make([]string, 0, 100)
+	for _, v := range list {
+		for _, vv := range k {
+			if v == vv {
+				plist = append(plist, vv)
+			}
+		}
+	}
+	return plist
+}

@@ -15,7 +15,7 @@ import (
 
 	"html/template"
 
-	"goclass/convert"
+	"github.com/goweb/gopro/lib/convert"
 
 	"os/exec"
 	"os/signal"

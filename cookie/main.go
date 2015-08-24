@@ -11,9 +11,9 @@ import (
 
 	"sync"
 
-	"goclass/encrypt"
-	"goclass/grab"
-	"goclass/orm"
+	"github.com/goweb/gopro/lib/encrypt"
+	"github.com/goweb/gopro/lib/grab"
+	"github.com/goweb/gopro/lib/orm"
 
 	"github.com/garyburd/redigo/redis"
 	"gopkg.in/ini.v1"

@@ -3,7 +3,8 @@ package main
 
 import (
 	"fmt"
-	"gopro/lib/grab"
+	"github.com/goweb/gopro/lib/grab"
+
 	"log"
 	"strings"
 	"sync"

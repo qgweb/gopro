@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/bitly/go-nsq"
-	"goclass/convert"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -15,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"goclass/encrypt"
+	"github.com/goweb/gopro/lib/encrypt"
 
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"

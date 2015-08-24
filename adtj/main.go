@@ -3,14 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/goweb/gopro/lib/encrypt"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 	"sync"
 	"time"
-
-	"goclass/encrypt"
 
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"

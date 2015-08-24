@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"goclass/encrypt"
-	"gopro/lib/grab"
+	"github.com/goweb/gopro/lib/encrypt"
+	"github.com/goweb/gopro/lib/grab"
 	"io/ioutil"
 	"log"
 	"math/rand"
