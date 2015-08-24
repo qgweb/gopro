@@ -2,4 +2,4 @@
 golang 程序集
 
 ##包管理
-[gopm](http://gpm.io)
+[gopm](http://gopm.io)
