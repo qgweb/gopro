@@ -18,7 +18,7 @@ import (
 
 var (
 	cd        iconv.Iconv
-	cookie    string
+	cookie    string = "cainiao_abtest9_1=1; ucn=center; cna=iBpHDuxbpDoCAXPI8O66zMhi; thw=cn; ali_ab=122.235.237.26.1438678183372.3; ck1=; uc3=nk2=GcqJE1wyksW8hY8%3D&id2=UojRZsxzFZhY&vt3=F8dASM2Zmvg2X%2BWeIHI%3D&lg2=URm48syIIVrSKA%3D%3D; lgc=zb976481619; tracknick=zb976481619; mt=np=&ci=8_1&cyk=0_0; _cc_=U%2BGCWk%2F7og%3D%3D; tg=0; _m_h5_tk=7819c8d37396527c4608c57c171dd4da_1440146700627; _m_h5_tk_enc=2e5d7f69d3e230bb1ce52ff4b5b8e46d; v=0; _tb_token_=9e46e63eee13; uc1=cookie14=UoWzWcB%2BnbMMvg%3D%3D; cookie2=1c3ef5c78bf77cba1f55fe59971c74eb; t=afd38437622a33dd1817869da512ff1e; l=AufnyS3KOkoaaK9yqYQm-pQC9xWxS7tO; x=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0%26__ll%3D-1%26_ato%3D0; swfstore=121955; isg=EC13968AA9A38A4CB092FBEF55BF46BE"
 	useragent string = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.152 Safari/537.36"
 	client    *http.Client
 )
@@ -44,7 +44,7 @@ func GrabTaoHTML(url string) string {
 	r.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
 	r.Header.Set("Cache-Control", "no-cache")
 	r.Header.Set("Connection", "keep-alive")
-	//r.Header.Set("Cookie", cookie)
+	r.Header.Set("Cookie", cookie)
 	r.Header.Set("Host", "www.taobao.com")
 	r.Header.Set("Pragma", "no-cache")
 	r.Header.Set("User-Agent", useragent)

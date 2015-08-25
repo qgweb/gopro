@@ -65,7 +65,13 @@ func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 		return nil
 	}
 
-	dispath(urlData, this.Px)
+	//数据存放在队列中
+	nt := time.NewTicker(time.Minute * 10)
+	select {
+	case dataQueue <- QueueData{Data: urlData, Px: this.Px}:
+	case <-nt.C:
+		log.Println("队列超时")
+	}
 
 	return nil
 }

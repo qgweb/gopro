@@ -20,10 +20,16 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
+type QueueData struct {
+	Data url.Values
+	Px   string
+}
+
 var (
-	iniFile *ini.File
-	conf    = flag.String("conf", "conf.ini", "conf.ini")
-	err     error
+	iniFile   *ini.File
+	conf      = flag.String("conf", "conf.ini", "conf.ini")
+	err       error
+	dataQueue = make(chan QueueData, 1000)
 )
 
 func init() {
@@ -53,7 +59,14 @@ func bootstrap(px string) {
 			continue
 		}
 
-		dispath(data, px)
+		//数据存放在队列中
+		nt := time.NewTicker(time.Minute * 10)
+		select {
+		case dataQueue <- QueueData{Data: data, Px: px}:
+		case <-nt.C:
+			log.Println("队列超时")
+		}
+
 		seed := time.Duration(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(200))
 		time.Sleep(time.Millisecond * seed)
 	}
@@ -80,6 +93,7 @@ func bootstrapNsq(px string) {
 	}
 }
 
+// 分配数据
 func dispath(data url.Values, px string) {
 	if px == "_ad" && data.Get("date") != time.Now().Format("2006-01-02") {
 		return
@@ -132,12 +146,24 @@ func dispath(data url.Values, px string) {
 	pushMsgToNsq(j)
 }
 
+//循环读取队列
+func loopQueue() {
+	for {
+		select {
+		case d := <-dataQueue:
+			dispath(d.Data, d.Px)
+		}
+	}
+}
+
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	//go bootstrap("_ad")
 	//go bootstrap("_ck")
 	go bootstrapNsq("_ad")
 	go bootstrapNsq("_ck")
+	go loopQueue()
 	go checkProxyHealth()
+
 	select {}
 }
