@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/goweb/gopro/lib/encrypt"
-	"github.com/goweb/gopro/lib/grab"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -13,6 +11,9 @@ import (
 	"path"
 	"strings"
 	"time"
+
+	"github.com/goweb/gopro/lib/encrypt"
+	"github.com/goweb/gopro/lib/grab"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -121,6 +122,7 @@ func httpsqsQueue(px string) url.Values {
 func GrabGoodsInfo(gid string) (info map[string]interface{}) {
 LABEL:
 	url := "https://item.taobao.com/item.htm?id=" + gid
+	grab.SetGrabCookie("")
 	grab.SetUserAgent(getUserAgent())
 	//grab.SetTransport(getHttpProxy())
 	h := grab.GrabTaoHTML(url)
