@@ -1,29 +1,20 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
+	"os"
+	"strconv"
 
-	"github.com/goweb/gopro/lib/grab"
+	"github.com/astaxie/beego/grace"
+	"github.com/labstack/echo"
 )
 
 func main() {
-	//	os.Setenv("SURF_DEBUG_HEADERS", "111")
-	//	cd, _ := iconv.Open("utf-8", "gbk")
-	//	d := surfer.NewDownload(2, time.Second, "")
-	//	for {
-	//		d.SetUserAgent(agent.Firefox())
-	//		r, _ := d.Get("https://item.taobao.com/item.htm?id=43873054934", nil, nil)
-	//		dd, _ := goquery.NewDocumentFromResponse(r)
-	//		h, _ := dd.Find("title").Html()
-	//		fmt.Println(cd.ConvString(h))
+	// Setup
+	e := echo.New()
+	e.Get("/", func(c *echo.Context) error {
+		return c.String(http.StatusOK, strconv.Itoa(os.Getpid()))
+	})
 
-	//		h = grab.GrabTaoHTML("https://item.taobao.com/item.htm?id=43873054934")
-	//		n, _ := grab.ParseNode(h)
-	//		fmt.Println(grab.GetTitle(n))
-	//	}
-	for {
-		h := grab.GrabTaoHTML("https://item.taobao.com/item.htm?id=43873054934")
-		n, _ := grab.ParseNode(h)
-		fmt.Println(grab.GetTitle(n))
-	}
+	grace.ListenAndServe(":1312", e)
 }

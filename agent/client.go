@@ -40,5 +40,4 @@ func main() {
 		fmt.Scanf("%s\n", &str)
 		fmt.Println(str)
 	}
-
 }
