@@ -35,3 +35,8 @@ func GetDefault() *ini.Section {
 func GetDB() *ini.Section {
 	return Config.Section("mysql")
 }
+
+// 获取redis配置
+func GetRedis() *ini.Section {
+	return Config.Section("redis")
+}

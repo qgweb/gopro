@@ -1,0 +1,88 @@
+{{define "usercenter"}}
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+    <head>
+        <title>
+            千兆浏览器-个人中心
+        </title>
+        <!--    <meta name="google" value="notranslate">-->
+        <!--    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>-->
+        <!--    <meta name="renderer" content="webkit">-->
+        <!--    <meta name="viewport" content="user-scalable=no, width=device-width, maximum-scale=1.0">-->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="/css/layout.css" media="all"/>
+    </head>
+    <body class="bcf">
+        <div class="g-top">
+            <div class="divcen950 clearfix">
+                <span class="flol miaosu">
+                    <i class="flol">
+                    </i>千兆浏览器
+                </span>
+                <span class="person-center-tit flol">个人中心</span>
+                <a href="#" class="logout flor">
+                    _
+                </a>
+            </div>
+        </div>
+        <div class="g-head">
+            <div class="divcen950 clearfix">
+                <a href="#" targer="" title="" class="flol">
+                    <img src="./img/default_avatar.jpg" alt="" title="" width="146" height="146"/>
+                </a>
+                <span class="flol ml35">
+                    <span class="username">{{.Username}}</span>
+                    <span class="user-rating">用户等级：初级</span>
+                </span>
+            </div>
+        </div>
+        <div class="divcen950 person-content clearfix">
+            <div class="person-left flol">
+                <div class="person-left-tit">
+                    <i class="ico_person mr7 flol">
+                    </i>
+                    <span>个人中心</span>
+                </div>
+            </div>
+            <div class="bcf person-right flol">
+                <h4 class="person-right-tit">
+                    <i class="ico_person_gray mr4 flol">
+                    </i>个人资料
+                </h4>
+                <p class="content">
+                    <span>宽带账号名：</span>
+                    <label id="radresult">暂无</label>
+                </p>
+                <p class="content">
+                    <span><span class="word-space">带宽</span>：</span>
+                    <label>暂无</label>
+                </p>
+                <p class="content">
+                    <span>上&nbsp;传&nbsp;速&nbsp;率：</span>
+                    <label>暂无</label>
+                </p>
+                <p class="content">
+                    <span>下&nbsp;载&nbsp;速&nbsp;率：</span>
+                    <label>暂无</label>
+                </p>
+                <p class="line">
+                </p>
+                <h4 class="person-right-tit">
+                    <i class="ico_stopwatch mr4 flol">
+                    </i>提速记录
+                </h4>
+                <p class="content">
+                    <span>暂无提速记录</span>
+                </p>
+            </div>
+        </div>
+        <script src="/js/jquery-1.10.2.min.js"></script>
+        <script>
+            $(function () {
+                var ri = external.GetRasID();
+                ri && $('#radresult').text(ri);
+            })
+        </script>
+    </body>
+</html>
+{{end}}
