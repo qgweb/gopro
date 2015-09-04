@@ -14,18 +14,24 @@ const (
 
 // USER
 const (
-	CONTROLLER_USER_NOT_EXIST            = "用户名不存在,请注册或者联系客服!"
-	CONTROLLER_USER_LOGIN_SUCCESS        = "用户登录成功"
-	CONTROLLER_USER_CHECK_ERROR          = "验证出错!"
-	CONTROLLER_USER_USERPWD_ERROR        = "用户名或密码错误!"
-	CONTROLLER_USER_USERNAME_EXIST_ERROR = "该邮箱已被注册使用!"
-	CONTROLLER_USER_REGISTER_REF_SUCCESS = "注册或关联成功!"
-	CONTROLLER_USER_REGISTER_REF_ERROR   = "一些不知名的错误,注册或关联失败!"
-	CONTROLLER_USER_REGISTER_SUCCESS     = "注册成功!"
-	CONTROLLER_USER_REGISTER_ERROR       = "注册失败!"
-	CONTROLLER_USER_LOGIN_FIRST          = "请先登陆!"
-	CONTROLLER_USER_LOGINOUT             = "用户已注销!"
-	CONTROLLER_USER_NEEDLOGIN            = "need login!"
+	CONTROLLER_USER_NOT_EXIST                 = "用户名不存在,请注册或者联系客服!"
+	CONTROLLER_USER_LOGIN_SUCCESS             = "用户登录成功"
+	CONTROLLER_USER_CHECK_ERROR               = "验证出错!"
+	CONTROLLER_USER_USERPWD_ERROR             = "用户名或密码错误!"
+	CONTROLLER_USER_USERNAME_EXIST_ERROR      = "该邮箱已被注册使用!"
+	CONTROLLER_USER_REGISTER_REF_SUCCESS      = "注册或关联成功!"
+	CONTROLLER_USER_REGISTER_REF_ERROR        = "一些不知名的错误,注册或关联失败!"
+	CONTROLLER_USER_REGISTER_SUCCESS          = "注册成功!"
+	CONTROLLER_USER_REGISTER_ERROR            = "注册失败!"
+	CONTROLLER_USER_LOGIN_FIRST               = "请先登陆!"
+	CONTROLLER_USER_LOGINOUT                  = "用户已注销!"
+	CONTROLLER_USER_NEEDLOGIN                 = "need login!"
+	CONTROLLER_USER_BANDWITH_ACTIONERROR      = "action wrong!"
+	CONTROLLER_USER_BANDWITH_BANDWITHERROR    = "bandwith wrong!"
+	CONTROLLER_USER_BANDWITH_BANDWITHPWDERROR = "bandwith_pwd wrong"
+	CONTROLLER_USER_BANDWITH_NOMESSAGE        = "No message!"
+	CONTROLLER_USER_BANDWITH_NEEDAPPUID       = "需要请求参数app_uid"
+	CONTROLLER_USER_BANDWITH_NOTEXISTBRAND    = "不存在宽带帐号,请联系管理员!"
 )
 
 // Favorite

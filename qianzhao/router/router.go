@@ -25,6 +25,10 @@ func Router(e *echo.Echo) {
 	e.Post("/Api/v0.1/backup_favorite", (&controller.Favorite{}).BackupFavorite)
 	e.Post("/Api/v0.1/get_favorite", (&controller.Favorite{}).GetFavorite)
 
+	//// 宽带账号
+	e.Post("/Api/v0.1/verify_Bandwith", (&controller.User{}).VerifyBandwith)
+	e.Get("/Api/v0.1/get_Bandwith", (&controller.User{}).GetBandwith)
+
 	//// 123
 	e.Post("/Api/v0.1/speedup_open", (&controller.Ebit{}).SpeedupOpen)
 	e.Get("/Api/v0.1/speedup_open", (&controller.Ebit{}).SpeedupOpen)
@@ -38,7 +42,8 @@ func Router(e *echo.Echo) {
 	//// 测速
 	e.Get("/operate/speedup_prepare", (&controller.Operate{}).SpeedupPrepare)
 	e.Get("/Api/v0.1/user/speed_test", (&controller.User{}).SpeedTest)
-	//Route::post("/operate/speedup_open_check", "EbitController@speedup_open_check");
+	e.Post("/operate/speedup_open_check", (&controller.Ebit{}).SpeedupOpenCheck)
+	e.Post("/operate/speedup_open", (&controller.Ebit{}).SpeedupOpen)
 }
 
 //// 秒速浏览器用户注册

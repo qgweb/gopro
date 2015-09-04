@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/goweb/gopro/lib/grab"
 	"goclass/convert"
 	"log"
 
@@ -199,4 +200,78 @@ func (this *User) MemberCenter(ctx *echo.Context) error {
 // 速度测试
 func (this *User) SpeedTest(ctx *echo.Context) error {
 	return ctx.Render(200, "speedtest", "")
+}
+
+// 验证宽带
+func (this *User) VerifyBandwith(ctx *echo.Context) error {
+	var (
+		action       = ctx.Form("action")
+		bandwith     = ctx.Form("bandwith")
+		bandwith_pwd = ctx.Form("bandwith_pwd")
+		umodel       = model.User{}
+	)
+
+	if !grab.In_Array([]string{"verify", "fetch"}, action) {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"data": "NULL",
+			"msg":  global.CONTROLLER_USER_BANDWITH_ACTIONERROR,
+		})
+	}
+
+	if bandwith == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"data": "NULL",
+			"msg":  global.CONTROLLER_USER_BANDWITH_BANDWITHERROR,
+		})
+	}
+
+	if bandwith_pwd == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"data": "NULL",
+			"msg":  global.CONTROLLER_USER_BANDWITH_BANDWITHPWDERROR,
+		})
+	}
+
+	switch action {
+	case "verify":
+		app_uid := umodel.VerifyBandWith(bandwith, bandwith_pwd)
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"code": global.CONTROLLER_CODE_SUCCESS,
+			"data": map[string]string{"app_uid": app_uid},
+			"msg":  global.CONTROLLER_USER_BANDWITH_NOMESSAGE,
+		})
+	}
+
+	return nil
+}
+
+// 获取宽带
+func (this *User) GetBandwith(ctx *echo.Context) error {
+	var (
+		app_uid = ctx.Query("app_uid")
+		umodel  = model.User{}
+	)
+
+	if app_uid == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  global.CONTROLLER_USER_BANDWITH_NEEDAPPUID,
+		})
+	}
+
+	u := umodel.GetBrandWith(app_uid)
+	if u.Id != "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code":     global.CONTROLLER_CODE_SUCCESS,
+			"bandwith": u.Bandwith,
+		})
+	} else {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  global.CONTROLLER_USER_BANDWITH_NOTEXISTBRAND,
+		})
+	}
 }

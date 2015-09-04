@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/goweb/gopro/lib/encrypt"
+
 	"github.com/goweb/gopro/qianzhao/common/function"
 
 	"log"
 
 	"github.com/goweb/gopro/lib/convert"
+)
+
+const (
+	USER_TABLE_NAME = "221su_users"
 )
 
 type User struct {
@@ -24,9 +30,13 @@ type User struct {
 	Sid           string `sid`
 }
 
+func make_app_uid(bandwith string, bandwith_pwd string, timestamp string) string {
+	return encrypt.DefaultMd5.Encode(bandwith + bandwith_pwd + timestamp + "1024")
+}
+
 // 用户名是否存在
 func (this *User) UserNameExist(name string) bool {
-	myorm.BSQL().Select("count(*) as num").From("221su_users").Where("username=?")
+	myorm.BSQL().Select("count(*) as num").From(USER_TABLE_NAME).Where("username=?")
 	list, err := myorm.Query(name)
 	if err != nil {
 		log.Println("[user UserNameExist]数据获取失败", err)
@@ -52,7 +62,7 @@ func (this *User) UserExist(name string, pwd string) bool {
 
 // 用户信息
 func (this *User) UserInfo(name string) (u User) {
-	myorm.BSQL().Select("*").From("221su_users").Where("username=?")
+	myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("username=?")
 	list, err := myorm.Query(name)
 	if err != nil {
 		log.Println("[user UserInfo]数据获取失败", err)
@@ -79,7 +89,7 @@ func (this *User) UserInfo(name string) (u User) {
 
 // 用户注册
 func (this *User) UserRegister(name string, password string) bool {
-	myorm.BSQL().Insert("221su_users").Values("username", "password", "created")
+	myorm.BSQL().Insert(USER_TABLE_NAME).Values("username", "password", "created")
 	n, err := myorm.Insert(name, function.GetBcrypt([]byte(password)), function.GetTimeUnix())
 	if err != nil {
 		log.Println("[user UserRegister] 插入失败，", err)
@@ -111,7 +121,7 @@ func (this *User) Update(values map[string]interface{}, wheres map[string]interf
 		wvlues = append(wvlues, v)
 	}
 
-	fmt.Println(myorm.BSQL().Update("221su_users").Set(fields...).Where(strings.Join(where, " and ")))
+	fmt.Println(myorm.BSQL().Update(USER_TABLE_NAME).Set(fields...).Where(strings.Join(where, " and ")))
 	n, err := myorm.Update(wvlues...)
 	if err != nil {
 		log.Println("[user Update]更新失败", err)
@@ -122,4 +132,51 @@ func (this *User) Update(values map[string]interface{}, wheres map[string]interf
 	}
 
 	return false
+}
+
+// 验证宽带
+func (this *User) VerifyBandWith(bandwith string, bandwith_pwd string) (app_uid string) {
+	myorm.BSQL().Select("app_uid").From(USER_TABLE_NAME).Where("bandwith=?")
+	list, err := myorm.Query(bandwith)
+	if err != nil {
+		log.Println("[user VerifyBandWith]查询失败", err)
+		return
+	}
+
+	if len(list) > 0 {
+		return list[0]["app_uid"]
+	}
+
+	timestamp := function.GetTimeUnix()
+	app_uid = make_app_uid(bandwith, bandwith_pwd, timestamp)
+
+	myorm.BSQL().Insert(USER_TABLE_NAME).Values("bandwith", "bandwith_pwd", "created", "app_uid")
+	n, err := myorm.Insert(bandwith, bandwith_pwd, timestamp, app_uid)
+	if err != nil {
+		log.Println("[user VerifyBandWith] 插入失败", err)
+		return ""
+	}
+
+	if n > 0 {
+		return
+	}
+
+	return ""
+}
+
+// 获取宽带
+func (this *User) GetBrandWith(app_uid string) (u User) {
+	myorm.BSQL().Select("bandwith", "id").From(USER_TABLE_NAME).Where("app_uid=?")
+	list, err := myorm.Query(app_uid)
+	if err != nil {
+		log.Println("[user GetBrandWith] 查询失败", err)
+		return
+	}
+
+	if len(list) > 0 {
+		u.Bandwith = list[0]["bandwith"]
+		u.Id = list[0]["id"]
+		return u
+	}
+	return
 }
