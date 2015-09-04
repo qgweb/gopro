@@ -30,5 +30,16 @@ const (
 
 // Favorite
 const (
-	CONTROLLER_FAVORITE_NOCONTENT = "无内容!"
+	CONTROLLER_FAVORITE_NOCONTENT       = "无内容!"
+	CONTROLLER_FAVORITE_NOUPLOADCONTENT = "没有需要上传的内容!"
+)
+
+// ebit
+const (
+	CONTROLLER_EBIT_NOPARAM            = "缺少参数!"
+	CONTROLLER_EBIT_REQUESTFAILE       = "请求失败!"
+	CONTROLLER_EBIT_SPEEDTFAILE        = "提速失败!!!"
+	CONTROLLER_EBIT_REQUEST_TIMEOUT    = "抱歉，本次请求超时，请稍后重试"
+	CONTROLLER_EBIT_NOSPEEDUPCONDITION = "抱歉，您的运行环境不符合加速条件"
+	CONTROLLER_EBIT_SIGNERROR          = "sign错误!"
 )

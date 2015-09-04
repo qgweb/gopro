@@ -1,11 +1,16 @@
 package function
 
 import (
-	"golang.org/x/crypto/bcrypt"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
+
+	"github.com/labstack/echo"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/goweb/gopro/lib/convert"
 )
@@ -28,11 +33,31 @@ func GetBcrypt(data []byte) string {
 	return string(pwd)
 }
 
-// 严重是否相同
+// 验证是否相同
 func CheckBcrypt(data []byte, pwd []byte) bool {
 	err := bcrypt.CompareHashAndPassword(data, pwd)
 	if err != nil {
 		return false
 	}
 	return true
+}
+
+// get或者post
+func GetPost(ctx *echo.Context, name string) string {
+	if ctx.Query(name) == "" {
+		return ctx.Form(name)
+	}
+
+	return ctx.Query(name)
+}
+
+// 获取随机数
+func GetRand(b int, e int) int {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return r.Intn(e-b) + b
+}
+
+//  ip
+func GetIP(ctx *echo.Context) string {
+	return strings.Split(ctx.Request().RemoteAddr, ":")[0]
 }

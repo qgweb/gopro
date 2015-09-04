@@ -22,12 +22,23 @@ func Router(e *echo.Echo) {
 	e.Get("/user/edit", (&controller.User{}).Edit)
 
 	//// 用户收藏夹
-	//Route::post("Api/v0.1/backup_favorite", array('before' => 'is_login', 'uses' => 'FavoriteController@backup_favorite'));
+	e.Post("/Api/v0.1/backup_favorite", (&controller.Favorite{}).BackupFavorite)
 	e.Post("/Api/v0.1/get_favorite", (&controller.Favorite{}).GetFavorite)
 
-	//// 测速
-	e.Get("/Api/v0.1/user/speed_test", (&controller.User{}).SpeedTest)
+	//// 123
+	e.Post("/Api/v0.1/speedup_open", (&controller.Ebit{}).SpeedupOpen)
+	e.Get("/Api/v0.1/speedup_open", (&controller.Ebit{}).SpeedupOpen)
 
+	e.Get("/Api/v0.1/speedup_open_check", (&controller.Ebit{}).SpeedupOpenCheck)
+	e.Post("/Api/v0.1/speedup_open_check", (&controller.Ebit{}).SpeedupOpenCheck)
+
+	e.Get("/Api/v0.1/speedup_check", (&controller.Ebit{}).SpeedupCheck)
+	e.Post("/Api/v0.1/speedup_check", (&controller.Ebit{}).SpeedupCheck)
+
+	//// 测速
+	e.Get("/operate/speedup_prepare", (&controller.Operate{}).SpeedupPrepare)
+	e.Get("/Api/v0.1/user/speed_test", (&controller.User{}).SpeedTest)
+	//Route::post("/operate/speedup_open_check", "EbitController@speedup_open_check");
 }
 
 //// 秒速浏览器用户注册

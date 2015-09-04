@@ -14,7 +14,7 @@ import (
 type Base struct {
 }
 
-func (this *Base) IsLogin(ctx *echo.Context) error {
+func (this *Base) IsLogin(ctx *echo.Context) (bool, error) {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Println("获取session失败：", err)
@@ -22,15 +22,12 @@ func (this *Base) IsLogin(ctx *echo.Context) error {
 
 	defer sess.SessionRelease(ctx.Response())
 
-	if u, ok := sess.Get(global.SESSION_USER_INFO).(model.User); !ok {
-		return ctx.JSON(http.StatusOK, map[string]string{
+	if _, ok := sess.Get(global.SESSION_USER_INFO).(model.User); !ok {
+		return false, ctx.JSON(http.StatusOK, map[string]string{
 			"code": convert.ToString(http.StatusMovedPermanently),
 			"msg":  global.CONTROLLER_USER_LOGIN_FIRST,
 		})
 	} else {
-		return ctx.JSON(http.StatusOK, map[string]string{
-			"code":     global.CONTROLLER_CODE_SUCCESS,
-			"username": u.Name,
-		})
+		return true, nil
 	}
 }

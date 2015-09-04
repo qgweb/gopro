@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"goclass/convert"
 	"log"
 
 	"github.com/goweb/gopro/lib/encrypt"
@@ -139,7 +140,24 @@ func (this *User) Edit(ctx *echo.Context) error {
 
 // 是否登录
 func (this *User) IsLogin(ctx *echo.Context) error {
-	return this.Base.IsLogin(ctx)
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Println("获取session失败：", err)
+	}
+
+	defer sess.SessionRelease(ctx.Response())
+
+	if u, ok := sess.Get(global.SESSION_USER_INFO).(model.User); !ok {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": convert.ToString(http.StatusMovedPermanently),
+			"msg":  global.CONTROLLER_USER_LOGIN_FIRST,
+		})
+	} else {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code":     global.CONTROLLER_CODE_SUCCESS,
+			"username": u.Name,
+		})
+	}
 }
 
 // 退出登录
