@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/goweb/gopro/qianzhao/controller"
 	"github.com/labstack/echo"
+	"github.com/qgweb/gopro/qianzhao/controller"
 )
 
 func Router(e *echo.Echo) {
@@ -44,6 +44,9 @@ func Router(e *echo.Echo) {
 	e.Get("/Api/v0.1/user/speed_test", (&controller.User{}).SpeedTest)
 	e.Post("/operate/speedup_open_check", (&controller.Ebit{}).SpeedupOpenCheck)
 	e.Post("/operate/speedup_open", (&controller.Ebit{}).SpeedupOpen)
+
+	//// 接口
+	e.Post("/interface/account", (&controller.Interfacer{}).AccountList)
 }
 
 //// 秒速浏览器用户注册

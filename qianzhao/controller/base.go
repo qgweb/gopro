@@ -1,14 +1,15 @@
 package controller
 
 import (
-	"goclass/convert"
 	"log"
 	"net/http"
 
-	"github.com/goweb/gopro/qianzhao/common/global"
-	"github.com/goweb/gopro/qianzhao/common/session"
-	"github.com/goweb/gopro/qianzhao/model"
+	"github.com/qgweb/gopro/lib/convert"
+
 	"github.com/labstack/echo"
+	"github.com/qgweb/gopro/qianzhao/common/global"
+	"github.com/qgweb/gopro/qianzhao/common/session"
+	"github.com/qgweb/gopro/qianzhao/model"
 )
 
 type Base struct {

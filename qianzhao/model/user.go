@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/goweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/lib/encrypt"
 
-	"github.com/goweb/gopro/qianzhao/common/function"
+	"github.com/qgweb/gopro/qianzhao/common/function"
 
 	"log"
 
-	"github.com/goweb/gopro/lib/convert"
+	"github.com/qgweb/gopro/lib/convert"
 )
 
 const (

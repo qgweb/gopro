@@ -10,18 +10,18 @@ import (
 	"html/template"
 	"io"
 
-	"github.com/goweb/gopro/qianzhao/common/config"
-	"github.com/goweb/gopro/qianzhao/router"
+	"github.com/qgweb/gopro/qianzhao/common/config"
+	"github.com/qgweb/gopro/qianzhao/router"
 
 	"github.com/astaxie/beego/grace"
 
 	"os"
 
-	_ "github.com/goweb/gopro/qianzhao/common/redis"
-	_ "github.com/goweb/gopro/qianzhao/common/session"
-	_ "github.com/goweb/gopro/qianzhao/model"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
+	_ "github.com/qgweb/gopro/qianzhao/common/redis"
+	_ "github.com/qgweb/gopro/qianzhao/common/session"
+	_ "github.com/qgweb/gopro/qianzhao/model"
 )
 
 const (

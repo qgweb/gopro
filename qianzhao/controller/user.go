@@ -1,15 +1,16 @@
 package controller
 
 import (
-	"github.com/goweb/gopro/lib/grab"
-	"goclass/convert"
 	"log"
 
-	"github.com/goweb/gopro/lib/encrypt"
-	"github.com/goweb/gopro/qianzhao/common/function"
-	"github.com/goweb/gopro/qianzhao/common/global"
-	"github.com/goweb/gopro/qianzhao/common/session"
-	"github.com/goweb/gopro/qianzhao/model"
+	"github.com/qgweb/gopro/lib/convert"
+	"github.com/qgweb/gopro/lib/grab"
+
+	"github.com/qgweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/qianzhao/common/function"
+	"github.com/qgweb/gopro/qianzhao/common/global"
+	"github.com/qgweb/gopro/qianzhao/common/session"
+	"github.com/qgweb/gopro/qianzhao/model"
 
 	"net/http"
 

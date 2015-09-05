@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/goweb/gopro/lib/convert"
+	"github.com/qgweb/gopro/lib/convert"
 
 	"github.com/astaxie/beego/httplib"
 	oredis "github.com/garyburd/redigo/redis"
-	"github.com/goweb/gopro/lib/encrypt"
-	"github.com/goweb/gopro/qianzhao/common/function"
-	"github.com/goweb/gopro/qianzhao/common/global"
-	"github.com/goweb/gopro/qianzhao/common/redis"
 	"github.com/labstack/echo"
+	"github.com/qgweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/qianzhao/common/function"
+	"github.com/qgweb/gopro/qianzhao/common/global"
+	"github.com/qgweb/gopro/qianzhao/common/redis"
 )
 
 const (

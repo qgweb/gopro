@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/goweb/gopro/qianzhao/common/global"
-	"github.com/goweb/gopro/qianzhao/model"
 	"github.com/labstack/echo"
+	"github.com/qgweb/gopro/qianzhao/common/global"
+	"github.com/qgweb/gopro/qianzhao/model"
 )
 
 type Favorite struct {

@@ -2,11 +2,11 @@ package model
 
 import
 
-//"github.com/goweb/gopro/qianzhao/common/function"
+//"github.com/qgweb/gopro/qianzhao/common/function"
 
 "log"
 
-//"github.com/goweb/gopro/lib/convert"
+//"github.com/qgweb/gopro/lib/convert"
 
 const (
 	FAVORITE_TABLE_NAME = "221su_favorite"

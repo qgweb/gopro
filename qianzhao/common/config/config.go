@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/goweb/gopro/qianzhao/common/function"
+	"github.com/qgweb/gopro/qianzhao/common/function"
 	"gopkg.in/ini.v1"
 )
 
@@ -39,4 +39,9 @@ func GetDB() *ini.Section {
 // 获取redis配置
 func GetRedis() *ini.Section {
 	return Config.Section("redis")
+}
+
+// 活取接口配置
+func GetInterface() *ini.Section {
+	return Config.Section("interface")
 }

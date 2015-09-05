@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/goweb/gopro/qianzhao/common/config"
+	"github.com/qgweb/gopro/qianzhao/common/config"
 )
 
 var (

@@ -12,7 +12,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/goweb/gopro/lib/convert"
+	"github.com/qgweb/gopro/lib/convert"
 )
 
 // 获取程序执行目录

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/goweb/gopro/lib/orm"
-	"github.com/goweb/gopro/qianzhao/common/config"
+	"github.com/qgweb/gopro/lib/orm"
+	"github.com/qgweb/gopro/qianzhao/common/config"
 )
 
 var (
