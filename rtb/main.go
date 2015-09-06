@@ -116,7 +116,7 @@ func getRand(ary []int) int {
 //请求出价
 func requestPrice(w http.ResponseWriter, r *http.Request) {
 	rtotal++
-	//http://$ip:$port/uri/?ad=$ad&ua=$ua&url=$url&mid=$mid&showType=01|02|03|04
+	//http://$ip:$port/uri/?ad=$ad&ua=$ua&url=$url&mid=$mid&showType=01|02|03|04|05
 	query := r.URL.Query()
 	//	ad := query.Get("ad")
 	//	ua := query.Get("ua")
@@ -168,7 +168,7 @@ func reponsePrice(param map[string]string) {
 
 	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
-		"03", "reBkYQmESMs=", "10")
+		"04", "reBkYQmESMs=", "10")
 
 	//	res, err := redis.Bytes(conn.Do("GET", "name"))
 	//	if err != nil {
