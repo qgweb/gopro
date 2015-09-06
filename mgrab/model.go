@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/goweb/gopro/lib/encrypt"
-	"github.com/goweb/gopro/lib/grab"
+	"github.com/qgweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/lib/grab"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

@@ -3,7 +3,7 @@ package protocol
 import (
 	"bytes"
 	"fmt"
-	"github.com/goweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/lib/encrypt"
 	"net"
 	"sync"
 	"time"

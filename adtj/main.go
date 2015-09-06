@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/goweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/lib/encrypt"
 	"io/ioutil"
 	"log"
 	"os"

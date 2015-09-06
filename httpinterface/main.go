@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/bradfitz/gomemcache/memcache"
-	"github.com/goweb/gopro/lib/convert"
+	"github.com/qgweb/gopro/lib/convert"
 	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"log"

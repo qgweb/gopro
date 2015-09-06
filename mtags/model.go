@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	gs "github.com/goweb/gopro/lib/grab"
+	gs "github.com/qgweb/gopro/lib/grab"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

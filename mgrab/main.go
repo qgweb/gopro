@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/goweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/lib/encrypt"
 
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"

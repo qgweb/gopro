@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/goweb/gopro/lib/grab"
+	"github.com/qgweb/gopro/lib/grab"
 	"log"
 	"strings"
 	"time"
