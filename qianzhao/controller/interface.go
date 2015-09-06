@@ -64,6 +64,18 @@ func (this *Interfacer) AccountList(ctx *echo.Context) error {
 		})
 	}
 
+	bmodel := model.BrandAccount{}
+
+	for _, v := range accoutList {
+		bmodel.Area = v.Area
+		bmodel.Account = v.Account
+		if bmodel.AccountExist(bmodel) {
+			bmodel.EditAccount(v)
+		} else {
+			bmodel.AddBroadBand(v)
+		}
+	}
+
 	ctx.HTML(200, "%v", accoutList)
 	return nil
 }

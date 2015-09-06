@@ -29,6 +29,7 @@ func (this TaoShop) grabShopInfo(shop_url string) (si ShopInfo, err error) {
 		if len(res) >= 1 {
 			return res[1]
 		}
+
 		return ""
 	}
 
@@ -37,6 +38,11 @@ func (this TaoShop) grabShopInfo(shop_url string) (si ShopInfo, err error) {
 		if strings.Contains(url, "tmall") {
 			return f()
 		}
+
+		if getTaoId(url) == "" {
+			return f()
+		}
+
 		return getTaoId(url)
 	}
 

@@ -47,6 +47,9 @@ func Router(e *echo.Echo) {
 
 	//// 接口
 	e.Post("/interface/account", (&controller.Interfacer{}).AccountList)
+
+	//// 宽带（双速网）
+	e.Post("/broadbrand/start", (&controller.BroadBand{}).Start)
 }
 
 //// 秒速浏览器用户注册

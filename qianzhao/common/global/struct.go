@@ -7,11 +7,11 @@ type getUserProductResponse struct {
 	GetUserProductReturn string `xml:"getUserProductReturn"`
 }
 
-type Envelope struct {
-	By Body `xml:"Body"`
+type UserEnvelope struct {
+	By UserBody `xml:"Body"`
 }
 
-type Body struct {
+type UserBody struct {
 	GP getUserProductResponse `xml:"getUserProductResponse"`
 }
 
