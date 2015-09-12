@@ -2,28 +2,38 @@
 package controller
 
 import (
-	"errors"
+	"bytes"
+	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/labstack/echo"
 	"github.com/qgweb/gopro/qianzhao/common/global"
 	"github.com/qgweb/gopro/qianzhao/model"
 	"log"
 	"strings"
+	"text/template"
 )
+
+type ErrBrand struct {
+	Code string
+	Msg  string
+}
+
+type UserData struct {
+	Area    string
+	Account string
+}
 
 const (
 	USER_QUERY_URL       = "http://js.vnet.cn/ProvinceForSPSearchUserName/services/ProvinceForSPSearchUserName?wsdl"
-	USER_QUERY_PRODUCTID = "1100000300002204"
+	USER_QUERY_PRODUCTID = "1100099900000000"
+	DEFAULT_SPEED        = 1024 * 20 * 1.0 // 单位kb
 )
 
 var (
-	ErrProgram         = errors.New("程序发生异常")
-	ErrData            = errors.New("数据格式出错")
-	ErrUserUnup        = errors.New("用户未登录宽带")
-	ErrNotJiangShuUser = errors.New("须为江苏电信校园宽带用户")
-	ErrNotAllowUP      = errors.New("当前宽带环境不满足提速条件")
-	ErrCode            = "3xx"
-	SuccCode           = "200"
+	ErrProgram         = &ErrBrand{"5000", "程序发生异常"}
+	ErrNotJiangShuUser = &ErrBrand{"5001", "须为江苏电信校园宽带用户"}
+	ErrNotAllowUP      = &ErrBrand{"5002", "当前宽带环境不满足提速条件"}
+	ErrTimeOut         = &ErrBrand{"5003", "体验时间已结束"}
 )
 
 type BroadBand struct {
@@ -31,27 +41,49 @@ type BroadBand struct {
 
 // 开启
 func (this *BroadBand) Start(ctx *echo.Context) error {
-	areacode, username, err := this.userQuery(ctx)
+	udata, err := this.userQuery(ctx)
 	if err != nil {
 		return ctx.JSON(200, map[string]string{
-			"code": ErrCode,
-			"msg":  err.Error(),
+			"code": ErrProgram.Code,
+			"msg":  ErrProgram.Msg,
 		})
 	}
+	//udata := UserData{"", "10327158472"}
 
 	// 检测用户是否在白名单内
 	baModel := model.BrandAccount{}
-	if !baModel.AccountExist(model.BrandAccount{Account: username, Area: areacode}) {
+	if !baModel.AccountExist(model.BrandAccount{Account: udata.Account, Area: udata.Area}) {
 		return ctx.JSON(200, map[string]string{
-			"code": ErrCode,
-			"msg":  ErrNotAllowUP.Error(),
+			"code": ErrNotAllowUP.Code,
+			"msg":  ErrNotAllowUP.Msg,
 		})
 	}
 
+	// 检测用户时长
+	ba, err1 := baModel.GetAccountInfo(udata.Account)
+	if err1 != nil || ba.Id == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": ErrProgram.Code,
+			"msg":  ErrProgram.Msg,
+		})
+	}
+
+	// 可以使用时长
+	canTime := ba.TotalTime - ba.UsedTime
+	if canTime == 0 {
+		return ctx.JSON(200, map[string]string{
+			"code": ErrTimeOut.Code,
+			"msg":  ErrTimeOut.Msg,
+		})
+	}
+
+	// 宽带提速比
+	speed := 1 - float32(ba.DownBroadband)/float32(DEFAULT_SPEED)
+
 	return ctx.JSON(200, map[string]string{
-		"code": SuccCode,
+		"code": "200",
 		"msg":  "OK",
-		"data": username,
+		"data": fmt.Sprintf("%s|%d|%.2f", ba.Account, canTime, speed),
 	})
 }
 
@@ -61,7 +93,7 @@ func (this *BroadBand) Stop(ctx *echo.Context) error {
 }
 
 // 用户宽带查询(username string, areacode string)
-func (this *BroadBand) userQuery(ctx *echo.Context) (string, string, error) {
+func (this *BroadBand) userQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
 	var (
 		ip = ctx.Form("ip")
 	)
@@ -69,42 +101,52 @@ func (this *BroadBand) userQuery(ctx *echo.Context) (string, string, error) {
 	req := httplib.Post(USER_QUERY_URL)
 	req.Header("Content-Type", "text/xml; charset=utf-8")
 	req.Header("SOAPAction", USER_QUERY_URL)
-	req.Body(createUserSOAPXml("", "getUserProduct", ip, USER_QUERY_PRODUCTID))
+	req.Body(createUserSOAPXml(ip, USER_QUERY_PRODUCTID))
 	a := global.UserEnvelope{}
 	err := req.ToXml(&a)
 	if err != nil {
 		log.Println("[BroadBand userQuery] 解析xml失败 ", err)
-		return "", "", ErrProgram
+		return &UserData{}, ErrProgram
 	}
 
 	res := a.By.GP.GetUserProductReturn
 	resAry := strings.Split(res, "|")
 	log.Println(res)
 	if len(resAry) != 3 {
-		return "", "", ErrProgram
+		return &UserData{}, ErrProgram
 	}
 
 	if resAry[0] == "0" {
-		return resAry[1], resAry[1], nil
+		return &UserData{resAry[1], resAry[2]}, nil
 	}
 	if resAry[0] == "-999" {
-		return "", "", ErrNotJiangShuUser
+		return &UserData{}, ErrNotJiangShuUser
 	}
 	if resAry[0] == "-998" {
-		return "", "", ErrProgram
+		return &UserData{}, ErrProgram
 	}
 
-	return "", "", nil
+	return &UserData{}, nil
 }
 
-func createUserSOAPXml(nameSpace string, methodName string, productid string, ip string) string {
-	soapBody := "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-	soapBody += "<soap12:Envelope xmlns:m=\"http://js.vnet.cn\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">"
-	soapBody += "<soap12:Body>"
-	soapBody += "<" + methodName + " xmlns=\"" + nameSpace + "\">"
-	//以下是具体参数
-	soapBody += "<productid>" + productid + "</productid>"
-	soapBody += "<ip>" + ip + "</ip>"
-	soapBody += "</" + methodName + "></soap12:Body></soap12:Envelope>"
-	return soapBody
+func createUserSOAPXml(productid string, ip string) string {
+	soapBody := `
+<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/">
+  <x:Header/>
+  <x:Body>
+    <getUserProduct xmlns="">
+      <productid>{{.Productid}}</productid>
+      <ip>{{.Ip}}</ip>
+    </getUserProduct>
+  </x:Body>
+</x:Envelope>`
+
+	buf := bytes.NewBufferString("")
+	t, _ := template.New("a").Parse(soapBody)
+	t.Execute(buf, struct {
+		Productid string
+		Ip        string
+	}{productid, ip})
+
+	return buf.String()
 }

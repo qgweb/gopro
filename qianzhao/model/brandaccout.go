@@ -19,8 +19,11 @@ type BrandAccount struct {
 	Account       string `json:"account"`        //宽带账户
 	SchoolName    string `json:"school_name"`    //校园名称
 	SchoolGroup   string `json:"school_group"`   //校园组别
-	UpBroadband   string `json:"broadband_up"`   //上行带宽
-	DownBroadband string `json:"broadband_down"` //下行带宽
+	UpBroadband   int    `json:"broadband_up"`   //上行带宽
+	DownBroadband int    `json:"broadband_down"` //下行带宽
+	TotalTime     int    `json:"total_time"`     //总共体验时长
+	UsedTime      int    `json:"used_time"`      //已体验时长
+	TryCount      string `json:"try_count"`      // 已尝试次数
 }
 
 // 添加白名单
@@ -69,4 +72,32 @@ func (this *BrandAccount) EditAccount(ba BrandAccount) bool {
 		return true
 	}
 	return false
+}
+
+// 获取用户信息
+func (this *BrandAccount) GetAccountInfo(account string) (BrandAccount, error) {
+	myorm.BSQL().Select("*").From(BROAD_TABLE_NAME).Where("account=?")
+	list, err := myorm.Query(account)
+	if err != nil {
+		log.Println("[brandaccount GetAccountInfo] 查询失败，", err)
+		return BrandAccount{}, err
+	}
+
+	if len(list) == 0 {
+		return BrandAccount{}, nil
+	}
+
+	ba := BrandAccount{}
+	ba.Id = list[0]["id"]
+	ba.Account = list[0]["account"]
+	ba.Area = list[0]["area"]
+	ba.SchoolName = list[0]["school_name"]
+	ba.SchoolGroup = list[0]["school_group"]
+	ba.UpBroadband = convert.ToInt(list[0]["broadband_up"])
+	ba.DownBroadband = convert.ToInt(list[0]["broadband_down"])
+	ba.TotalTime = convert.ToInt(list[0]["total_time"])
+	ba.UsedTime = convert.ToInt(list[0]["used_time"])
+	ba.TryCount = list[0]["try_count"]
+
+	return ba, nil
 }

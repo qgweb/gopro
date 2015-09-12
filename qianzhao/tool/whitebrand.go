@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"github.com/qgweb/gopro/qianzhao/model"
+	"github.com/qiniu/iconv"
 	"io"
 	"log"
 	"os"
@@ -28,7 +29,7 @@ func main() {
 		log.Fatalln("文件打开失败：", err)
 	}
 	defer f.Close()
-
+	cd, _ := iconv.Open("utf-8", "gbk")
 	bi := bufio.NewReader(f)
 	for {
 		line, err := bi.ReadString('\n')
@@ -37,10 +38,11 @@ func main() {
 		}
 
 		line = strings.TrimSpace(line)
+		line = cd.ConvString(line)
 		//宽带账户|属地|校园名称|校园组别|上行带宽|下行带宽
-		datas := strings.Split(line, "|")
+		datas := strings.Split(line, "^$^")
 		if len(datas) != 6 {
-			log.Println("数据出错："，  line)
+			log.Println("数据出错：", line)
 			continue
 		}
 
