@@ -1,0 +1,128 @@
+// 宽带服务管理
+package server
+
+import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
+	"sync"
+	"time"
+
+	"github.com/qgweb/gopro/qianzhao-tcpserver/logger"
+)
+
+// 宽带账号管理
+type AccountManager struct {
+	sync.Mutex
+	StopChan chan bool
+	Users    map[string]*Account // 账号集合
+	log      *logger.Logger
+}
+
+type Account struct {
+	Name  string `json:"account"`    // 账号名称
+	BTime int64  `json:"begin_time"` // 开始时间
+	ETime int64  `json:"end_time"`   // 结束时间
+	CTime int64  `json:"used_time"`  // 可使用时间
+}
+
+// 新建管理服务
+func NewAccountManager(log *logger.Logger) *AccountManager {
+	return &AccountManager{
+		Users:    make(map[string]*Account),
+		log:      log,
+		StopChan: make(chan bool),
+	}
+}
+
+// 添加用户
+func (this *AccountManager) Add(user *Account) {
+	this.Lock()
+	defer this.Unlock()
+	this.Users[user.Name] = user
+}
+
+// 删除用户
+func (this *AccountManager) Del(name string) {
+	this.Lock()
+	defer this.Unlock()
+	delete(this.Users, name)
+}
+
+// 获取用户
+func (this *AccountManager) Get(name string) *Account {
+	this.Lock()
+	defer this.Unlock()
+	return this.Users[name]
+}
+
+// 编辑用户
+func (this *AccountManager) Edit(user *Account) {
+	this.Lock()
+	defer this.Unlock()
+	this.Users[user.Name] = user
+}
+
+// 遍历
+func (this *AccountManager) Range() map[string]*Account {
+	this.Lock()
+	defer this.Unlock()
+	return this.Users
+}
+
+// 定时刷新到磁盘
+func (this *AccountManager) TimeFlushDisk(fileName string) {
+	var flushDiskFun = func() {
+		this.Lock()
+		defer this.Unlock()
+
+		bytes, err := json.Marshal(&this.Users)
+		if err != nil {
+			this.log.Println("json格式化失败,错误信息为:", err)
+			return
+		}
+
+		err = ioutil.WriteFile(fileName, bytes, os.ModePerm)
+		if err != nil {
+			this.log.Println("更新到磁盘失败,错误信息为:", err)
+			return
+		}
+	}
+
+	t := time.NewTicker(time.Second * 10)
+	for {
+		select {
+		case <-t.C: // 检测时间
+			flushDiskFun()
+		case <-this.StopChan:
+			// 后续处理
+			flushDiskFun()
+			this.log.Println("定时磁盘服务已接收到停止服务")
+			return
+		}
+	}
+}
+
+// 定时检测时间
+func (this *AccountManager) TimeCheckAccountUTime(fun func(u *Account)) {
+	t := time.NewTicker(time.Second * 10)
+	for {
+		select {
+		case <-t.C: // 检测时间
+			ntime := time.Now().Unix()
+			for k, v := range this.Range() {
+				this.log.Println(k)
+				if ntime-v.BTime >= v.CTime {
+					v.ETime = ntime
+					fun(v) //回调函数处理
+					// 删除用户
+					this.Del(k)
+				}
+			}
+		case <-this.StopChan:
+			// 后续处理
+			this.log.Println("定时时钟服务已接收到停止服务")
+			return
+		}
+	}
+}

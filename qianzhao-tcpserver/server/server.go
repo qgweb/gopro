@@ -8,7 +8,25 @@ import (
 	"time"
 
 	"github.com/qgweb/gopro/qianzhao-tcpserver/logger"
+	"github.com/qgweb/gopro/qianzhao-tcpserver/protocol"
 )
+
+const (
+	PROTOCOL_HEAD = "qgbrower"
+)
+
+// 封包
+func ProtocolPack(data []byte) []byte {
+	p := protocol.NewProtocol(PROTOCOL_HEAD)
+	return p.Packet(data)
+}
+
+// 解包
+func ProtocolUnPack(data []byte) []byte {
+	p := protocol.NewProtocol(PROTOCOL_HEAD)
+	b, _ := p.Unpack(data)
+	return b[0]
+}
 
 type Server struct {
 	cm     *ConnectionManager
@@ -96,34 +114,39 @@ func (s *Server) StartAcceptLoop() {
 		}
 		go func() {
 			s.cm.Add(1)
-			s.handleConn(conn)
+			s.handleConn(conn.(*net.TCPConn))
 			s.cm.Done()
 		}()
 	}
 }
 
-func (s *Server) handleConn(conn net.Conn) {
-	tick := time.NewTicker(time.Second)
-	buffer := make([]byte, 64)
+func (s *Server) handleConn(conn *net.TCPConn) {
+	buffer := make([]byte, 1024)
 	for {
-		select {
-		case <-tick.C:
-			_, err := conn.Write([]byte("ping\r\n"))
-			if err != nil {
-				s.logger.Println("[Error] fail to write 'ping':", err)
-				conn.Close()
-				return
-			}
-			s.logger.Printf("[Server] Sent 'ping'\n")
+		//接收服务
+		n, err := conn.Read(buffer)
+		if err != nil {
+			s.logger.Println("客户端连接失败，错误信息：", err)
+			// 处理断开服务
+			break
+		}
 
-			n, err := conn.Read(buffer)
-			if err != nil {
-				s.logger.Println("[Error] fail to read from socket:", err)
-				conn.Close()
-				return
-			}
+		r, err := UmRequest(buffer[0:n])
+		if err != nil {
+			s.logger.Println("请求参数解析错误，信息为：", err)
+			continue
+		}
 
-			s.logger.Printf("[Server] OK: read %d bytes: '%s'\n", n, string(buffer[:n]))
+		switch r.Action {
+		case "ping": //响应ping包
+			(&Event{}).RepPing(conn)
+			break
+		case "link": // 连接请求
+			(&Event{}).Start(conn, &r)
+			break
+		case "stop": // 停止请求
+			(&Event{}).Stop(conn, &r)
+			break
 		}
 	}
 }
