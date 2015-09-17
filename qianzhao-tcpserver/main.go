@@ -11,10 +11,6 @@ import (
 )
 
 func main() {
-	data := []byte{113, 103, 98, 114, 111, 119, 101, 114, 33, 0, 0, 0, 123, 34, 97, 99, 116, 105, 111, 110, 34, 58, 34, 108, 105, 110, 107, 34, 44, 34, 99, 111, 110, 116, 101, 110, 116, 34, 58, 34, 49, 50, 51, 34, 125}
-	fmt.Println(string(data))
-	fmt.Println(string(server.ProtocolUnPack(data)))
-	return
 	var (
 		log      = logger.New("qianzhao-tcpserver")
 		fileName = fmt.Sprintf("./data/%d.dat", os.Getpid())
