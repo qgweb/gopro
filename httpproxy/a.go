@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-func main() {
+func main1() {
 	request, _ := http.NewRequest("GET", "https://www.taobao.com/", nil)
 	proxy, err := url.Parse("http://192.168.1.122:8888")
 	if err != nil {

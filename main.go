@@ -47,44 +47,70 @@
 // 	fmt.Println(r.String())
 // }
 
+// package main
+
+// import (
+// 	"encoding/xml"
+// 	"fmt"
+// )
+
+// // <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+// //   <soapenv:Body>
+// //     <ns1:getUserProductResponse xmlns:ns1="http://tempuri.org/" soapenv:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+// //       <ns2:result xmlns:ns2="http://www.w3.org/2003/05/soap-rpc">getUserProductReturn</ns2:result>
+// //       <getUserProductReturn xmlns:ns3="http://schemas.xmlsoap.org/soap/encoding/" xsi:type="ns3:string">-998||</getUserProductReturn>
+// //     </ns1:getUserProductResponse>
+// //   </soapenv:Body>
+// // </soapenv:Envelope>
+
+// type getUserProductResponse struct {
+// 	Result               string `xml:"result"`
+// 	GetUserProductReturn string `xml:"getUserProductReturn"`
+// }
+
+// type Envelope struct {
+// 	By Body `xml:"Body"`
+// }
+
+// type Body struct {
+// 	GP getUserProductResponse `xml:"getUserProductResponse"`
+// }
+
+// func main() {
+
+// 	input := `<?xml version="1.0" encoding="utf-8"?><soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><ns1:getUserProductResponse soapenv:encodingStyle="http://www.w3.org/2003/05/soap-encoding" xmlns:ns1="http://tempuri.org/"><ns2:result xmlns:ns2="http://www.w3.org/2003/05/soap-rpc">getUserProductReturn</ns2:result><getUserProductReturn xsi:type="ns3:string" xmlns:ns3="http://schemas.xmlsoap.org/soap/encoding/">-998||</getUserProductReturn></ns1:getUserProductResponse></soapenv:Body></soapenv:Envelope>`
+// 	//inputReader := strings.NewReader(input)
+
+// 	// 从文件读取，如可以如下：
+// 	// content, err := ioutil.ReadFile("studygolang.xml")
+// 	// decoder := xml.NewDecoder(bytes.NewBuffer(content))
+// 	var by Envelope
+// 	fmt.Println(xml.Unmarshal([]byte(input), &by))
+// 	fmt.Println(by.By.GP.Result)
+// }
+
 package main
 
 import (
-	"encoding/xml"
 	"fmt"
+	"net"
 )
 
-// <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-//   <soapenv:Body>
-//     <ns1:getUserProductResponse xmlns:ns1="http://tempuri.org/" soapenv:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
-//       <ns2:result xmlns:ns2="http://www.w3.org/2003/05/soap-rpc">getUserProductReturn</ns2:result>
-//       <getUserProductReturn xmlns:ns3="http://schemas.xmlsoap.org/soap/encoding/" xsi:type="ns3:string">-998||</getUserProductReturn>
-//     </ns1:getUserProductResponse>
-//   </soapenv:Body>
-// </soapenv:Envelope>
-
-type getUserProductResponse struct {
-	Result               string `xml:"result"`
-	GetUserProductReturn string `xml:"getUserProductReturn"`
-}
-
-type Envelope struct {
-	By Body `xml:"Body"`
-}
-
-type Body struct {
-	GP getUserProductResponse `xml:"getUserProductResponse"`
-}
-
 func main() {
+	l, err := net.Listen("tcp4", ":8080")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	input := `<?xml version="1.0" encoding="utf-8"?><soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><ns1:getUserProductResponse soapenv:encodingStyle="http://www.w3.org/2003/05/soap-encoding" xmlns:ns1="http://tempuri.org/"><ns2:result xmlns:ns2="http://www.w3.org/2003/05/soap-rpc">getUserProductReturn</ns2:result><getUserProductReturn xsi:type="ns3:string" xmlns:ns3="http://schemas.xmlsoap.org/soap/encoding/">-998||</getUserProductReturn></ns1:getUserProductResponse></soapenv:Body></soapenv:Envelope>`
-	//inputReader := strings.NewReader(input)
+	for {
+		con, err := l.Accept()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
 
-	// 从文件读取，如可以如下：
-	// content, err := ioutil.ReadFile("studygolang.xml")
-	// decoder := xml.NewDecoder(bytes.NewBuffer(content))
-	var by Envelope
-	fmt.Println(xml.Unmarshal([]byte(input), &by))
-	fmt.Println(by.By.GP.Result)
+		fmt.Println(con.RemoteAddr())
+		con.Write([]byte("hello word"))
+	}
 }

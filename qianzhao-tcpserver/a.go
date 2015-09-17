@@ -19,7 +19,7 @@ func show(list map[string]*server.Account) {
 	}
 }
 
-func main() {
+func main1() {
 	log := logger.New("Server")
 	am := server.NewAccountManager(log)
 	u := &server.Account{}
@@ -38,9 +38,8 @@ func main() {
 	show(am.Range())
 
 	go am.TimeFlushDisk("aaaa.dat")
-	go am.TimeCheckAccountUTime(func(u *server.Account) {
-		log.Println(u.Name)
-		log.Println(u.ETime)
+	go am.TimeCheckAccountUTime(func(u string) {
+		log.Println(u)
 	})
 
 	go func() {

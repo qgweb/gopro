@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/qgweb/gopro/qianzhao-tcpserver/logger"
 	"github.com/qgweb/gopro/qianzhao-tcpserver/server"
 	"os"
@@ -10,21 +11,41 @@ import (
 )
 
 func main() {
-	log := logger.New("Server")
+	data := []byte{113, 103, 98, 114, 111, 119, 101, 114, 33, 0, 0, 0, 123, 34, 97, 99, 116, 105, 111, 110, 34, 58, 34, 108, 105, 110, 107, 34, 44, 34, 99, 111, 110, 116, 101, 110, 116, 34, 58, 34, 49, 50, 51, 34, 125}
+	fmt.Println(string(data))
+	fmt.Println(string(server.ProtocolUnPack(data)))
+	return
+	var (
+		log      = logger.New("qianzhao-tcpserver")
+		fileName = fmt.Sprintf("./data/%d.dat", os.Getpid())
+		s        *server.Server
+		err      error
+	)
 
-	var s *server.Server
-	var err error
 	if os.Getenv("_GRACEFUL_RESTART") == "true" {
 		s, err = server.NewFromFD(log, 3)
 	} else {
-		s, err = server.New(log, 12345)
+		s, err = server.New(log, "", "9091")
+		d := server.GetLastFile("./data")
+		if d != nil {
+			server.DealData(d)
+		}
 	}
+
 	if err != nil {
 		log.Fatalln("fail to init server:", err)
 	}
+
 	log.Println("Listen on", s.Addr())
 
 	go s.StartAcceptLoop()
+	go s.GetAccountManager().TimeFlushDisk(fileName)
+	go s.GetAccountManager().TimeCheckAccountUTime(func(name string) {
+		(&server.Event{}).InnerStop(name)
+	})
+	go s.GetAccountConnManager().Ping(func(name string) {
+		(&server.Event{}).InnerStop(name)
+	})
 
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGHUP, syscall.SIGTERM)
@@ -32,10 +53,16 @@ func main() {
 		if sig == syscall.SIGTERM {
 			// Stop accepting new connections
 			s.Stop()
+			// 发送信号，flush到磁盘
+			s.GetAccountManager().StopChan <- true
+			s.GetAccountManager().StopDiskChan <- true
+			<-s.GetAccountManager().OverChan
+			<-s.GetAccountManager().OverChan
+
 			// Wait a maximum of 10 seconds for existing connections to finish
 			err := s.WaitWithTimeout(10 * time.Second)
 			if err == server.WaitTimeoutError {
-				log.Printf("Timeout when stopping server, %d active connections will be cut.\n", s.ConnectionsCounter())
+				log.Printf("Timeout when stop  ping server, %d active connections will be cut.\n", s.ConnectionsCounter())
 				os.Exit(-127)
 			}
 			// Then the program exists

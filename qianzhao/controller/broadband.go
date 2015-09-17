@@ -4,13 +4,14 @@ package controller
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"strings"
+	"text/template"
+
 	"github.com/astaxie/beego/httplib"
 	"github.com/labstack/echo"
 	"github.com/qgweb/gopro/qianzhao/common/global"
 	"github.com/qgweb/gopro/qianzhao/model"
-	"log"
-	"strings"
-	"text/template"
 )
 
 type ErrBrand struct {
@@ -41,14 +42,14 @@ type BroadBand struct {
 
 // 开启
 func (this *BroadBand) Start(ctx *echo.Context) error {
-	udata, err := this.userQuery(ctx)
-	if err != nil {
-		return ctx.JSON(200, map[string]string{
-			"code": ErrProgram.Code,
-			"msg":  ErrProgram.Msg,
-		})
-	}
-	//udata := UserData{"", "10327158472"}
+	// udata, err := this.userQuery(ctx)
+	// if err != nil {
+	// 	return ctx.JSON(200, map[string]string{
+	// 		"code": ErrProgram.Code,
+	// 		"msg":  ErrProgram.Msg,
+	// 	})
+	// }
+	udata := UserData{"0001", "10327158471"}
 
 	// 检测用户是否在白名单内
 	baModel := model.BrandAccount{}
@@ -95,7 +96,7 @@ func (this *BroadBand) Stop(ctx *echo.Context) error {
 // 用户宽带查询(username string, areacode string)
 func (this *BroadBand) userQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
 	var (
-		ip = ctx.Form("ip")
+		ip = ctx.Request().RemoteAddr
 	)
 
 	req := httplib.Post(USER_QUERY_URL)

@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"net"
+	"time"
 
 	"sync"
 )
@@ -50,8 +51,10 @@ func (this *AccountConnManager) Add(name string, conn *net.TCPConn) {
 func (this *AccountConnManager) Del(name string) {
 	this.Lock()
 	defer this.Unlock()
-	this.conns[name].Close()
-	delete(this.conns, name)
+	if v, ok := this.conns[name]; ok {
+		v.Close()
+		delete(this.conns, name)
+	}
 }
 
 // 获取连接
@@ -61,10 +64,40 @@ func (this *AccountConnManager) Get(name string) *net.TCPConn {
 	return this.conns[name]
 }
 
+// 返回连接数目
+func (this *AccountConnManager) Count() int {
+	this.Lock()
+	defer this.Unlock()
+	return len(this.conns)
+}
+
+// ping服务
+func (this *AccountConnManager) Ping(fun func(name string)) {
+	t := time.NewTicker(septime)
+	for {
+		select {
+		case <-t.C:
+			for k, conn := range this.conns {
+				r := &Request{}
+				r.Action = "ping"
+				b, _ := MRequest(r)
+				conn.Write(ProtocolPack(b))
+				buf := make([]byte, 100)
+				_, err := conn.Read(buf)
+				if err != nil {
+					// 客户端已挂掉
+					fun(k)
+					continue
+				}
+			}
+		}
+	}
+}
+
 // 请求
 type Request struct {
 	Action  string `json:"action"`
-	Content string `json:"Action"`
+	Content string `json:"content"`
 }
 
 // 响应

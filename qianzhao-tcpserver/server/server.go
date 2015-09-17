@@ -15,6 +15,11 @@ const (
 	PROTOCOL_HEAD = "qgbrower"
 )
 
+var (
+	connManager    = NewAccountConnManager()
+	accountManager = NewAccountManager(logger.New("qianzhaotcp"))
+)
+
 // 封包
 func ProtocolPack(data []byte) []byte {
 	p := protocol.NewProtocol(PROTOCOL_HEAD)
@@ -25,6 +30,10 @@ func ProtocolPack(data []byte) []byte {
 func ProtocolUnPack(data []byte) []byte {
 	p := protocol.NewProtocol(PROTOCOL_HEAD)
 	b, _ := p.Unpack(data)
+	if len(b) == 0 {
+		return []byte("")
+	}
+
 	return b[0]
 }
 
@@ -34,10 +43,10 @@ type Server struct {
 	logger *logger.Logger
 }
 
-func New(logger *logger.Logger, port int) (*Server, error) {
+func New(logger *logger.Logger, host string, port string) (*Server, error) {
 	s := &Server{cm: NewConnectionManager(), logger: logger}
 
-	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%d", port))
+	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", host, port))
 	if err != nil {
 		return nil, fmt.Errorf("fail to resolve addr: %v", err)
 	}
@@ -65,6 +74,14 @@ func NewFromFD(logger *logger.Logger, fd uintptr) (*Server, error) {
 	s.socket = listenerTCP
 
 	return s, nil
+}
+
+func (s *Server) GetAccountManager() *AccountManager {
+	return accountManager
+}
+
+func (s *Server) GetAccountConnManager() *AccountConnManager {
+	return connManager
 }
 
 func (s *Server) Stop() {
@@ -131,9 +148,12 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 			break
 		}
 
-		r, err := UmRequest(buffer[0:n])
+		s.logger.Println(buffer[0:n])
+
+		r, err := UmRequest(ProtocolUnPack(buffer[0:n]))
 		if err != nil {
 			s.logger.Println("请求参数解析错误，信息为：", err)
+			conn.Write(buffer[0:n])
 			continue
 		}
 
@@ -147,6 +167,8 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 		case "stop": // 停止请求
 			(&Event{}).Stop(conn, &r)
 			break
+		case "info": //监听内部程序状态
+			(&Event{}).Info(conn)
 		}
 	}
 }
