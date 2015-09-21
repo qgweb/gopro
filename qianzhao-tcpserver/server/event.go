@@ -21,13 +21,13 @@ func (this *Event) Start(conn *net.TCPConn, req *Request) {
 	)
 
 	rep := bd.CanStart(account, conn.RemoteAddr().String())
-	// if rep.Code != "200" {
-	// 	data, _ := MRespond(&rep)
-	// 	conn.Write(ProtocolPack(data))
-	// 	return
-	// }
+	if rep.Code != "200" {
+		data, _ := MRespond(&rep)
+		conn.Write(ProtocolPack(data))
+		return
+	}
 
-	rep.Msg = "120|0002"
+	//rep.Msg = "120|0002"
 	udata := strings.Split(rep.Msg, "|") // "时长|区域"
 
 	// 把socket连接加入连接管理

@@ -66,7 +66,9 @@ func main() {
 		ba.UsedTime = 0
 		ba.TryCount = 0
 
-		if ba.AccountExist(ba) {
+		if info, _ := ba.GetAccountInfo(ba.Account); info.Id != "" {
+			ba.UsedTime = info.UsedTime
+			ba.TryCount = info.TryCount
 			ba.EditAccount(ba)
 		} else {
 			ba.AddBroadBand(ba)

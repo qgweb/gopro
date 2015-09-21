@@ -153,7 +153,7 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 		r, err := UmRequest(ProtocolUnPack(buffer[0:n]))
 		if err != nil {
 			s.logger.Println("请求参数解析错误，信息为：", err)
-			conn.Write(buffer[0:n])
+			//conn.Write(buffer[0:n])
 			continue
 		}
 

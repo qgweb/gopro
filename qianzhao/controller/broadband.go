@@ -42,14 +42,14 @@ type BroadBand struct {
 
 // 开启
 func (this *BroadBand) Start(ctx *echo.Context) error {
-	// udata, err := this.userQuery(ctx)
-	// if err != nil {
-	// 	return ctx.JSON(200, map[string]string{
-	// 		"code": ErrProgram.Code,
-	// 		"msg":  ErrProgram.Msg,
-	// 	})
-	// }
-	udata := UserData{"0001", "10327158471"}
+	udata, err := this.userQuery(ctx)
+	if err != nil {
+		return ctx.JSON(200, map[string]string{
+			"code": ErrProgram.Code,
+			"msg":  ErrProgram.Msg,
+		})
+	}
+	//udata := UserData{"0001", "10327158471"}
 
 	// 检测用户是否在白名单内
 	baModel := model.BrandAccount{}
