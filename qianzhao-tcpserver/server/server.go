@@ -148,7 +148,7 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 			break
 		}
 
-		s.logger.Println(buffer[0:n])
+		//s.logger.Println(buffer[0:n])
 
 		r, err := UmRequest(ProtocolUnPack(buffer[0:n]))
 		if err != nil {
@@ -156,6 +156,8 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 			conn.Write(buffer[0:n])
 			continue
 		}
+
+		s.logger.Println(r)
 
 		switch r.Action {
 		case "ping": //响应ping包

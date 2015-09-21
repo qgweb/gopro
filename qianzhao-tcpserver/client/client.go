@@ -14,7 +14,7 @@ const (
 // 请求
 type Request struct {
 	Action  string `json:"action"`
-	Content string `json:"Action"`
+	Content string `json:"content"`
 }
 
 // 响应
@@ -76,6 +76,7 @@ func ProtocolUnPack(data []byte) []byte {
 
 func main() {
 	addr, _ := net.ResolveTCPAddr("tcp4", "122.225.98.80:9091")
+	//addr, _ := net.ResolveTCPAddr("tcp4", "127.0.0.1:9091")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
 		log.Fatalln("fuck")
@@ -95,10 +96,18 @@ func main() {
 		}
 
 		log.Println(string(ProtocolUnPack(buf[0:n])))
+		// time.Sleep(time.Second * 30)
+
 		// r.Action = "stop"
 		// r.Content = "10327158471"
 		// d, _ := MRequest(r)
 		// conn.Write(ProtocolPack(d))
+		// n, err = conn.Read(buf)
+		// if err != nil {
+		// 	log.Println(err)
+		// }
+
+		// log.Println(string(ProtocolUnPack(buf[0:n])))
 	}
 
 }

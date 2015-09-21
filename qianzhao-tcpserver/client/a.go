@@ -82,7 +82,7 @@ func main() {
 	}
 
 	r := &Request{}
-	r.Action = "link"
+	r.Action = "info"
 	r.Content = ""
 	d, _ := MRequest(r)
 	conn.Write(ProtocolPack(d))
@@ -97,6 +97,7 @@ func main() {
 
 		log.Println(string(buf[0:n]))
 		log.Println(len(buf[0:n]))
+
 		// r.Action = "stop"
 		// r.Content = "10327158471"
 		// d, _ := MRequest(r)

@@ -79,8 +79,8 @@ func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 	brand := &model.BrandAccount{}
 	ba, err := brand.GetAccountInfo(account)
 	if err == nil && ba.Id != "" {
-		ba.UsedTime = ba.TotalTime - ba.UsedTime - int(record.EndTime-record.BeginTime)
-		if ba.UsedTime < 0 {
+		ba.UsedTime = ba.UsedTime + int(record.EndTime-record.BeginTime)
+		if ba.UsedTime > ba.TotalTime {
 			ba.UsedTime = ba.TotalTime
 		}
 		log.Println(ba)
