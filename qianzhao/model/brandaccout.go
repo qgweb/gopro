@@ -23,14 +23,15 @@ type BrandAccount struct {
 	DownBroadband int    `json:"broadband_down"` //下行带宽
 	TotalTime     int    `json:"total_time"`     //总共体验时长
 	UsedTime      int    `json:"used_time"`      //已体验时长
-	TryCount      string `json:"try_count"`      // 已尝试次数
+	TryCount      int    `json:"try_count"`      // 已尝试次数
 }
 
 // 添加白名单
 func (this *BrandAccount) AddBroadBand(ba BrandAccount) bool {
 	myorm.BSQL().Insert(BROAD_TABLE_NAME).Values("area", "account", "school_name",
-		"school_group", "broadband_up", "broadband_down")
-	n, err := myorm.Insert(ba.Area, ba.Account, ba.SchoolName, ba.SchoolGroup, ba.UpBroadband, ba.DownBroadband)
+		"school_group", "broadband_up", "broadband_down", "total_time", "used_time", "try_count")
+	n, err := myorm.Insert(ba.Area, ba.Account, ba.SchoolName, ba.SchoolGroup,
+		ba.UpBroadband, ba.DownBroadband, ba.TotalTime, ba.UsedTime, ba.TryCount)
 	if err != nil {
 		log.Println("[brandaccount AddBroadBand] 添加白名单失败 ", err)
 		return false
@@ -62,9 +63,10 @@ func (this *BrandAccount) AccountExist(ba BrandAccount) bool {
 // 更新账户
 func (this *BrandAccount) EditAccount(ba BrandAccount) bool {
 	myorm.BSQL().Update(BROAD_TABLE_NAME).Set("area", "school_name", "school_group",
-		"broadband_up", "broadband_down", "used_time", "total_time").Where("account=?")
+		"broadband_up", "broadband_down", "used_time", "total_time", "used_time", "try_count").Where("account=?")
 	n, err := myorm.Update(ba.Area, ba.SchoolName, ba.SchoolGroup,
-		ba.UpBroadband, ba.DownBroadband, ba.UsedTime, ba.TotalTime, ba.Account)
+		ba.UpBroadband, ba.DownBroadband, ba.UsedTime, ba.TotalTime,
+		ba.UsedTime, ba.TryCount, ba.Account)
 	if err != nil {
 		log.Println("[brandaccount EditAccount] 更新失败，", err)
 		return false
@@ -98,7 +100,7 @@ func (this *BrandAccount) GetAccountInfo(account string) (BrandAccount, error) {
 	ba.DownBroadband = convert.ToInt(list[0]["broadband_down"])
 	ba.TotalTime = convert.ToInt(list[0]["total_time"])
 	ba.UsedTime = convert.ToInt(list[0]["used_time"])
-	ba.TryCount = list[0]["try_count"]
+	ba.TryCount = convert.ToInt(list[0]["try_count"])
 
 	return ba, nil
 }
