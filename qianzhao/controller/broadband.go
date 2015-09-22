@@ -45,8 +45,8 @@ func (this *BroadBand) Start(ctx *echo.Context) error {
 	udata, err := this.userQuery(ctx)
 	if err != nil {
 		return ctx.JSON(200, map[string]string{
-			"code": ErrProgram.Code,
-			"msg":  ErrProgram.Msg,
+			"code": err.Code,
+			"msg":  err.Msg,
 		})
 	}
 	//udata := UserData{"0001", "10327158471"}
@@ -97,6 +97,7 @@ func (this *BroadBand) Stop(ctx *echo.Context) error {
 func (this *BroadBand) userQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
 	var (
 		ip = ctx.Request().RemoteAddr
+		//ip = "121.237.226.1:11137"
 	)
 
 	req := httplib.Post(USER_QUERY_URL)

@@ -48,6 +48,7 @@ func (this *BrandAccount) AddBroadBand(ba BrandAccount) bool {
 func (this *BrandAccount) AccountExist(ba BrandAccount) bool {
 	myorm.BSQL().Select("id").From(BROAD_TABLE_NAME).Where("account=?")
 	list, err := myorm.Query(ba.Account)
+	log.Println(list, err, ba.Account, myorm.LastSql())
 	if err != nil {
 		log.Println("[brandaccount AccountExist] 查询失败，", err)
 		return false

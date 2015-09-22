@@ -18,9 +18,11 @@ func (this *Event) Start(conn *net.TCPConn, req *Request) {
 	var (
 		bd      = &BDInterfaceManager{}
 		account = req.Content
+		ip      = conn.RemoteAddr().String()
+		//ip = "121.237.226.1:11137"
 	)
 
-	rep := bd.CanStart(account, conn.RemoteAddr().String())
+	rep := bd.CanStart(account, ip)
 	if rep.Code != "200" {
 		data, _ := MRespond(&rep)
 		conn.Write(ProtocolPack(data))
@@ -37,7 +39,7 @@ func (this *Event) Start(conn *net.TCPConn, req *Request) {
 	user.Name = account
 	user.BTime = time.Now().Unix()
 	user.CTime = convert.ToInt64(udata[0])
-	user.RemoteAddr = conn.RemoteAddr().String()
+	user.RemoteAddr = ip
 	user.Area = udata[1]
 	accountManager.Add(&user)
 
@@ -51,6 +53,8 @@ func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 		bd      = &BDInterfaceManager{}
 		account = req.Content
 		user    = accountManager.Get(account)
+		ip      = conn.RemoteAddr().String()
+		//ip = "121.237.226.1:11137"
 	)
 
 	// 用户不能存在返回
@@ -58,7 +62,7 @@ func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 		return
 	}
 
-	rep := bd.Stop(account, user.Area, conn.RemoteAddr().String())
+	rep := bd.Stop(account, user.Area, ip)
 	if rep.Code != "200" {
 		data, _ := MRespond(&rep)
 		conn.Write(ProtocolPack(data))

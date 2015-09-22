@@ -202,7 +202,6 @@ func (this *BDInterfaceManager) CanStart(account string, addr string) Respond {
 	}
 
 	addrAry := strings.Split(addr, ":")
-
 	reqQos := RequestQos{}
 	reqQos.AccNbr = fmt.Sprintf("%d", time.Now().Unix())
 	reqQos.Area = userArea
@@ -230,7 +229,7 @@ func (this *BDInterfaceManager) CanStart(account string, addr string) Respond {
 func (this *BDInterfaceManager) canOpen(account string, addr string) *ErrBrand {
 	udata, err := this.userQuery(addr)
 	if err != nil {
-		return ErrProgram
+		return err
 	}
 	//udata := UserData{"", "10327158472"}
 
@@ -260,7 +259,7 @@ func (this *BDInterfaceManager) userQuery(addr string) (*UserData, *ErrBrand) {
 	req := httplib.Post(USER_QUERY_URL)
 	req.Header("Content-Type", "text/xml; charset=utf-8")
 	req.Header("SOAPAction", USER_QUERY_URL)
-	req.Body(createUserSOAPXml(addr, USER_QUERY_PRODUCTID))
+	req.Body(createUserSOAPXml(USER_QUERY_PRODUCTID, addr))
 	a := UserEnvelope{}
 	err := req.ToXml(&a)
 	if err != nil {
@@ -270,7 +269,7 @@ func (this *BDInterfaceManager) userQuery(addr string) (*UserData, *ErrBrand) {
 
 	res := a.By.GP.GetUserProductReturn
 	resAry := strings.Split(res, "|")
-
+	log.Println(res)
 	if len(resAry) != 3 {
 		return &UserData{}, ErrProgram
 	}
@@ -298,6 +297,7 @@ func (this *BDInterfaceManager) QosQuery(reqQos RequestQos, method string) *ErrB
 	if method == "stopQos" {
 		res := QosStopEnvelope{}
 		req.ToXml(&res)
+		log.Println(req.String())
 		if strings.TrimSpace(res.By.GP.Rep.URP.Item.Result) == "0" {
 			return &ErrBrand{"200", "", ""}
 		} else {
@@ -306,6 +306,7 @@ func (this *BDInterfaceManager) QosQuery(reqQos RequestQos, method string) *ErrB
 	} else {
 		res := QosStartEnvelope{}
 		req.ToXml(&res)
+		log.Println(req.String())
 		if strings.TrimSpace(res.By.GP.Rep.URP.Item.Result) == "0" {
 			return &ErrBrand{"200", "", ""}
 		} else {
