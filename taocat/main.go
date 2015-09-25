@@ -2,9 +2,14 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"github.com/bitly/go-simplejson"
 	"github.com/ngaut/log"
+	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qiniu/iconv"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,13 +21,40 @@ const (
 	TAO_CAT_URL = "https://upload.taobao.com/auction/json/reload_cats.htm?customId="
 )
 
+var (
+	mdbsession *mgo.Session
+)
+
 type Category struct {
-	Name  string     `json:"name"`
-	Spell string     `json:"spell"`
-	Sid   string     `json:"sid"`
-	Id    string     `json:"id"` //顶级需要
-	Level int        `json:"level"`
-	Child []Category `json:"child"` //子集
+	Name  string     `bson:"name"`
+	Spell string     `bson:"spell"`
+	Sid   string     `bson:"cid"`
+	Id    string     `bson:"id"` //顶级需要
+	Level int        `bson:"level"`
+	Child []Category `bson:"child"` //子集
+	Pid   string     `bson:"pid"`
+}
+
+//获取mongo数据库链接
+func GetSession() *mgo.Session {
+	var (
+		mouser = "xu"
+		mopwd  = "123456"
+		mohost = "127.0.0.1"
+		moport = "27017"
+		modb   = "xu_precise"
+	)
+
+	if mdbsession == nil {
+		var err error
+		mdbsession, err = mgo.Dial(fmt.Sprintf("%s:%s@%s:%s/%s", mouser, mopwd, mohost, moport, modb))
+		if err != nil {
+			panic(err)
+		}
+	}
+	//高并发下会关闭连接,ping下会恢复
+	mdbsession.Ping()
+	return mdbsession.Copy()
 }
 
 // 获取html
@@ -43,7 +75,7 @@ func grabHtml(path string, sid string) string {
 	r.Header.Set("Connection", "keep-alive")
 	r.Header.Set("Content-Length", "17")
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-	r.Header.Set("Cookie", "cna=iBpHDuxbpDoCAXPI8O66zMhi; thw=cn; ali_ab=122.235.237.26.1438678183372.3; miid=6856742623729070531; x=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0%26__ll%3D-1%26_ato%3D0; v=0; _tb_token_=PsM1KPAjxqah5f6; isg=30DBEEC6A07BEC83ECD1E9E2516C7CDC; uc3=nk2=F4T%2BqCs1GCv3cUU%3D&id2=UU6p%2B6jaIpgS&vt3=F8dASMr56U95cn4JdGw%3D&lg2=URm48syIIVrSKA%3D%3D; existShop=MTQ0MzE3NTQ4Mg%3D%3D; lgc=tracyxiang5; tracknick=tracyxiang5; sg=57c; cookie2=1c47414352a167e02fb5dd9058a5a33c; mt=np=&ci=9_1&cyk=0_0; cookie1=ACiySN0X98ZST2xXkglRaGFbZmpUopo7AQbwVps1wd8%3D; unb=268142207; skt=ac21cf765ab75d65; t=afd38437622a33dd1817869da512ff1e; publishItemObj=Ng%3D%3D; _cc_=VT5L2FSpdA%3D%3D; tg=0; _l_g_=Ug%3D%3D; _nk_=tracyxiang5; cookie17=UU6p%2B6jaIpgS; l=Ajs7zObGrvYmzIP2HSjR712GSxGlnk-S; uc1=cookie14=UoWzWimyiWEu0A%3D%3D&existShop=true&cookie16=UIHiLt3xCS3yM2h4eKHS9lpEOw%3D%3D&cookie21=UIHiLt3xSixwG45%2Bs3wzsA%3D%3D&tag=3&cookie15=U%2BGCWk%2F75gdr5Q%3D%3D&pas=0")
+	r.Header.Set("Cookie", "thw=cn; cna=BLJwDlhUGU4CAX14n0a8en7J; v=0; _tb_token_=tNI3NeXl1OXO9G; uc3=nk2=F4T%2BqCs1GCv3cUU%3D&id2=UU6p%2B6jaIpgS&vt3=F8dASMr55qi6XxKWJuU%3D&lg2=UIHiLt3xD8xYTw%3D%3D; existShop=MTQ0MzE5ODY2OQ%3D%3D; lgc=tracyxiang5; tracknick=tracyxiang5; sg=57c; cookie2=1c7a14d526ade08e9628789b95114d34; mt=np=&ci=1_1; cookie1=ACiySN0X98ZST2xXkglRaGFbZmpUopo7AQbwVps1wd8%3D; unb=268142207; skt=e1eaf69f0c4f438b; t=1bb9fbc5f55889dff929db1dc7393e01; publishItemObj=Ng%3D%3D; _cc_=U%2BGCWk%2F7og%3D%3D; tg=0; _l_g_=Ug%3D%3D; _nk_=tracyxiang5; cookie17=UU6p%2B6jaIpgS; isg=F0AE4D906AC26DEDD38109B2D9759EE9; uc1=cookie14=UoWzWim8vS%2BMzg%3D%3D&existShop=true&cookie16=Vq8l%2BKCLySLZMFWHxqs8fwqnEw%3D%3D&cookie21=UIHiLt3xSixwG45%2Bs3wzsA%3D%3D&tag=3&cookie15=UIHiLt3xD8xYTw%3D%3D&pas=0; l=Ari41eRdRiqCBiCfohliZiAlCGhKGxyr")
 	r.Header.Set("Host", "upload.taobao.com")
 	r.Header.Set("Pragma", "no-cache")
 	r.Header.Set("Referer", "http://upload.taobao.com/auction/sell.jhtml?spm=a1z0e.1.0.0.nigjAo&mytmenu=wym&utkn=g,orzgcy3zpbuwc3thgu1435198089453&scm=1028.1.1.101")
@@ -64,23 +96,25 @@ func grabHtml(path string, sid string) string {
 }
 
 // 获取第一级类目(包含第二)
-func FirstLevelCategory(path string, sid string) {
+func FirstLevelCategory(path string, sid string) []Category {
 	data := grabHtml(path, sid)
 	jn, err := simplejson.NewJson([]byte(data))
 	if err != nil {
 		log.Error("cookie失效")
-		return
+		return nil
 	}
 
 	if v, _ := jn.GetIndex(0).Get("pName").String(); v == "类目" {
 		//顶级类目
 		firstList, _ := jn.GetIndex(0).Get("data").Array()
+		fcs := make([]Category, 0, 100)
 		for _, fdata := range firstList {
 			fdataJson := simplejson.New()
 			fdataJson.SetPath([]string{}, fdata)
 			fc := Category{}
 			fc.Name, _ = fdataJson.Get("name").String()
-			fc.Id, _ = fdataJson.Get("id").String()
+			id, _ := fdataJson.Get("id").Int()
+			fc.Sid = convert.ToString(id)
 			fc.Level = 1
 			fc.Child = make([]Category, 0, 100)
 
@@ -95,15 +129,17 @@ func FirstLevelCategory(path string, sid string) {
 				sfc.Level = 2
 				sfc.Spell, _ = sdataJson.Get("spell").String()
 				fc.Child = append(fc.Child, sfc)
-
 			}
 
 			log.Info(fc.Name, "\t", fc.Id)
 			for _, v := range fc.Child {
 				log.Info("-", v.Name, "\t", v.Sid, "\t", v.Spell)
 			}
+			fcs = append(fcs, fc)
 		}
+		return fcs
 	}
+	return nil
 }
 
 // 递归分类
@@ -112,7 +148,7 @@ func SecondLevelCategory(path string, sid string, level int) []Category {
 	data := grabHtml(path, sid)
 	jn, err := simplejson.NewJson([]byte(data))
 	if err != nil {
-		log.Error("cookie失效")
+		log.Fatal("cookie失效")
 		return nil
 	}
 
@@ -145,8 +181,40 @@ func SecondLevelCategory(path string, sid string, level int) []Category {
 	return nil
 }
 
+// 添加monggo记录
+func addRecord(list []Category, pid string) {
+	sess := GetSession()
+	defer sess.Close()
+
+	for _, v := range list {
+		sess.DB("xu_precise").C("taocat").Upsert(bson.M{"cid": v.Sid}, bson.M{
+			"$set": bson.M{
+				"name":  v.Name,
+				"spell": v.Spell,
+				"level": v.Level,
+				"pid":   pid,
+			},
+		})
+		if len(v.Child) > 0 {
+			addRecord(v.Child, v.Sid)
+		}
+	}
+}
+
 func main() {
-	log.SetHighlighting(false)
-	//FirstLevelCategory("all", "")
-	log.Error(SecondLevelCategory("next", "50011665", 3))
+	var (
+		pid = flag.String("pid", "", "父节点id")
+	)
+
+	flag.Parse()
+
+	if *pid == "" {
+		log.Fatal("木有父节点")
+	}
+
+	log.SetHighlighting(true)
+	//list := FirstLevelCategory("all", "")
+
+	list := SecondLevelCategory("next", *pid, 3)
+	addRecord(list, *pid)
 }
