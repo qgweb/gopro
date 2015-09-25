@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"log"
+	"github.com/ngaut/log"
+
 	//"fmt"
 	"net/http"
 
@@ -19,7 +20,7 @@ func Index(ctx *echo.Context) error {
 func Show(ctx *echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
-		log.Println("获取session失败：", err)
+		log.Error("获取session失败：", err)
 	}
 
 	defer sess.SessionRelease(ctx.Response())

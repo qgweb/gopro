@@ -92,25 +92,32 @@
 package main
 
 import (
-	"fmt"
-	"net"
+	//"errors"
+	//"github.com/astaxie/beego/logs"
+	"github.com/juju/errors"
+	"github.com/ngaut/log"
 )
 
+func show1() error {
+	return errors.Trace(errors.New("aaa"))
+}
+
+func show() error {
+	return errors.Annotate(errors.Trace(show1()), "bbbbb")
+}
+
 func main() {
-	l, err := net.Listen("tcp4", ":8080")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	//log.SetOutputByName("./b.txt")
+	log.SetRotateByHour()
+	log.SetHighlighting(true)
+	log.SetLevelByString("errors")
+	log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate)
+	log.Warn("ffffff")
 
-	for {
-		con, err := l.Accept()
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		fmt.Println(con.RemoteAddr())
-		con.Write([]byte("hello word"))
-	}
+	// log := logs.NewLogger(10000)
+	// log.SetLogger("console", "")
+	// log.EnableFuncCallDepth(true)
+	// log.Debug("debug")
+	//
+	log.Info(errors.ErrorStack(show()))
 }

@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"log"
+	"github.com/ngaut/log"
 
 	"github.com/qgweb/gopro/lib/orm"
 	"github.com/qgweb/gopro/qianzhao/common/config"
@@ -28,7 +28,7 @@ func init() {
 		user, pwd, host, port, db, charset))
 
 	if err != nil {
-		log.Fatalln("连接数据库失败：", err)
+		log.Fatal("连接数据库失败：", err)
 	}
 
 	myorm.SetMaxIdleConns(50)

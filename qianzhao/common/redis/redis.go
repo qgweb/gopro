@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"log"
+	"github.com/ngaut/log"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/qgweb/gopro/qianzhao/common/config"
@@ -23,7 +23,7 @@ func init() {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", host+":"+port)
 			if err != nil {
-				log.Fatalln(err.Error())
+				log.Fatal(err.Error())
 			}
 			return c, err
 		},

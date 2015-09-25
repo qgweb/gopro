@@ -50,6 +50,7 @@ func Router(e *echo.Echo) {
 
 	//// 宽带（双速网）
 	e.Post("/broadbrand/start", (&controller.BroadBand{}).Start)
+	e.Get("/broadbrand/resettime", (&controller.BroadBand{}).ResetTime)
 }
 
 //// 秒速浏览器用户注册

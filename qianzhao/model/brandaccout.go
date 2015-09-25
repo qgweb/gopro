@@ -1,7 +1,7 @@
 package model
 
 import (
-	"log"
+	"github.com/ngaut/log"
 
 	"github.com/qgweb/gopro/lib/convert"
 )
@@ -33,7 +33,7 @@ func (this *BrandAccount) AddBroadBand(ba BrandAccount) bool {
 	n, err := myorm.Insert(ba.Area, ba.Account, ba.SchoolName, ba.SchoolGroup,
 		ba.UpBroadband, ba.DownBroadband, ba.TotalTime, ba.UsedTime, ba.TryCount)
 	if err != nil {
-		log.Println("[brandaccount AddBroadBand] 添加白名单失败 ", err)
+		log.Warn("[brandaccount AddBroadBand] 添加白名单失败 ", err)
 		return false
 	}
 
@@ -49,7 +49,7 @@ func (this *BrandAccount) AccountExist(ba BrandAccount) bool {
 	myorm.BSQL().Select("id").From(BROAD_TABLE_NAME).Where("account=?")
 	list, err := myorm.Query(ba.Account)
 	if err != nil {
-		log.Println("[brandaccount AccountExist] 查询失败，", err)
+		log.Warn("[brandaccount AccountExist] 查询失败，", err)
 		return false
 	}
 
@@ -68,7 +68,7 @@ func (this *BrandAccount) EditAccount(ba BrandAccount) bool {
 		ba.UpBroadband, ba.DownBroadband, ba.UsedTime, ba.TotalTime,
 		ba.UsedTime, ba.TryCount, ba.Account)
 	if err != nil {
-		log.Println("[brandaccount EditAccount] 更新失败，", err)
+		log.Warn("[brandaccount EditAccount] 更新失败，", err)
 		return false
 	}
 	if n > 0 {
@@ -82,7 +82,7 @@ func (this *BrandAccount) GetAccountInfo(account string) (BrandAccount, error) {
 	myorm.BSQL().Select("*").From(BROAD_TABLE_NAME).Where("account=?")
 	list, err := myorm.Query(account)
 	if err != nil {
-		log.Println("[brandaccount GetAccountInfo] 查询失败，", err)
+		log.Warn("[brandaccount GetAccountInfo] 查询失败，", err)
 		return BrandAccount{}, err
 	}
 
@@ -103,4 +103,13 @@ func (this *BrandAccount) GetAccountInfo(account string) (BrandAccount, error) {
 	ba.TryCount = convert.ToInt(list[0]["try_count"])
 
 	return ba, nil
+}
+
+// reset user time
+func (this *BrandAccount) ResetTime() {
+	myorm.BSQL().Update(BROAD_TABLE_NAME).Set("total_time", "used_time")
+	_, err := myorm.Update("3600", "0")
+	if err != nil {
+		log.Warn("[brandaccount resettime] update faile", err)
+	}
 }

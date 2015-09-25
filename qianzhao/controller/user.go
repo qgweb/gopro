@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log"
+	"github.com/ngaut/log"
 
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/grab"
@@ -27,7 +27,8 @@ type User struct {
 func (this *User) Login(ctx *echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
-		log.Println("获取session失败：", err)
+		log.Error("获取session失败：", err)
+		return err
 	}
 
 	defer sess.SessionRelease(ctx.Response())
@@ -144,7 +145,8 @@ func (this *User) Edit(ctx *echo.Context) error {
 func (this *User) IsLogin(ctx *echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
-		log.Println("获取session失败：", err)
+		log.Error("获取session失败：", err)
+		return err
 	}
 
 	defer sess.SessionRelease(ctx.Response())
@@ -166,7 +168,8 @@ func (this *User) IsLogin(ctx *echo.Context) error {
 func (this *User) LoginOut(ctx *echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
-		log.Println("获取session失败：", err)
+		log.Error("获取session失败：", err)
+		return err
 	}
 
 	defer sess.SessionRelease(ctx.Response())
@@ -183,7 +186,8 @@ func (this *User) LoginOut(ctx *echo.Context) error {
 func (this *User) MemberCenter(ctx *echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
-		log.Println("获取session失败：", err)
+		log.Error("获取session失败：", err)
+		return err
 	}
 
 	defer sess.SessionRelease(ctx.Response())

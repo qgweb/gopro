@@ -5,6 +5,7 @@ import (
 	"github.com/qgweb/gopro/qianzhao-tcpserver/protocol"
 	"log"
 	"net"
+	"time"
 )
 
 const (
@@ -85,11 +86,12 @@ func main() {
 	r.Action = "info"
 	r.Content = ""
 	d, _ := MRequest(r)
-	conn.Write(ProtocolPack(d))
+
 	buf := make([]byte, 2048)
-	log.Println(ProtocolPack(d))
+	// log.Println(ProtocolPack(d))
 
 	for {
+		conn.Write(ProtocolPack(d))
 		n, err := conn.Read(buf)
 		if err != nil {
 			log.Println(err)
@@ -102,6 +104,7 @@ func main() {
 		// r.Content = "10327158471"
 		// d, _ := MRequest(r)
 		// conn.Write(ProtocolPack(d))
+		time.Sleep(time.Second * 5)
 	}
 
 }

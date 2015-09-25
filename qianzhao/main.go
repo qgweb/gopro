@@ -10,6 +10,8 @@ import (
 	"html/template"
 	"io"
 
+	"github.com/ngaut/log"
+
 	"github.com/qgweb/gopro/qianzhao/common/config"
 	"github.com/qgweb/gopro/qianzhao/router"
 
@@ -51,8 +53,21 @@ func flagParse() {
 	}
 }
 
+// 日志类初始化
+func loginit() {
+	logFile := config.GetDefault().Key("log").String()
+	if logFile == "" {
+		log.Fatal("日志文件不存在")
+	}
+
+	log.SetHighlighting(false)
+	log.SetOutputByName(logFile)
+	log.SetRotateByDay()
+}
+
 func init() {
 	flagParse()
+	loginit()
 }
 
 func main() {

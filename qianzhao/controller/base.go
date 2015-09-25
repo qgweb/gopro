@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log"
+	"github.com/ngaut/log"
 	"net/http"
 
 	"github.com/qgweb/gopro/lib/convert"
@@ -18,7 +18,8 @@ type Base struct {
 func (this *Base) IsLogin(ctx *echo.Context) (bool, error) {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
-		log.Println("获取session失败：", err)
+		log.Error("获取session失败：", err)
+		return false, err
 	}
 
 	defer sess.SessionRelease(ctx.Response())

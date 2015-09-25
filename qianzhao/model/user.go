@@ -1,14 +1,12 @@
 package model
 
 import (
-	"fmt"
+	"github.com/ngaut/log"
 	"strings"
 
 	"github.com/qgweb/gopro/lib/encrypt"
 
 	"github.com/qgweb/gopro/qianzhao/common/function"
-
-	"log"
 
 	"github.com/qgweb/gopro/lib/convert"
 )
@@ -39,7 +37,7 @@ func (this *User) UserNameExist(name string) bool {
 	myorm.BSQL().Select("count(*) as num").From(USER_TABLE_NAME).Where("username=?")
 	list, err := myorm.Query(name)
 	if err != nil {
-		log.Println("[user UserNameExist]数据获取失败", err)
+		log.Warn("[user UserNameExist]数据获取失败", err)
 		return false
 	}
 
@@ -65,7 +63,7 @@ func (this *User) UserInfo(name string) (u User) {
 	myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("username=?")
 	list, err := myorm.Query(name)
 	if err != nil {
-		log.Println("[user UserInfo]数据获取失败", err)
+		log.Warn("[user UserInfo]数据获取失败", err)
 		return
 	}
 
@@ -92,7 +90,7 @@ func (this *User) UserRegister(name string, password string) bool {
 	myorm.BSQL().Insert(USER_TABLE_NAME).Values("username", "password", "created")
 	n, err := myorm.Insert(name, function.GetBcrypt([]byte(password)), function.GetTimeUnix())
 	if err != nil {
-		log.Println("[user UserRegister] 插入失败，", err)
+		log.Warn("[user UserRegister] 插入失败，", err)
 		return false
 	}
 
@@ -121,10 +119,10 @@ func (this *User) Update(values map[string]interface{}, wheres map[string]interf
 		wvlues = append(wvlues, v)
 	}
 
-	fmt.Println(myorm.BSQL().Update(USER_TABLE_NAME).Set(fields...).Where(strings.Join(where, " and ")))
+	myorm.BSQL().Update(USER_TABLE_NAME).Set(fields...).Where(strings.Join(where, " and "))
 	n, err := myorm.Update(wvlues...)
 	if err != nil {
-		log.Println("[user Update]更新失败", err)
+		log.Warn("[user Update]更新失败", err)
 		return false
 	}
 	if n > 0 {
@@ -139,7 +137,7 @@ func (this *User) VerifyBandWith(bandwith string, bandwith_pwd string) (app_uid 
 	myorm.BSQL().Select("app_uid").From(USER_TABLE_NAME).Where("bandwith=?")
 	list, err := myorm.Query(bandwith)
 	if err != nil {
-		log.Println("[user VerifyBandWith]查询失败", err)
+		log.Warn("[user VerifyBandWith]查询失败", err)
 		return
 	}
 
@@ -153,7 +151,7 @@ func (this *User) VerifyBandWith(bandwith string, bandwith_pwd string) (app_uid 
 	myorm.BSQL().Insert(USER_TABLE_NAME).Values("bandwith", "bandwith_pwd", "created", "app_uid")
 	n, err := myorm.Insert(bandwith, bandwith_pwd, timestamp, app_uid)
 	if err != nil {
-		log.Println("[user VerifyBandWith] 插入失败", err)
+		log.Warn("[user VerifyBandWith] 插入失败", err)
 		return ""
 	}
 
@@ -169,7 +167,7 @@ func (this *User) GetBrandWith(app_uid string) (u User) {
 	myorm.BSQL().Select("bandwith", "id").From(USER_TABLE_NAME).Where("app_uid=?")
 	list, err := myorm.Query(app_uid)
 	if err != nil {
-		log.Println("[user GetBrandWith] 查询失败", err)
+		log.Warn("[user GetBrandWith] 查询失败", err)
 		return
 	}
 

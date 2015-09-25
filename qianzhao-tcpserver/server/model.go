@@ -16,7 +16,7 @@ import (
 const (
 	USER_QUERY_URL       = "http://js.vnet.cn/ProvinceForSPSearchUserName/services/ProvinceForSPSearchUserName?wsdl"
 	USER_QUERY_PRODUCTID = "1100099900000000"
-	DEFAULT_SPEED        = 1024 * 20 * 1.0 // 单位kb
+	DEFAULT_SPEED        = 1024 * 30 * 1.0 // 单位kb
 	QOS_QUERY_URL        = "http://202.102.41.31:8083/services/DacsForSPInterface"
 )
 

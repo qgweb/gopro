@@ -1,10 +1,10 @@
 package model
 
-import
+import (
+	"github.com/ngaut/log"
+)
 
 //"github.com/qgweb/gopro/qianzhao/common/function"
-
-"log"
 
 //"github.com/qgweb/gopro/lib/convert"
 
@@ -22,7 +22,7 @@ func (this *Favorite) GetFavorite(uid string) (f Favorite) {
 	myorm.BSQL().Select("*").From(FAVORITE_TABLE_NAME).Where("uid=?")
 	list, err := myorm.Query(uid)
 	if err != nil {
-		log.Println("[favorite getfavorite] 读取数据出错", err)
+		log.Warn("[favorite getfavorite] 读取数据出错", err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (this *Favorite) SaveFavorite(f Favorite) bool {
 	myorm.BSQL().Select("count(*) as num").From(FAVORITE_TABLE_NAME).Where("uid=?")
 	list, err := myorm.Query(f.Uid)
 	if err != nil {
-		log.Println("[favorite saveFavorite] 查找失败 ", err)
+		log.Warn("[favorite saveFavorite] 查找失败 ", err)
 		return false
 	}
 
@@ -49,7 +49,7 @@ func (this *Favorite) SaveFavorite(f Favorite) bool {
 		myorm.BSQL().Insert(FAVORITE_TABLE_NAME).Values("uid", "content")
 		n, err := myorm.Insert(f.Uid, f.Content)
 		if err != nil {
-			log.Println("[favorite saveFavorite] 插入失败 ", err)
+			log.Warn("[favorite saveFavorite] 插入失败 ", err)
 			return false
 		}
 
@@ -62,7 +62,7 @@ func (this *Favorite) SaveFavorite(f Favorite) bool {
 		myorm.BSQL().Update(FAVORITE_TABLE_NAME).Set("content").Where("uid=?")
 		n, err := myorm.Update(f.Content, f.Uid)
 		if err != nil {
-			log.Println("[favorite saveFavorite] 保存失败 ", err)
+			log.Warn("[favorite saveFavorite] 保存失败 ", err)
 			return false
 		}
 

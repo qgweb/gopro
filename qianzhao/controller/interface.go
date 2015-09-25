@@ -3,12 +3,12 @@ package controller
 import (
 	"encoding/json"
 	"github.com/labstack/echo"
+	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/qianzhao/common/config"
 	"github.com/qgweb/gopro/qianzhao/common/global"
 	"github.com/qgweb/gopro/qianzhao/model"
 	"io/ioutil"
-	"log"
 )
 
 type Interfacer struct{}
@@ -45,7 +45,7 @@ func (this *Interfacer) AccountList(ctx *echo.Context) error {
 
 	body, err := ioutil.ReadAll(ctx.Request().Body)
 	if err != nil {
-		log.Println("[interfacer AccountList] 读取body失败 ", err)
+		log.Error("[interfacer AccountList] 读取body失败 ", err)
 		return ctx.JSON(200, ctx.JSON(200, JsonReturn{
 			Code: global.CONTROLLER_INTERFACE_ERROR_CODE_PROGRAM,
 			Msg:  global.CONTROLLER_INTERFACE_ERROR_MSG_PROGRAM,
@@ -56,7 +56,7 @@ func (this *Interfacer) AccountList(ctx *echo.Context) error {
 	accoutList := make([]model.BrandAccount, 0, 10)
 	err = json.Unmarshal(body, &accoutList)
 	if err != nil {
-		log.Println("[interfacer AccountList] 转换白名单失败 ", err)
+		log.Error("[interfacer AccountList] 转换白名单失败 ", err)
 		return ctx.JSON(200, JsonReturn{
 			Code: global.CONTROLLER_INTERFACE_ERROR_CODE_DATA,
 			Msg:  global.CONTROLLER_INTERFACE_ERROR_MSG_DATA,

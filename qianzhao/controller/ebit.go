@@ -2,7 +2,8 @@ package controller
 
 import (
 	"encoding/json"
-	"log"
+	"github.com/ngaut/log"
+
 	"net/http"
 	"time"
 
@@ -42,13 +43,13 @@ func (this *Ebit) SpeedupOpen(ctx *echo.Context) error {
 	speedup_data, err := oredis.String(conn.Do("GET", sid))
 
 	if err != oredis.ErrNil {
-		log.Println("[ebit speedupopen] redis获取可以失败 ", err)
+		log.Warn("[ebit speedupopen] redis获取可以失败 ", err)
 		return ctx.String(http.StatusInternalServerError, "系统发生错误")
 	}
 
 	speedup_dataJson := make(map[string]interface{})
 	if err := json.Unmarshal([]byte(speedup_data), &speedup_dataJson); err != nil {
-		log.Println("[ebit speedupopen] 解析json出错", err)
+		log.Warn("[ebit speedupopen] 解析json出错", err)
 		return ctx.String(http.StatusInternalServerError, "系统发生错误")
 	}
 
@@ -98,7 +99,7 @@ func (this *Ebit) SpeedupOpen(ctx *echo.Context) error {
 
 			d, err := json.Marshal(&speedup_dataJson)
 			if err != nil {
-				log.Println("[ebit speedupopen] 解析json出错", err)
+				log.Warn("[ebit speedupopen] 解析json出错", err)
 				return ctx.String(http.StatusInternalServerError, "系统发生错误")
 			}
 
@@ -127,14 +128,14 @@ func (this *Ebit) SpeedupOpenCheck(ctx *echo.Context) error {
 
 	speedup_data, err := oredis.String(conn.Do("GET", key))
 	if err != oredis.ErrNil {
-		log.Println("[ebit speedupOpencheck] 读取redis失败", err)
+		log.Warn("[ebit speedupOpencheck] 读取redis失败", err)
 	}
 
 	if speedup_data != "" {
 		speedup_dataJson := make(map[string]interface{})
 		err := json.Unmarshal([]byte(speedup_data), &speedup_dataJson)
 		if err != nil {
-			log.Println("[ebit speedupOpencheck] 解析speedup_data数据出错", err)
+			log.Warn("[ebit speedupOpencheck] 解析speedup_data数据出错", err)
 			return ctx.String(http.StatusInternalServerError, "系统发生错误")
 		}
 
@@ -225,7 +226,7 @@ func (this *Ebit) SpeedupCheck(ctx *echo.Context) error {
 
 	dial_acct, err := oredis.String(conn.Do("GET", key))
 	if err != oredis.ErrNil {
-		log.Println("[ebit speedupopen] redis获取可以失败 ", err)
+		log.Warn("[ebit speedupopen] redis获取可以失败 ", err)
 		return ctx.String(http.StatusInternalServerError, "系统发生错误")
 	}
 

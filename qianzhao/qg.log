@@ -1,0 +1,10 @@
+2015/09/25 13:53:45 broadband.go:45: [warning] 127.0.0.1:33242 
+2015/09/25 13:53:45 broadband.go:117: [info] -998|| 
+2015/09/25 14:01:41 broadband.go:117: [info] -998|| 
+2015/09/25 14:01:41 logger.go:38: [info] %s %s %s %s %d POST /broadbrand/start [32m200[0m 99.787321ms 43 
+2015/09/25 14:03:48 broadband.go:117: [info] -998|| 
+2015/09/25 14:03:48 logger.go:38: [info] POST /broadbrand/start [32m200[0m 329.475952ms 43
+2015/09/25 14:15:01 logger.go:38: [info] POST /broadbrand/resettime [33m404[0m 29.011µs 10
+2015/09/25 14:15:03 logger.go:38: [info] POST /broadbrand/resettime [33m404[0m 26.006µs 10
+2015/09/25 14:15:29 logger.go:38: [info] GET /broadbrand/resettime [32m200[0m 112.261692ms 0
+2015/09/25 14:16:04 logger.go:38: [info] GET /broadbrand/resettime [32m200[0m 54.050415ms 0

@@ -6,6 +6,7 @@ import (
 	"github.com/qgweb/gopro/qianzhao-tcpserver/server"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 )
@@ -17,6 +18,8 @@ func main() {
 		s        *server.Server
 		err      error
 	)
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if os.Getenv("_GRACEFUL_RESTART") == "true" {
 		s, err = server.NewFromFD(log, 3)

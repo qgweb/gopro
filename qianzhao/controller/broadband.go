@@ -4,9 +4,10 @@ package controller
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"strings"
 	"text/template"
+
+	"github.com/ngaut/log"
 
 	"github.com/astaxie/beego/httplib"
 	"github.com/labstack/echo"
@@ -27,7 +28,7 @@ type UserData struct {
 const (
 	USER_QUERY_URL       = "http://js.vnet.cn/ProvinceForSPSearchUserName/services/ProvinceForSPSearchUserName?wsdl"
 	USER_QUERY_PRODUCTID = "1100099900000000"
-	DEFAULT_SPEED        = 1024 * 20 * 1.0 // 单位kb
+	DEFAULT_SPEED        = 1024 * 30 * 1.0 // 单位kb
 )
 
 var (
@@ -93,6 +94,13 @@ func (this *BroadBand) Stop(ctx *echo.Context) error {
 	return nil
 }
 
+// 重置用户体验时间
+func (this *BroadBand) ResetTime(ctx *echo.Context) error {
+	baModel := model.BrandAccount{}
+	baModel.ResetTime()
+	return nil
+}
+
 // 用户宽带查询(username string, areacode string)
 func (this *BroadBand) userQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
 	var (
@@ -103,17 +111,17 @@ func (this *BroadBand) userQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
 	req := httplib.Post(USER_QUERY_URL)
 	req.Header("Content-Type", "text/xml; charset=utf-8")
 	req.Header("SOAPAction", USER_QUERY_URL)
-	req.Body(createUserSOAPXml(ip, USER_QUERY_PRODUCTID))
+	req.Body(createUserSOAPXml(USER_QUERY_PRODUCTID, ip))
 	a := global.UserEnvelope{}
 	err := req.ToXml(&a)
 	if err != nil {
-		log.Println("[BroadBand userQuery] 解析xml失败 ", err)
+		log.Warn("[BroadBand userQuery] 解析xml失败 ", err)
 		return &UserData{}, ErrProgram
 	}
 
 	res := a.By.GP.GetUserProductReturn
 	resAry := strings.Split(res, "|")
-	log.Println(res)
+	log.Info(res)
 	if len(resAry) != 3 {
 		return &UserData{}, ErrProgram
 	}

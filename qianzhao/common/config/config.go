@@ -1,8 +1,8 @@
 package config
 
 import (
+	"github.com/ngaut/log"
 	"io/ioutil"
-	"log"
 
 	"github.com/qgweb/gopro/qianzhao/common/function"
 	"gopkg.in/ini.v1"
@@ -17,12 +17,12 @@ func init() {
 	fname := function.GetBasePath() + "/conf/app.ini"
 	data, err := ioutil.ReadFile(fname)
 	if err != nil {
-		log.Fatalln("打开配置文件出错，错误信息为：", err)
+		log.Fatal("打开配置文件出错，错误信息为：", err)
 	}
 
 	Config, err = ini.Load(data)
 	if err != nil {
-		log.Fatalln("加载配置文件出错，错误信息为：", err)
+		log.Fatal("加载配置文件出错，错误信息为：", err)
 	}
 }
 
