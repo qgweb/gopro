@@ -11,6 +11,12 @@ import (
 
 var (
 	mdbsession *mgo.Session
+	mo_user    = "xu"
+	mo_pwd     = "123456"
+	mo_host    = "192.168.1.199"
+	mo_port    = "27017"
+	mo_db      = "xu_precise"
+	mo_table   = "tao_cat"
 )
 
 type Category struct {
@@ -21,16 +27,17 @@ type Category struct {
 	Level int        `bson:"level"`
 	Child []Category `bson:"child"` //子集
 	Pid   string     `bson:"pid"`
+	Type  string     `bson:"type"`
 }
 
 //获取mongo数据库链接
 func GetSession() *mgo.Session {
 	var (
-		mouser = "xu"
-		mopwd  = "123456"
-		mohost = "127.0.0.1"
-		moport = "27017"
-		modb   = "xu_precise"
+		mouser = mo_user
+		mopwd  = mo_pwd
+		mohost = mo_host
+		moport = mo_port
+		modb   = mo_db
 	)
 
 	if mdbsession == nil {
@@ -50,7 +57,7 @@ func getAllCatroy() []Category {
 	sess := GetSession()
 	defer sess.Close()
 	var list []Category
-	sess.DB("xu_precise").C("taocat").Find(bson.M{}).All(&list)
+	sess.DB("xu_precise").C(mo_table).Find(bson.M{}).All(&list)
 	return list
 }
 

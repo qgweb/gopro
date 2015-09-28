@@ -4,17 +4,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/bitly/go-simplejson"
-	"github.com/ngaut/log"
-	"github.com/qgweb/gopro/lib/convert"
-	"github.com/qiniu/iconv"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/bitly/go-simplejson"
+	iconv "github.com/djimenez/iconv-go"
+	"github.com/ngaut/log"
+	"github.com/qgweb/gopro/lib/convert"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -23,6 +24,12 @@ const (
 
 var (
 	mdbsession *mgo.Session
+	mo_user    = "xu"
+	mo_pwd     = "123456"
+	mo_host    = "192.168.1.199"
+	mo_port    = "27017"
+	mo_db      = "xu_precise"
+	mo_table   = "tao_cat"
 )
 
 type Category struct {
@@ -33,16 +40,17 @@ type Category struct {
 	Level int        `bson:"level"`
 	Child []Category `bson:"child"` //子集
 	Pid   string     `bson:"pid"`
+	Type  string     `bson:"type"`
 }
 
 //获取mongo数据库链接
 func GetSession() *mgo.Session {
 	var (
-		mouser = "xu"
-		mopwd  = "123456"
-		mohost = "127.0.0.1"
-		moport = "27017"
-		modb   = "xu_precise"
+		mouser = mo_user
+		mopwd  = mo_pwd
+		mohost = mo_host
+		moport = mo_port
+		modb   = mo_db
 	)
 
 	if mdbsession == nil {
@@ -59,7 +67,6 @@ func GetSession() *mgo.Session {
 
 // 获取html
 func grabHtml(path string, sid string) string {
-	cd, _ := iconv.Open("utf-8", "gbk")
 	v := url.Values{}
 	v.Set("path", path)
 	v.Set("sid", sid)
@@ -75,7 +82,7 @@ func grabHtml(path string, sid string) string {
 	r.Header.Set("Connection", "keep-alive")
 	r.Header.Set("Content-Length", "17")
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-	r.Header.Set("Cookie", "thw=cn; cna=BLJwDlhUGU4CAX14n0a8en7J; v=0; _tb_token_=tNI3NeXl1OXO9G; uc3=nk2=F4T%2BqCs1GCv3cUU%3D&id2=UU6p%2B6jaIpgS&vt3=F8dASMr55qi6XxKWJuU%3D&lg2=UIHiLt3xD8xYTw%3D%3D; existShop=MTQ0MzE5ODY2OQ%3D%3D; lgc=tracyxiang5; tracknick=tracyxiang5; sg=57c; cookie2=1c7a14d526ade08e9628789b95114d34; mt=np=&ci=1_1; cookie1=ACiySN0X98ZST2xXkglRaGFbZmpUopo7AQbwVps1wd8%3D; unb=268142207; skt=e1eaf69f0c4f438b; t=1bb9fbc5f55889dff929db1dc7393e01; publishItemObj=Ng%3D%3D; _cc_=U%2BGCWk%2F7og%3D%3D; tg=0; _l_g_=Ug%3D%3D; _nk_=tracyxiang5; cookie17=UU6p%2B6jaIpgS; isg=F0AE4D906AC26DEDD38109B2D9759EE9; uc1=cookie14=UoWzWim8vS%2BMzg%3D%3D&existShop=true&cookie16=Vq8l%2BKCLySLZMFWHxqs8fwqnEw%3D%3D&cookie21=UIHiLt3xSixwG45%2Bs3wzsA%3D%3D&tag=3&cookie15=UIHiLt3xD8xYTw%3D%3D&pas=0; l=Ari41eRdRiqCBiCfohliZiAlCGhKGxyr")
+	r.Header.Set("Cookie", "cna=iBpHDuxbpDoCAXPI8O66zMhi; thw=cn; ali_ab=122.235.237.26.1438678183372.3; miid=6856742623729070531; x=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0%26__ll%3D-1%26_ato%3D0; v=0; _tb_token_=PsM1KPAjxqah5f6; isg=31DEBB4066877FAAB35DDA6EB47D4AAA; uc3=nk2=F4T%2BqCs1GCv3cUU%3D&id2=UU6p%2B6jaIpgS&vt3=F8dASMlJs8zUtnhkm80%3D&lg2=Vq8l%2BKCLz3%2F65A%3D%3D; existShop=MTQ0MzQzODI0OA%3D%3D; lgc=tracyxiang5; tracknick=tracyxiang5; sg=57c; cookie2=1c47414352a167e02fb5dd9058a5a33c; mt=np=&ci=9_1&cyk=0_0; cookie1=ACiySN0X98ZST2xXkglRaGFbZmpUopo7AQbwVps1wd8%3D; unb=268142207; skt=f779130c1598812d; t=afd38437622a33dd1817869da512ff1e; publishItemObj=Ng%3D%3D; _cc_=U%2BGCWk%2F7og%3D%3D; tg=0; _l_g_=Ug%3D%3D; _nk_=tracyxiang5; cookie17=UU6p%2B6jaIpgS; l=AmBg3efaZReJJcinimEK4qBisGAycEQz; uc1=cookie14=UoWzWiy1dE99ww%3D%3D&existShop=true&cookie16=VT5L2FSpNgq6fDudInPRgavC%2BQ%3D%3D&cookie21=W5iHLLyFfXVRDP8mxoRA8A%3D%3D&tag=3&cookie15=VT5L2FSpMGV7TQ%3D%3D&pas=0")
 	r.Header.Set("Host", "upload.taobao.com")
 	r.Header.Set("Pragma", "no-cache")
 	r.Header.Set("Referer", "http://upload.taobao.com/auction/sell.jhtml?spm=a1z0e.1.0.0.nigjAo&mytmenu=wym&utkn=g,orzgcy3zpbuwc3thgu1435198089453&scm=1028.1.1.101")
@@ -92,7 +99,8 @@ func grabHtml(path string, sid string) string {
 	defer resp.Body.Close()
 
 	a, _ := ioutil.ReadAll(resp.Body)
-	return cd.ConvString(string(a))
+	d, _ := iconv.ConvertString(string(a), "gbk", "utf-8")
+	return d
 }
 
 // 获取第一级类目(包含第二)
@@ -100,7 +108,7 @@ func FirstLevelCategory(path string, sid string) []Category {
 	data := grabHtml(path, sid)
 	jn, err := simplejson.NewJson([]byte(data))
 	if err != nil {
-		log.Error("cookie失效")
+		log.Fatal("cookie失效")
 		return nil
 	}
 
@@ -148,7 +156,7 @@ func SecondLevelCategory(path string, sid string, level int) []Category {
 	data := grabHtml(path, sid)
 	jn, err := simplejson.NewJson([]byte(data))
 	if err != nil {
-		log.Fatal("cookie失效")
+		log.Error("cookie失效", err)
 		return nil
 	}
 
@@ -167,6 +175,7 @@ func SecondLevelCategory(path string, sid string, level int) []Category {
 				fc.Sid, _ = sdataJson.Get("sid").String()
 				fc.Spell, _ = sdataJson.Get("spell").String()
 				fc.Level = level
+				fc.Type = "0"
 				log.Info(fc)
 				fc.Child = SecondLevelCategory(path, fc.Sid, level+1)
 				fcs = append(fcs, fc)
@@ -175,9 +184,30 @@ func SecondLevelCategory(path string, sid string, level int) []Category {
 		return fcs
 	}
 
-	if v, _ := jn.GetIndex(0).Get("pName").String(); v == "品牌" {
-
+	if v, _ := jn.GetIndex(0).Get("pName").String(); strings.Contains(v, "品牌") {
+		firstList, _ := jn.GetIndex(0).Get("data").Array()
+		fcs := make([]Category, 0, 100)
+		for _, fdata := range firstList {
+			fdataJson := simplejson.New()
+			fdataJson.SetPath([]string{}, fdata)
+			secondlist, _ := fdataJson.Get("data").Array()
+			for _, sdata := range secondlist {
+				sdataJson := simplejson.New()
+				sdataJson.SetPath([]string{}, sdata)
+				fc := Category{}
+				fc.Name, _ = sdataJson.Get("name").String()
+				fc.Sid, _ = sdataJson.Get("sid").String()
+				fc.Spell, _ = sdataJson.Get("spell").String()
+				fc.Level = level
+				fc.Type = "1"
+				log.Warn(fc)
+				//fc.Child = SecondLevelCategory(path, fc.Sid, level+1)
+				fcs = append(fcs, fc)
+			}
+		}
+		return fcs
 	}
+
 	return nil
 }
 
@@ -187,12 +217,13 @@ func addRecord(list []Category, pid string) {
 	defer sess.Close()
 
 	for _, v := range list {
-		sess.DB("xu_precise").C("taocat").Upsert(bson.M{"cid": v.Sid}, bson.M{
+		sess.DB("xu_precise").C(mo_table).Upsert(bson.M{"cid": v.Sid}, bson.M{
 			"$set": bson.M{
 				"name":  v.Name,
 				"spell": v.Spell,
 				"level": v.Level,
 				"pid":   pid,
+				"type":  v.Type,
 			},
 		})
 		if len(v.Child) > 0 {
@@ -213,8 +244,9 @@ func main() {
 	}
 
 	log.SetHighlighting(true)
-	//list := FirstLevelCategory("all", "")
-
+	// list := FirstLevelCategory("all", "")
+	// addRecord(list, "")
+	//log.Info(list)
 	list := SecondLevelCategory("next", *pid, 3)
 	addRecord(list, *pid)
 }

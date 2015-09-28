@@ -89,35 +89,45 @@
 // 	fmt.Println(by.By.GP.Result)
 // }
 
+//package main
+
+//import (
+//	//"errors"
+//	//"github.com/astaxie/beego/logs"
+//	"github.com/juju/errors"
+//	"github.com/ngaut/log"
+//)
+
+//func show1() error {
+//	return errors.Trace(errors.New("aaa"))
+//}
+
+//func show() error {
+//	return errors.Annotate(errors.Trace(show1()), "bbbbb")
+//}
+
+//func main() {
+//	//log.SetOutputByName("./b.txt")
+//	log.SetRotateByHour()
+//	log.SetHighlighting(true)
+//	log.SetLevelByString("errors")
+//	log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate)
+//	log.Warn("ffffff")
+
+//	// log := logs.NewLogger(10000)
+//	// log.SetLogger("console", "")
+//	// log.EnableFuncCallDepth(true)
+//	// log.Debug("debug")
+//	//
+//	log.Info(errors.ErrorStack(show()))
+//}
 package main
 
-import (
-	//"errors"
-	//"github.com/astaxie/beego/logs"
-	"github.com/juju/errors"
-	"github.com/ngaut/log"
-)
-
-func show1() error {
-	return errors.Trace(errors.New("aaa"))
-}
-
-func show() error {
-	return errors.Annotate(errors.Trace(show1()), "bbbbb")
-}
+import "fmt"
+import "github.com/axgle/mahonia"
 
 func main() {
-	//log.SetOutputByName("./b.txt")
-	log.SetRotateByHour()
-	log.SetHighlighting(true)
-	log.SetLevelByString("errors")
-	log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate)
-	log.Warn("ffffff")
-
-	// log := logs.NewLogger(10000)
-	// log.SetLogger("console", "")
-	// log.EnableFuncCallDepth(true)
-	// log.Debug("debug")
-	//
-	log.Info(errors.ErrorStack(show()))
+	enc := mahonia.NewEncoder("gbk")
+	//converts a  string from UTF-8 to gbk encoding.
+	fmt.Println(enc.ConvertString("hello,世界"))
 }
