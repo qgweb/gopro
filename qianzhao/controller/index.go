@@ -1,31 +1,38 @@
 package controller
 
 import (
-	"github.com/ngaut/log"
-
-	//"fmt"
-	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo"
-	"github.com/qgweb/gopro/qianzhao/common/session"
-	//"golang.org/x/crypto/bcrypt"
+	"github.com/qgweb/gopro/qianzhao/model"
 )
 
-func Index(ctx *echo.Context) error {
-	//$2y$10$PJwVP4S3B9QBcai/bP.NA.ujSX8ue90wDbPm1B423wtOeiBVyWpFG
-	//$2a$10$dBBYYkpONL1rnBQ2BH2Hy.emfcgOKv4NZCP9o1SwIBT6d1spUMPNq
-	return ctx.Render(200, "usercenter", "333")
+type Index struct {
 }
 
-func Show(ctx *echo.Context) error {
-	sess, err := session.GetSession(ctx)
-	if err != nil {
-		log.Error("获取session失败：", err)
+//qianzhao.主版本号.次版本号.修订版本号.渠道号
+func (this *Index) Update(ctx *echo.Context) error {
+	var (
+		version  = ctx.Form("version")
+		mversion = model.Version{}
+	)
+
+	if version == "" {
+		return ctx.JSON(200, map[string]interface{}{
+			"code": "500",
+			"msg":  "参数为空",
+			"data": "",
+		})
 	}
 
-	defer sess.SessionRelease(ctx.Response())
-
-	//$2y$10$PJwVP4S3B9QBcai/bP.NA.ujSX8ue90wDbPm1B423wtOeiBVyWpFG
-	//$2a$10$dBBYYkpONL1rnBQ2BH2Hy.emfcgOKv4NZCP9o1SwIBT6d1spUMPNq
-	return ctx.String(http.StatusOK, sess.Get("NAME").(string))
+	v := mversion.Update(version)
+	return ctx.JSON(200, map[string]interface{}{
+		"code": "200",
+		"msg":  "",
+		"data": map[string]string{
+			"is_update":    strconv.FormatBool(v.IsUpdate),
+			"download_url": v.Url,
+			"update_page":  v.Update_page,
+		},
+	})
 }

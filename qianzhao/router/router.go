@@ -6,9 +6,6 @@ import (
 )
 
 func Router(e *echo.Echo) {
-	e.Get("/", controller.Index)
-	e.Get("/show", controller.Show)
-
 	//// 秒速浏览器用户注册
 	e.Post("/Api/v0.1/user/register", (&controller.User{}).Register)
 
@@ -51,6 +48,7 @@ func Router(e *echo.Echo) {
 	//// 宽带（双速网）
 	e.Post("/broadbrand/start", (&controller.BroadBand{}).Start)
 	e.Get("/broadbrand/resettime", (&controller.BroadBand{}).ResetTime)
+	e.Post("/version/update", (&controller.Index{}).Update)
 }
 
 //// 秒速浏览器用户注册

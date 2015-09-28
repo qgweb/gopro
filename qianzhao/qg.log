@@ -8,3 +8,6 @@
 2015/09/25 14:15:03 logger.go:38: [info] POST /broadbrand/resettime [33m404[0m 26.006µs 10
 2015/09/25 14:15:29 logger.go:38: [info] GET /broadbrand/resettime [32m200[0m 112.261692ms 0
 2015/09/25 14:16:04 logger.go:38: [info] GET /broadbrand/resettime [32m200[0m 54.050415ms 0
+2015/09/28 20:43:57 logger.go:38: [info] POST /version/update [32m200[0m 25.064791ms 88
+2015/09/28 20:44:22 logger.go:38: [info] POST /version/update [32m200[0m 2.001518ms 88
+2015/09/28 20:44:42 logger.go:38: [info] POST /version/update [32m200[0m 1.943549ms 98
