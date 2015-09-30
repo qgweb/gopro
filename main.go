@@ -216,13 +216,12 @@ package main
 
 import (
 	"fmt"
-	"math"
+	"gopkg.in/mgo.v2/bson"
 	"net"
 	"os"
 	"time"
 
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 
 	"code.google.com/p/go.crypto/ssh"
 	"github.com/ngaut/log"
@@ -310,33 +309,57 @@ func main() {
 	}
 	defer c.Close()
 
-	sess, err := getMongo("192.168.0.86:27017/xu_precise", func() (net.Conn, error) {
-		return c.Dial("tcp", "192.168.0.86:27017")
-	})
+	sess := GetRSession(c)
 	defer sess.Close()
+
+	clist := getSubCat(c)
+
+	f, err := os.Create("./xxxx.txt")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
+	defer f.Close()
 
-	nsess := GetSession()
-	defer nsess.Close()
+	for _, v := range clist {
+		var list []map[string]interface{}
+		sess.DB(mo_db).C("zhejiang_ad_tags_clock").Find(bson.M{"date": "2015-09-29", "$or": []bson.M{
+			bson.M{"cids.00": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.01": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.02": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.03": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.04": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.05": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.06": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.07": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.08": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.09": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.10": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.11": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.12": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.13": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.14": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.15": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.16": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.17": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.18": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.19": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.20": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.21": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.22": bson.RegEx{Pattern: v.Cid}},
+			bson.M{"cids.23": bson.RegEx{Pattern: v.Cid}},
+		}}).All(&list)
 
-	count, _ := nsess.DB(mo_db).C("taocat").Count()
-	pageSize := 1000
-	pageCount := int(math.Ceil(float64(count) / float64(pageSize)))
-
-	for i := 1; i <= pageCount; i++ {
-		list := make([]map[string]interface{}, 0, pageSize)
-		nsess.DB(mo_db).C("taocat").Find(bson.M{}).
-			Limit(pageSize).Skip((i - 1) * pageSize).All(&list)
-		var aaa = make([]interface{}, 0, len(list))
-		for _, v := range list {
-			aaa = append(aaa, bson.M(v))
-			log.Info(v)
+		if len(list) > 0 {
+			f.WriteString(v.Name + "\t")
+			for _, vvv := range list {
+				fmt.Println(vvv["ad"].(string))
+				f.WriteString(vvv["ad"].(string) + ",")
+			}
+			f.WriteString("\n")
 		}
-		log.Warn(sess.DB(mo_db).C(mo_table).Insert(aaa...))
 	}
+
 	return
 }
 
@@ -352,3 +375,43 @@ func getMongo(url string, f func() (net.Conn, error)) (*mgo.Session, error) {
 
 	return mgo.DialWithInfo(info)
 }
+
+func GetRSession(c *ssh.Client) *mgo.Session {
+	sess, err := getMongo("xu:xu123net@192.168.0.68:10001/xu_precise", func() (net.Conn, error) {
+		return c.Dial("tcp", "192.168.0.68:10001")
+	})
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	return sess.Clone()
+}
+
+type Cate struct {
+	Name string
+	Cid  string
+}
+
+func getSubCat(c *ssh.Client) []Cate {
+	sess := GetRSession(c)
+	defer sess.Close()
+	var list []map[string]interface{}
+	var clist = make([]Cate, 0, 100)
+	sess.DB(mo_db).C(mo_table).Find(bson.M{"pid": "2"}).All(&list)
+	if len(list) > 0 {
+		for _, v := range list {
+			var ll []map[string]interface{}
+			sess.DB(mo_db).C(mo_table).Find(bson.M{"pid": v["cid"].(string)}).All(&ll)
+			if len(ll) > 0 {
+				for _, vv := range ll {
+					clist = append(clist, Cate{Name: vv["name"].(string), Cid: vv["cid"].(string)})
+				}
+			}
+		}
+	}
+	return clist
+}
+
+/**
+ * ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCwj1q4Fwgi3p1in41r6TswbVZUhApbDI0FcdeQ1jmBZJyDZltMSlqjwA2iWSwh8LOTg2Y4kd0EVToHHVVrXZw88ZgQWYkUtsjSRvvnorjOKiS7h7sFiL+P29+xHADlcLKI+JNUNbOyoSuW34OicvHNXHgAAt51bnBC2jRl1NGydXUeAPiL4vXjfdGAvCcfMcNVg4A7eusNkeBQF9dzaaN1lpK6B9nscxoZw3aHMWbXUYoBI784ZVRj8KiVhTjyhFa3HDlyho0aX+rCYWzf5TvQsoRcXnwhBCayjqmlINUat34gZ8g4aEOgJqj5Enuhj2FcJGK3Tzm7NDwwifDBtXq9 zhengbo@pv25.com
+ */
