@@ -2,30 +2,82 @@ package grab
 
 import (
 	"crypto/tls"
+	"io"
 	"io/ioutil"
-	"log"
+	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
+	"sync"
+	"time"
 	"unicode/utf8"
+
+	"golang.org/x/net/html/charset"
 
 	//"github.com/opesun/goquery"
 	//"github.com/opesun/goquery/exp/html"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/qiniu/iconv"
+	"github.com/henrylee2cn/surfer/agent"
+	"github.com/ngaut/log"
 )
 
+type GClient struct {
+	sync.Mutex
+	Client *http.Client
+}
+
 var (
-	cd        iconv.Iconv
-	cookie    string = ""
-	useragent string = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.152 Safari/537.36"
-	client    *http.Client
+	client *GClient
 )
 
 func init() {
-	cd, _ = iconv.Open("utf-8", "gbk")
-	client = &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
+	client = &GClient{Client: buildClient()}
+}
+
+func buildClient() *http.Client {
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, _ []*http.Request) error {
+			return nil
+		},
+	}
+
+	transport := &http.Transport{
+		Dial: func(network, addr string) (net.Conn, error) {
+			c, err := net.DialTimeout(network, addr, time.Second*30)
+			if err != nil {
+				log.Error(err)
+				return nil, err
+			}
+			c.SetDeadline(time.Now().Add(time.Second * 30))
+			return c, nil
+		},
+	}
+
+	transport.TLSClientConfig = &tls.Config{RootCAs: nil, InsecureSkipVerify: true}
+	transport.DisableCompression = true
+	client.Transport = transport
+	return client
+}
+
+func changeCharsetEncodingAuto(sor io.ReadCloser, contentTypeStr string) string {
+	var err error
+	destReader, err := charset.NewReader(sor, contentTypeStr)
+
+	if err != nil {
+		log.Error(err)
+		destReader = sor
+	}
+
+	var sorbody []byte
+	if sorbody, err = ioutil.ReadAll(destReader); err != nil {
+		log.Error(err)
+	}
+
+	bodystr := string(sorbody)
+
+	return bodystr
 }
 
 //解析页面到node
@@ -35,50 +87,43 @@ func ParseNode(h string) (*goquery.Document, error) {
 
 //抓取淘宝商品页面
 func GrabTaoHTML(url string) string {
-	r, err := http.NewRequest("GET", url, nil)
+	client := buildClient()
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return ""
-	}
-	r.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-	//r.Header.Set("Accept-Encoding", "gzip, deflate, sdch")
-	r.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
-	r.Header.Set("Cache-Control", "no-cache")
-	r.Header.Set("Connection", "keep-alive")
-	r.Header.Set("Cookie", cookie)
-	r.Header.Set("Host", "www.taobao.com")
-	r.Header.Set("Pragma", "no-cache")
-	r.Header.Set("User-Agent", useragent)
-
-	resp, err := client.Do(r)
-	if err != nil {
-		if resp == nil {
-			log.Println("================")
-			log.Println(url)
-			log.Println("================")
-			log.Println(err)
-			return ""
-		}
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode == 302 || resp.StatusCode == 301 {
-		location := resp.Header.Get("Location")
-		return GrabTaoHTML(location)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return ""
 	}
 
-	return string(body)
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
+	req.Header.Set("Cache-Control", "no-cache")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("Host", "www.taobao.com")
+	req.Header.Set("Pragma", "no-cache")
+
+	if req.UserAgent() == "" {
+		l := len(agent.UserAgents["common"])
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		req.Header.Set("User-Agent", agent.UserAgents["common"][r.Intn(l)])
+	}
+	//	client.Lock()
+	//	defer client.Unlock()
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Error(err)
+		return ""
+	}
+
+	if resp.Body != nil {
+		defer resp.Body.Close()
+		return changeCharsetEncodingAuto(resp.Body, resp.Header.Get("Content-Type"))
+	}
+	return ""
 }
 
 //获取淘宝标题
 func GetTitle(p *goquery.Document) string {
-	return cd.ConvString(p.Find("title").Text())
+	return strings.TrimSpace(p.Find("title").Text())
 }
 
 //获取淘宝属性信息
@@ -86,18 +131,14 @@ func GetAttrbuites(p *goquery.Document) string {
 	attribute := make([]string, 0, 20)
 	p.Find("#J_AttrUL li").Each(func(index int, element *goquery.Selection) {
 		as := strings.Split(element.Text(), ":")
-
 		if len(as) < 2 {
-			as = strings.Split(cd.ConvString(element.Text()), "：")
-		}
-		if !utf8.ValidString(as[0]) {
-			as[0] = cd.ConvString(as[0])
+			as = strings.Split(element.Text(), "：")
 		}
 
 		b := ""
 
 		if len(as) >= 2 && !utf8.ValidString(as[1]) {
-			as[1] = cd.ConvString(as[1])
+			as[1] = as[1]
 			b = as[1]
 		}
 
@@ -106,7 +147,7 @@ func GetAttrbuites(p *goquery.Document) string {
 
 	if len(attribute) == 0 {
 		p.Find("#attributes .attributes-list li").Each(func(index int, element *goquery.Selection) {
-			attribute = append(attribute, cd.ConvString(element.Text()))
+			attribute = append(attribute, element.Text())
 		})
 	}
 
@@ -139,23 +180,16 @@ func GetTaoCategoryId(h string) (catid string, gid string) {
 
 //设置cookie
 func SetGrabCookie(ck string) {
-	cookie = ck
+
 }
 
 //
 func SetUserAgent(ua string) {
-	useragent = ua
+
 }
 
 func SetTransport(proxyurl string) {
-	proxy, err := url.Parse(proxyurl)
-	if err != nil {
-		return
-	}
 
-	if v, ok := client.Transport.(*http.Transport); ok {
-		v.Proxy = http.ProxyURL(proxy)
-	}
 }
 
 //获取店铺信息
@@ -178,7 +212,7 @@ func GetShopName(p *goquery.Document) string {
 	if name == "" {
 		name = p.Find(".slogo-shopname").Text()
 	}
-	return strings.TrimSpace(cd.ConvString(name))
+	return strings.TrimSpace(name)
 }
 
 //获取店铺地址
@@ -194,7 +228,7 @@ func GetShopUrl(p *goquery.Document) string {
 func GetShopBoss(p *goquery.Document) string {
 	name := p.Find(".tb-seller-name").Text()
 	if name != "" {
-		return strings.TrimSpace(cd.ConvString(name))
+		return strings.TrimSpace(name)
 	}
 
 	reg, _ := regexp.Compile(`"sellerNickName":"([\w%%]+)"`)
@@ -220,7 +254,7 @@ func GetShopIdByShop(p *goquery.Document) string {
 
 //获取店铺名称通过店铺地址
 func GetShopNameByShop(p *goquery.Document) string {
-	return strings.TrimSpace(cd.ConvString(p.Find(".shop-name span").Text()))
+	return strings.TrimSpace(p.Find(".shop-name span").Text())
 }
 
 //获取店铺掌柜通过店铺地址
