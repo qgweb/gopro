@@ -1,10 +1,11 @@
 package ssh
 
 import (
-	ssh "code.google.com/p/go.crypto/ssh"
 	"fmt"
 	"io/ioutil"
 	"os/user"
+
+	ssh "code.google.com/p/go.crypto/ssh"
 	//"github.com/ngaut/log"
 )
 

@@ -3,14 +3,13 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
-	"os"
-	"path"
 	"strings"
 	"time"
+
+	"github.com/ngaut/log"
 
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/grab"
@@ -21,7 +20,7 @@ import (
 	"sync"
 
 	"github.com/astaxie/beego/httplib"
-	"github.com/bitly/go-nsq"
+	"github.com/nsqio/go-nsq"
 )
 
 var (
@@ -54,7 +53,7 @@ type NSQHandler struct {
 func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 	data := string(message.Body)
 	if data == "" {
-		log.Println("数据丢失")
+		log.Warn("数据丢失")
 		return nil
 	}
 
@@ -62,7 +61,7 @@ func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 
 	urlData, err := url.ParseQuery(data)
 	if err != nil {
-		log.Println("解析数据失败")
+		log.Warn("解析数据失败")
 		return nil
 	}
 
@@ -71,7 +70,7 @@ func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 	select {
 	case dataQueue <- QueueData{Data: urlData, Px: this.Px}:
 	case <-nt.C:
-		log.Println("队列超时")
+		log.Error("队列超时")
 	}
 
 	return nil
@@ -99,7 +98,7 @@ func httpsqsQueue(px string) url.Values {
 	res, err := r.String()
 
 	if err != nil {
-		log.Println("读取http队列出错,错误信息为:", err)
+		log.Warn("读取http队列出错,错误信息为:", err)
 		return nil
 	}
 
@@ -111,7 +110,7 @@ func httpsqsQueue(px string) url.Values {
 
 	data, err := url.ParseQuery(res)
 	if err != nil {
-		log.Println("解析数据失败")
+		log.Warn("解析数据失败")
 		return nil
 	}
 
@@ -122,9 +121,6 @@ func httpsqsQueue(px string) url.Values {
 func GrabGoodsInfo(gid string) (info map[string]interface{}) {
 LABEL:
 	url := "https://item.taobao.com/item.htm?id=" + gid
-	grab.SetGrabCookie("")
-	grab.SetUserAgent(getUserAgent())
-	//grab.SetTransport(getHttpProxy())
 	h := grab.GrabTaoHTML(url)
 
 	if h == "" {
@@ -142,8 +138,8 @@ LABEL:
 	}
 
 	if strings.Contains(title, "访问受限") {
-		log.Println("访问受限,id为", gid)
-		time.Sleep(time.Minute * 2)
+		log.Error("访问受限,id为", gid)
+		
 		goto LABEL
 		return nil
 	}
@@ -251,7 +247,7 @@ func initCateInfo() {
 	if err == mgo.ErrNotFound {
 		err = sess.DB(modb).C("taocat").Find(bson.M{}).Select(bson.M{"_id": 0}).All(&list)
 		if err == mgo.ErrNotFound {
-			log.Fatalln("读取淘宝分类出错")
+			log.Error("读取淘宝分类出错")
 		}
 	}
 
@@ -268,7 +264,7 @@ func initNsqConn() {
 	)
 	nsqproducer, err = nsq.NewProducer(fmt.Sprintf("%s:%s", host, port), nsq.NewConfig())
 	if err != nil {
-		log.Println("连接nsq出错,错误信息为:", err)
+		log.Fatal("连接nsq出错,错误信息为:", err)
 		return
 	}
 }
@@ -281,13 +277,13 @@ func pushMsgToNsq(data []byte) {
 
 	err := nsqproducer.Ping()
 	if err != nil {
-		log.Println("无法和nsq通讯,错误信息为:", err)
+		log.Warn("无法和nsq通讯,错误信息为:", err)
 		return
 	}
 
 	err = nsqproducer.Publish(key, data)
 	if err != nil {
-		log.Println("推送数据失败,错误信息为:", err)
+		log.Warn("推送数据失败,错误信息为:", err)
 	}
 }
 
@@ -335,25 +331,6 @@ func checkGoodsExist(gid string) (res map[string]interface{}, err error) {
 	return info, nil
 }
 
-func initUserAgent() {
-	f, err := ioutil.ReadFile(path.Dir(os.Args[0]) + "/ua.txt")
-	if err != nil {
-		log.Fatalln("无法读取useragent文件,确实ua.txt")
-	}
-
-	useragents = strings.Split(string(f), "\n")
-}
-
-func getUserAgent() string {
-	if len(useragents) == 0 {
-		return ""
-	}
-
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	index := r.Intn(len(useragents))
-	return useragents[index]
-}
-
 func initHttpProxy() {
 	httpproxys = make([]string, 0, 10)
 	keys := iniFile.Section("httpproxy").Keys()
@@ -394,4 +371,8 @@ func checkProxyHealth() {
 			httpproxys = tmpProxy
 		}
 	}
+}
+
+func initGrabFactory() {
+	grabFactory = NewFactory(200, 100)
 }

@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -23,17 +22,12 @@ import (
 	"github.com/ngaut/log"
 )
 
-type GClient struct {
-	sync.Mutex
-	Client *http.Client
-}
-
 var (
-	client *GClient
+	client *http.Client
 )
 
 func init() {
-	client = &GClient{Client: buildClient()}
+	client = buildClient()
 }
 
 func buildClient() *http.Client {
@@ -87,7 +81,6 @@ func ParseNode(h string) (*goquery.Document, error) {
 
 //抓取淘宝商品页面
 func GrabTaoHTML(url string) string {
-	client := buildClient()
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Error(err)
