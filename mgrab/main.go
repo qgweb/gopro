@@ -9,14 +9,13 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ngaut/log"
 	"github.com/nsqio/go-nsq"
 
 	"github.com/qgweb/gopro/lib/encrypt"
-
-	"sync/atomic"
 
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
@@ -27,14 +26,22 @@ type QueueData struct {
 	Px   string
 }
 
+type MapGoods struct {
+	sync.Mutex
+	Goods []map[string]interface{}
+}
+
+func NewMapGoods(length int) *MapGoods {
+	return &MapGoods{Goods: make([]map[string]interface{}, 0, length)}
+}
+
 var (
 	iniFile     *ini.File
 	conf        = flag.String("conf", "conf.ini", "conf.ini")
 	err         error
-	queueSize   = 10
+	queueSize   = 1
 	dataQueue   = make(chan QueueData, queueSize)
 	grabFactory *GrabFactory
-	dealNum     int64
 )
 
 func init() {
@@ -52,7 +59,6 @@ func init() {
 	initCateInfo()
 	initHttpProxy()
 	initNsqConn()
-	initGrabFactory()
 }
 
 func bootstrap(px string) {
@@ -103,71 +109,78 @@ func dispath(data url.Values, px string) {
 		//return
 	}
 
-	data.Set("ua", encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Decode(data.Get("ua")))
+	data.Set("ua", encrypt.DefaultBase64.Decode(data.Get("ua")))
 	uidsAry := strings.Split(data.Get("uids"), ",")
 
-	ginfoAry := make([]map[string]interface{}, 0, len(uidsAry))
-	info := make(map[string]interface{})
-	//log.Error(len(uidsAry))
-	bt := time.Now()
+	ginfoAry := NewMapGoods(len(uidsAry))
 
-	dn := &DockerNode{}
-	dn.Size = len(uidsAry)
-	dn.InputPipe = make(chan string, dn.Size)
-	dn.OutputPipe = make(chan Goods, dn.Size)
-	dn.NoticeChan = make(chan bool)
+	info := make(map[string]interface{})
+	log.Error(len(uidsAry))
+	bt := time.Now()
+	wg := sync.WaitGroup{}
 
 	for i := 0; i < len(uidsAry); i++ {
-		dn.InputPipe <- uidsAry[i]
+		wg.Add(1)
+		go func(gid string) {
+			defer func() {
+				if msg := recover(); msg != nil {
+					log.Error(msg)
+				}
+			}()
+
+			//判断是否存在
+			ginfo, err := checkGoodsExist(gid)
+			if err == mgo.ErrNotFound {
+				//抓取
+				ginfo = GrabGoodsInfo(gid)
+				if ginfo != nil {
+					ginfo["exists"] = 0
+				}
+			} else {
+				ginfo["exists"] = 1
+			}
+
+			ginfoAry.Lock()
+			ginfoAry.Goods = append(ginfoAry.Goods, ginfo)
+			ginfoAry.Unlock()
+			wg.Done()
+		}(uidsAry[i])
 	}
 
-	grabFactory.Add(dn)
-	//t := time.NewTimer(time.Second * 30)
-	select {
-	case <-dn.NoticeChan:
-		log.Error("recive msg")
-		for v := range dn.OutputPipe {
-			ginfoAry = append(ginfoAry, v)
-		}
-		break
-		//	case <-t.C: //超时
-		//		log.Error("chaoshi")
-		//		return
-	}
-
+	wg.Wait()
 	log.Debug(time.Now().Sub(bt).Seconds())
 
 	for k, _ := range data {
 		info[k] = data.Get(k)
 	}
 
-	info["ginfos"] = ginfoAry
+	info["ginfos"] = ginfoAry.Goods
 
 	j, err := json.Marshal(&info)
 	if err != nil {
 		log.Warn("err")
 		return
 	}
-	dealNum = atomic.AddInt64(&dealNum, -1)
-	return
+
 	pushMsgToNsq(j)
 }
 
 //循环读取队列
 func loopQueue() {
+	wg := sync.WaitGroup{}
 	for {
-		// if len(dataQueue) == queueSize {
-		// 	log.Error(len(dataQueue))
-		// 	for i := 0; i < queueSize; i++ {
-		// 		d := <-dataQueue
-		// 		dispath(d.Data, d.Px)
-		// 	}
-		// }
-		select {
-		case d := <-dataQueue:
-			dealNum = atomic.AddInt64(&dealNum, 1)
-			go dispath(d.Data, d.Px)
-			//time.Sleep(time.Second)
+		if len(dataQueue) == queueSize {
+			for i := 0; i < queueSize; i++ {
+				wg.Add(1)
+				go func() {
+					d := <-dataQueue
+					dispath(d.Data, d.Px)
+					wg.Done()
+				}()
+			}
+			wg.Wait()
+			r := rand.New(rand.NewSource(time.Now().UnixNano()))
+			time.Sleep(time.Millisecond * time.Duration(r.Intn(1500)+1000))
 		}
 	}
 }
@@ -178,41 +191,8 @@ func main() {
 	//go bootstrap("_ad")
 	//go bootstrap("_ck")
 	go bootstrapNsq("_ad")
-	//go bootstrapNsq("_ck")
+	go bootstrapNsq("_ck")
 	go loopQueue()
 	//go checkProxyHealth()
-	go grabFactory.Push()
-	go func() {
-		for {
-			grabFactory.Grab(func(gid string) Goods {
-				defer func() {
-					if msg := recover(); msg != nil {
-						log.Error(msg)
-					}
-				}()
-
-				//判断是否存在
-				ginfo, err := checkGoodsExist(gid)
-				if err == mgo.ErrNotFound {
-					//抓取
-					ginfo = GrabGoodsInfo(gid)
-					if ginfo != nil {
-						ginfo["exists"] = 0
-					}
-				} else {
-					ginfo["exists"] = 1
-				}
-				return Goods(ginfo)
-			})
-			//	time.Sleep(time.Second)
-		}
-	}()
-
-	go func() {
-		for {
-			log.Error("========", dealNum, "===========")
-			time.Sleep(time.Second * 2)
-		}
-	}()
 	select {}
 }

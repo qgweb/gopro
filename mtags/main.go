@@ -5,8 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"runtime"
+
+	"github.com/ngaut/log"
 
 	"gopkg.in/ini.v1"
 
@@ -22,12 +23,12 @@ func init() {
 	flag.Parse()
 	confData, err := ioutil.ReadFile(*conf)
 	if err != nil {
-		log.Fatalln("读取配置文件出错,错误信息为:", err)
+		log.Fatal("读取配置文件出错,错误信息为:", err)
 	}
 
 	iniFile, err = ini.Load(confData)
 	if err != nil {
-		log.Fatalln("读取配置文件内容出错,错误信息为:", err)
+		log.Fatal("读取配置文件内容出错,错误信息为:", err)
 	}
 }
 
@@ -38,7 +39,7 @@ func (th *TailHandler) HandleMessage(m *nsq.Message) error {
 	data := &CombinationData{}
 	err := json.Unmarshal(m.Body, data)
 	if err != nil {
-		log.Println("数据解析出错,错误信息为:", err)
+		log.Error("数据解析出错,错误信息为:", err)
 		return err
 	}
 
@@ -57,7 +58,7 @@ func bootstrap() {
 	)
 	cus, err := nsq.NewConsumer(key, "goods", nsq.NewConfig())
 	if err != nil {
-		log.Fatalln("连接nsq失败,错误信息为:", err)
+		log.Fatal("连接nsq失败,错误信息为:", err)
 	}
 
 	cus.AddHandler(&TailHandler{})

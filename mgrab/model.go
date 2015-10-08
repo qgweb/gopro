@@ -139,7 +139,7 @@ LABEL:
 
 	if strings.Contains(title, "访问受限") {
 		log.Error("访问受限,id为", gid)
-		
+		time.Sleep(time.Minute*2)
 		goto LABEL
 		return nil
 	}

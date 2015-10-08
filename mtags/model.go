@@ -6,15 +6,19 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ngaut/log"
+
 	gs "github.com/qgweb/gopro/lib/grab"
 
+	"github.com/qgweb/gopro/lib/encrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 var (
-	mdbsession *mgo.Session
-	mux        sync.Mutex
+	mdbsession    *mgo.Session
+	mdbputsession *mgo.Session
+	mux           sync.Mutex
 )
 
 type Goods struct {
@@ -41,6 +45,13 @@ type CombinationData struct {
 	Date   string  `json:"date"`
 	Uids   string  `json:"uids"`
 	Ginfos []Goods `json:"ginfos"`
+}
+
+type UserLocus struct {
+	AD     string
+	UA     string
+	Hour   string
+	TagIds []string
 }
 
 //分配数据
@@ -138,6 +149,14 @@ func AddUidCids(param map[string]string) {
 		sess.DB(modb).C(t).Upsert(bson.M{"ad": param["ad"], "ua": param["ua"], "date": d},
 			bson.M{"$set": bson.M{c: param["cids"]}})
 
+		//合并到用户轨迹上
+		userLocusCombine(UserLocus{
+			AD:     param["ad"],
+			Hour:   param["clock"],
+			TagIds: strings.Split(param["cids"], ","),
+			UA:     encrypt.DefaultBase64.Encode(param["ua"]),
+		})
+
 		//存储对应的店铺信息
 		t = tableName + "_shop"
 		for _, v := range strings.Split(param["shops"], ",") {
@@ -191,6 +210,48 @@ func tagFrequencyRecord(cookie string, cids string) {
 		bson.M{"cookie": cookie, "cids": bms, "date": time.Now().Format("2006-01-02 15:04:05")})
 }
 
+// 用户电商轨迹合并到投放用户轨迹
+func userLocusCombine(ul UserLocus) {
+	sess := GetPutSession()
+	defer sess.Close()
+
+	var (
+		modb    = iniFile.Section("mongo-put").Key("db").String()
+		motable = "useraction"
+		tags    = make([]bson.M, 0, len(ul.TagIds))
+		day     = time.Now().Format("20060102")
+		info    map[string]interface{}
+	)
+
+	for _, v := range ul.TagIds {
+		tags = append(tags, bson.M{
+			"tagmongo": "0",
+			"tagId":    v,
+			"tagType":  "1",
+		})
+	}
+	log.Error(ul)
+	err := sess.DB(modb).C(motable).Find(bson.M{"AD": ul.AD, "UA": ul.UA,
+		"hour": ul.Hour, "day": day}).One(&info)
+	if err == mgo.ErrNotFound {
+		//插入
+		sess.DB(modb).C(motable).Insert(bson.M{
+			"domainId": "0",
+			"AD":       ul.AD,
+			"UA":       ul.UA,
+			"hour":     ul.Hour,
+			"day":      time.Now().Format("20060102"),
+			"tag":      tags,
+		})
+	}
+
+	if err == nil {
+		//更新
+		sess.DB(modb).C(motable).Upsert(bson.M{"AD": ul.AD, "UA": ul.UA, "hour": ul.Hour,
+			"day": day}, bson.M{"$push": bson.M{"tag": bson.M{"$each": tags}}})
+	}
+}
+
 //获取mongo数据库链接
 func GetSession() *mgo.Session {
 	mux.Lock()
@@ -208,10 +269,43 @@ func GetSession() *mgo.Session {
 		var err error
 		mdbsession, err = mgo.Dial(fmt.Sprintf("%s:%s@%s:%s/%s", mouser, mopwd, mohost, moport, modb))
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 	//高并发下会关闭连接,ping下会恢复
 	mdbsession.Ping()
 	return mdbsession.Copy()
+}
+
+//获取mongo数据库链接
+func GetPutSession() *mgo.Session {
+	mux.Lock()
+	defer mux.Unlock()
+
+	var (
+		mouser = iniFile.Section("mongo-put").Key("user").String()
+		mopwd  = iniFile.Section("mongo-put").Key("pwd").String()
+		mohost = iniFile.Section("mongo-put").Key("host").String()
+		moport = iniFile.Section("mongo-put").Key("port").String()
+		modb   = iniFile.Section("mongo-put").Key("db").String()
+	)
+
+	if mdbputsession == nil {
+		var err error
+
+		mdbputsession, err = mgo.Dial(fmt.Sprintf("%s%s:%s/%s", func() string {
+			if mouser == "" && mopwd == "" {
+				return ""
+			} else {
+				return mouser + ":" + mopwd + "@"
+			}
+		}(), mohost, moport, modb))
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	//高并发下会关闭连接,ping下会恢复
+	mdbputsession.Ping()
+	return mdbputsession.Copy()
 }
