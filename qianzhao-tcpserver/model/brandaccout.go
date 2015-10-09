@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	BROAD_TABLE_NAME = "211su_broadband"
+	BROAD_TABLE_NAME = "221su_broadband"
 )
 
 //宽带账户|属地|

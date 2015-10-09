@@ -69,7 +69,7 @@ func (this *Ebit) SpeedupOpen(ctx *echo.Context) error {
 
 	req := httplib.Post(EBIT_BASE_URL + "speedup/opn")
 	req.JsonBody(map[string]string{
-		"app ":      APP_KEY,
+		"app":       APP_KEY,
 		"secret":    secret,
 		"timestamp": timestamp,
 		"ip_addr":   ip,

@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	BROADRECORD_TABLE_NAME = "211su_broadband_record"
+	BROADRECORD_TABLE_NAME = "221su_broadband_record"
 )
 
 // CREATE TABLE `211su_broadband_record` (
