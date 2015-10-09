@@ -24,9 +24,9 @@ func NewUserTraceCli() cli.Command {
 		Usage:   "生成用户最近3天浏览轨迹,供九旭精准投放",
 		Action: func(c *cli.Context) {
 			defer func() {
-				if msg := recover(); msg != nil {
-					log.Error(msg)
-				}
+				//				if msg := recover(); msg != nil {
+				//					log.Error(msg)
+				//				}
 			}()
 
 			// 获取配置文件
@@ -60,19 +60,21 @@ func NewUserTraceCli() cli.Command {
 
 func (this *UserTrace) Do(c *cli.Context) {
 	var (
-		date  = time.Now()
-		day   = date.Format("20060102")
-		hour  = convert.ToString(date.Hour() - 1)
-		b1day = date.AddDate(0, 0, -1).Format("20060102") //1天前
-		b2day = date.AddDate(0, 0, -2).Format("20060102") //2天前
-		b3day = date.AddDate(0, 0, -3).Format("20060102") //3天前
-		sess  = this.mp.Get()
-		db    = this.iniFile.Section("mongo").Key("db").String()
-		table = "useraction"
-		list  []map[string]interface{}
-		list1 []map[string]interface{}
-		list2 []map[string]interface{}
-		list3 []map[string]interface{}
+		date      = time.Now()
+		day       = date.Format("20060102")
+		hour      = convert.ToString(date.Hour() - 1)
+		b1day     = date.AddDate(0, 0, -1).Format("20060102") //1天前
+		b2day     = date.AddDate(0, 0, -2).Format("20060102") //2天前
+		b3day     = date.AddDate(0, 0, -3).Format("20060102") //3天前
+		sess      = this.mp.Get()
+		db        = this.iniFile.Section("mongo").Key("db").String()
+		table     = "useraction"
+		table_put = "useraction_put"
+		list_put  []interface{}
+		list      []map[string]interface{}
+		list1     []map[string]interface{}
+		list2     []map[string]interface{}
+		list3     []map[string]interface{}
 	)
 
 	// 当天前一个小时前的数据
@@ -96,28 +98,35 @@ func (this *UserTrace) Do(c *cli.Context) {
 		log.Error(err)
 	}
 
-	appendFun := func(l []map[string]interface{}) {
+	var appendFun = func(l []map[string]interface{}) {
 		for _, v := range l {
-			for _, v1 := range list {
-				if v["AD"] == v1["AD"] && v["UA"] == v1["UA"] {
-					if _, ok := v["tags"]; !ok {
-						v["tags"] = make([]bson.M, 0, 10)
-					}
-
-					// 去重
-					for _, v2 := range v["tag"].([]bson.M) {
-						ise := false
-						for _, v3 := range v1["tag"].([]bson.M) {
-							if v2["tagId"] == v3["tagId"] {
-								ise = true
+			ise := false
+			for k, v1 := range list {
+				if v["UA"] == v1["UA"] && v["AD"] == v1["AD"] {
+					//去重
+					for _, tv := range v["tag"].([]interface{}) {
+						isee := false
+						tvm := tv.(map[string]interface{})
+						for _, tv1 := range v1["tag"].([]interface{}) {
+							tv1m := tv1.(map[string]interface{})
+							if tvm["tagId"] == tv1m["tagId"] {
+								isee = true
+								break
 							}
 						}
-
-						if !ise {
-							v1["tag"] = append(v1["tag"].([]bson.M), v2)
+						if !isee {
+							list[k]["tag"] = append(list[k]["tag"].([]interface{}), tvm)
 						}
 					}
+					ise = true
 				}
+			}
+			if !ise {
+				list = append(list, bson.M{
+					"UA":  v["UA"],
+					"AD":  v["AD"],
+					"tag": v["tag"],
+				})
 			}
 		}
 	}
@@ -127,7 +136,14 @@ func (this *UserTrace) Do(c *cli.Context) {
 	appendFun(list2)
 	appendFun(list3)
 
-	log.Info(b2day, day, b3day)
-	log.Info(list)
+	//更新投放表
+	list_put = make([]interface{}, 0, len(list))
+	for _, v := range list {
+		list_put = append(list_put, v)
+	}
+
+	sess.DB(db).C(table_put).Remove(bson.M{})
+	sess.DB(db).C(table_put).Insert(list_put...)
 	sess.Close()
+	log.Info("ok")
 }
