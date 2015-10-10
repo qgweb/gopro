@@ -43,7 +43,7 @@ type BroadBand struct {
 
 // 开启
 func (this *BroadBand) Start(ctx *echo.Context) error {
-	udata, err := this.userQuery(ctx)
+	udata, err := this.UserQuery(ctx)
 	if err != nil {
 		return ctx.JSON(200, map[string]string{
 			"code": err.Code,
@@ -102,7 +102,7 @@ func (this *BroadBand) ResetTime(ctx *echo.Context) error {
 }
 
 // 用户宽带查询(username string, areacode string)
-func (this *BroadBand) userQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
+func (this *BroadBand) UserQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
 	var (
 		ip = ctx.Request().RemoteAddr
 		//ip = "121.237.226.1:11137"

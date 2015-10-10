@@ -49,6 +49,11 @@ func Router(e *echo.Echo) {
 	e.Post("/broadbrand/start", (&controller.BroadBand{}).Start)
 	e.Get("/broadbrand/resettime", (&controller.BroadBand{}).ResetTime)
 	e.Post("/version/update", (&controller.Index{}).Update)
+
+	//// 统计
+	e.Get("/download", (&controller.Statistics{}).Download)
+	e.Post("/stats/day", (&controller.Statistics{}).DayActivity)
+	e.Post("/stats/sidbar", (&controller.Statistics{}).SideBar)
 }
 
 //// 秒速浏览器用户注册

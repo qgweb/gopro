@@ -11,3 +11,201 @@
 2015/09/28 20:43:57 logger.go:38: [info] POST /version/update [32m200[0m 25.064791ms 88
 2015/09/28 20:44:22 logger.go:38: [info] POST /version/update [32m200[0m 2.001518ms 88
 2015/09/28 20:44:42 logger.go:38: [info] POST /version/update [32m200[0m 1.943549ms 98
+2015/10/10 15:55:11 logger.go:38: [info] GET /download [33m404[0m 18.743µs 0
+2015/10/10 15:56:24 logger.go:38: [info] GET /download [33m404[0m 21.233µs 0
+2015/10/10 15:56:47 logger.go:38: [info] GET /download [32m200[0m 16.317µs 0
+2015/10/10 15:56:53 logger.go:38: [info] GET /download [32m200[0m 14.876µs 0
+2015/10/10 15:57:11 logger.go:38: [info] GET /download [32m200[0m 11.923µs 0
+2015/10/10 15:57:21 logger.go:38: [info] GET /download [32m200[0m 22.829µs 3
+2015/10/10 15:57:33 logger.go:38: [info] GET /download [32m200[0m 26.439µs 26
+2015/10/10 15:57:52 logger.go:38: [info] GET /download [32m200[0m 24.214µs 2
+2015/10/10 15:58:04 logger.go:38: [info] GET /download [32m200[0m 21.763µs 2
+2015/10/10 15:58:06 logger.go:38: [info] GET /download [32m200[0m 18.216µs 2
+2015/10/10 15:58:10 logger.go:38: [info] GET /download [32m200[0m 16.403µs 2
+2015/10/10 15:58:39 logger.go:38: [info] GET /download [32m200[0m 23.017µs 2
+2015/10/10 16:00:33 logger.go:38: [info] POST /download [33m404[0m 155.708µs 10
+2015/10/10 16:01:00 logger.go:38: [info] GET /download [32m200[0m 20.549µs 26
+2015/10/10 16:01:16 broadband.go:124: [info] -998|| 
+2015/10/10 16:01:16 statistics.go:69: [warning] &{5000 程序发生异常} 
+2015/10/10 16:01:16 logger.go:38: [info] GET /download [36m302[0m 656.553098ms 43
+2015/10/10 16:01:29 broadband.go:124: [info] -998|| 
+2015/10/10 16:01:29 statistics.go:69: [warning] &{5000 程序发生异常} 
+2015/10/10 16:01:36 logger.go:38: [info] GET /download [36m302[0m 6.979940178s 43
+2015/10/10 16:02:09 broadband.go:124: [info] -998|| 
+2015/10/10 16:02:09 statistics.go:69: [warning] &{5000 程序发生异常} 
+2015/10/10 16:02:10 logger.go:38: [info] GET /download [36m302[0m 423.947859ms 43
+2015/10/10 16:02:48 logger.go:38: [info] GET /download [32m200[0m 6.75250949s 0
+2015/10/10 16:02:53 logger.go:38: [info] GET /download [32m200[0m 476.5524ms 0
+2015/10/10 16:05:49 statistics.go:77: [error] 127.0.0.1 
+2015/10/10 16:05:50 logger.go:38: [info] GET /download [32m200[0m 479.149567ms 0
+2015/10/10 16:05:54 statistics.go:77: [error] 127.0.0.1 
+2015/10/10 16:06:00 logger.go:38: [info] GET /download [32m200[0m 6.29125258s 0
+2015/10/10 16:07:27 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:07:40 logger.go:38: [info] GET /download [32m200[0m 12.555029562s 0
+2015/10/10 16:07:52 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:07:52 logger.go:38: [info] GET /download [32m200[0m 249.45471ms 0
+2015/10/10 16:07:52 logger.go:38: [info] GET /favicon.ico [32m200[0m 4.241315ms 0
+2015/10/10 16:08:06 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:08:12 logger.go:38: [info] GET /download [32m200[0m 6.321101933s 20
+2015/10/10 16:08:12 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.451756ms 0
+2015/10/10 16:08:22 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:08:22 logger.go:38: [info] GET /download [32m200[0m 19.89785ms 2
+2015/10/10 16:08:22 logger.go:38: [info] GET /favicon.ico [32m200[0m 10.196847ms 0
+2015/10/10 16:09:04 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:09:04 statistics.go:79: [debug] --- 127.0.0.1 
+2015/10/10 16:09:04 logger.go:38: [info] GET /download [32m200[0m 287.194289ms 2
+2015/10/10 16:09:18 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:09:18 statistics.go:79: [debug] --- 127.0.0.1 
+2015/10/10 16:09:27 logger.go:38: [info] GET /download [32m200[0m 9.556308639s 2
+2015/10/10 16:09:28 logger.go:38: [info] GET /favicon.ico [32m200[0m 4.763441ms 0
+2015/10/10 16:10:40 statistics.go:80: [error] 127.0.0.1 
+2015/10/10 16:10:40 statistics.go:81: [debug] --- 127.0.0.1 
+2015/10/10 16:10:53 logger.go:38: [info] GET /download [32m200[0m 13.337268883s 2
+2015/10/10 16:10:53 logger.go:38: [info] GET /favicon.ico [32m200[0m 5.104444ms 0
+2015/10/10 16:11:08 statistics.go:80: [error] 127.0.0.1 
+2015/10/10 16:11:08 statistics.go:81: [debug] --- 127.0.0.1 
+2015/10/10 16:11:08 logger.go:38: [info] GET /download [32m200[0m 74.278266ms 2
+2015/10/10 16:11:09 logger.go:38: [info] GET /favicon.ico [32m200[0m 5.899258ms 0
+2015/10/10 16:12:52 logger.go:38: [info] GET /download [32m200[0m 24.848831ms 2
+2015/10/10 16:12:52 logger.go:38: [info] GET /favicon.ico [32m200[0m 5.677824ms 0
+2015/10/10 16:13:26 logger.go:38: [info] GET /download [32m200[0m 125.062573ms 2
+2015/10/10 16:13:27 logger.go:38: [info] GET /favicon.ico [32m200[0m 4.714125ms 0
+2015/10/10 16:13:49 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:13:52 logger.go:38: [info] GET /download [32m200[0m 3.059138156s 2
+2015/10/10 16:13:52 logger.go:38: [info] GET /favicon.ico [32m200[0m 10.413174ms 0
+2015/10/10 16:13:53 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:13:59 logger.go:38: [info] GET /download [32m200[0m 6.318621706s 2
+2015/10/10 16:14:00 logger.go:38: [info] GET /favicon.ico [32m200[0m 67.239µs 0
+2015/10/10 16:14:32 statistics.go:78: [error] 127.0.0.1 
+2015/10/10 16:14:39 logger.go:38: [info] GET /download [32m200[0m 6.308612541s 2
+2015/10/10 16:14:39 logger.go:38: [info] GET /favicon.ico [32m200[0m 61.114µs 0
+2015/10/10 16:15:29 logger.go:38: [info] GET /download [32m200[0m 21.30606ms 2
+2015/10/10 16:15:30 logger.go:38: [info] GET /favicon.ico [32m200[0m 4.874449ms 0
+2015/10/10 16:15:32 logger.go:38: [info] GET /download [32m200[0m 26.076022ms 2
+2015/10/10 16:15:32 logger.go:38: [info] GET /favicon.ico [32m200[0m 67.063µs 0
+2015/10/10 16:15:53 broadband.go:124: [info] -998|| 
+2015/10/10 16:15:53 statistics.go:69: [warning] &{5000 程序发生异常} 
+2015/10/10 16:15:53 logger.go:38: [info] GET /download [36m302[0m 213.335915ms 43
+2015/10/10 16:17:59 broadband.go:124: [info] -998|| 
+2015/10/10 16:17:59 statistics.go:70: [warning] &{5000 程序发生异常} 
+2015/10/10 16:18:05 logger.go:38: [info] GET /download [36m302[0m 6.775979425s 43
+2015/10/10 16:20:30 logger.go:38: [info] GET /download [36m302[0m 44.456µs 60
+2015/10/10 16:20:30 broadband.go:124: [info] -998|| 
+2015/10/10 16:20:30 statistics.go:72: [warning] &{5000 程序发生异常} 
+2015/10/10 16:20:59 statistics.go:55: [error] http://www.baidu.com/qianzhao_1_1.exe 
+2015/10/10 16:20:59 logger.go:38: [info] GET /download [36m302[0m 96.938µs 60
+2015/10/10 16:21:00 broadband.go:124: [info] -998|| 
+2015/10/10 16:21:00 statistics.go:73: [warning] &{5000 程序发生异常} 
+2015/10/10 16:21:33 statistics.go:55: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:21:33 logger.go:38: [info] GET /download [36m302[0m 99.715µs 60
+2015/10/10 16:21:33 broadband.go:124: [info] -998|| 
+2015/10/10 16:21:33 statistics.go:73: [warning] &{5000 程序发生异常} 
+2015/10/10 16:21:46 statistics.go:55: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:21:46 logger.go:38: [info] GET /download [36m302[0m 100.653µs 60
+2015/10/10 16:21:46 broadband.go:124: [info] -998|| 
+2015/10/10 16:21:46 statistics.go:73: [warning] &{5000 程序发生异常} 
+2015/10/10 16:21:53 statistics.go:55: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:21:53 logger.go:38: [info] GET /download [36m302[0m 85.718µs 60
+2015/10/10 16:21:53 broadband.go:124: [info] -998|| 
+2015/10/10 16:21:53 statistics.go:73: [warning] &{5000 程序发生异常} 
+2015/10/10 16:22:20 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:22:20 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:22:20 logger.go:38: [info] GET /download [36m302[0m 121.684µs 60
+2015/10/10 16:22:20 broadband.go:124: [info] -998|| 
+2015/10/10 16:22:20 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:22:27 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:22:27 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:22:27 logger.go:38: [info] GET /download [36m302[0m 108.728µs 60
+2015/10/10 16:22:27 broadband.go:124: [info] -998|| 
+2015/10/10 16:22:27 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:22:45 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:22:45 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:22:45 logger.go:38: [info] GET /download [36m302[0m 101.13µs 60
+2015/10/10 16:22:46 broadband.go:124: [info] -998|| 
+2015/10/10 16:22:46 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:23:14 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:23:14 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:23:14 logger.go:38: [info] GET /download [36m302[0m 130.811µs 60
+2015/10/10 16:23:14 broadband.go:124: [info] -998|| 
+2015/10/10 16:23:14 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:23:28 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:23:28 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:23:28 logger.go:38: [info] GET /download [36m302[0m 124.039µs 60
+2015/10/10 16:23:29 broadband.go:124: [info] -998|| 
+2015/10/10 16:23:29 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:26:46 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:26:46 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:26:46 logger.go:38: [info] GET /download [36m302[0m 115.575µs 60
+2015/10/10 16:26:46 broadband.go:124: [info] -998|| 
+2015/10/10 16:26:46 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:26:57 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:26:57 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:26:57 logger.go:38: [info] GET /download [36m302[0m 105.861µs 60
+2015/10/10 16:26:57 broadband.go:124: [info] -998|| 
+2015/10/10 16:26:57 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:27:05 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:27:05 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:27:05 logger.go:38: [info] GET /download [36m302[0m 109.623µs 60
+2015/10/10 16:27:05 broadband.go:124: [info] -998|| 
+2015/10/10 16:27:05 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:27:05 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:27:05 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:27:05 logger.go:38: [info] GET /download [36m302[0m 104.879µs 60
+2015/10/10 16:27:05 broadband.go:124: [info] -998|| 
+2015/10/10 16:27:05 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:27:06 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:27:06 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:27:06 logger.go:38: [info] GET /download [36m302[0m 104.886µs 60
+2015/10/10 16:27:06 broadband.go:124: [info] -998|| 
+2015/10/10 16:27:06 statistics.go:74: [warning] &{5000 程序发生异常} 
+2015/10/10 16:27:40 statistics.go:62: [info] MQ==xxxx 
+2015/10/10 16:27:40 statistics.go:32: [error] 1 <nil> 
+2015/10/10 16:27:40 statistics.go:62: [info] MQ==xxxx 
+2015/10/10 16:27:40 statistics.go:62: [info] MQ==1xxx 
+2015/10/10 16:27:40 statistics.go:62: [info] MQ==1xxxx 
+2015/10/10 16:27:40 statistics.go:56: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:27:40 logger.go:38: [info] GET /download [36m302[0m 165.783µs 60
+2015/10/10 16:27:40 broadband.go:124: [info] -998|| 
+2015/10/10 16:27:40 statistics.go:75: [warning] &{5000 程序发生异常} 
+2015/10/10 16:28:37 logger.go:38: [info] GET /download [33m404[0m 22.007µs 0
+2015/10/10 16:28:46 statistics.go:55: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:28:46 logger.go:38: [info] GET /download [36m302[0m 109.484µs 60
+2015/10/10 16:28:46 broadband.go:124: [info] -998|| 
+2015/10/10 16:28:46 statistics.go:73: [warning] &{5000 程序发生异常} 
+2015/10/10 16:28:52 statistics.go:55: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:28:52 logger.go:38: [info] GET /download [36m302[0m 89.931µs 60
+2015/10/10 16:28:52 broadband.go:124: [info] -998|| 
+2015/10/10 16:28:52 statistics.go:73: [warning] &{5000 程序发生异常} 
+2015/10/10 16:28:59 statistics.go:55: [error] http://www.baidu.com/qgbrower_1_1.exe 
+2015/10/10 16:28:59 logger.go:38: [info] GET /download [36m302[0m 87.04µs 60
+2015/10/10 16:28:59 broadband.go:124: [info] -998|| 
+2015/10/10 16:28:59 statistics.go:73: [warning] &{5000 程序发生异常} 
+2015/10/10 16:47:04 logger.go:38: [info] POST //stats/day [33m404[0m 195.635µs 10
+2015/10/10 16:47:09 dayactivity.go:25: [error] Error 1054: Unknown column 'count' in 'field list' 
+2015/10/10 16:47:09 logger.go:38: [info] POST /stats/day [32m200[0m 4.213737ms 0
+2015/10/10 16:47:56 logger.go:38: [info] POST /stats/day [32m200[0m 85.994379ms 0
+2015/10/10 16:48:07 logger.go:38: [info] POST /stats/day [32m200[0m 61.068507ms 0
+2015/10/10 16:48:16 logger.go:38: [info] POST /stats/day [32m200[0m 68.274232ms 0
+2015/10/10 16:48:16 logger.go:38: [info] POST /stats/day [32m200[0m 62.557215ms 0
+2015/10/10 16:48:16 logger.go:38: [info] POST /stats/day [32m200[0m 63.101494ms 0
+2015/10/10 16:48:16 logger.go:38: [info] POST /stats/day [32m200[0m 57.997334ms 0
+2015/10/10 16:48:25 logger.go:38: [info] POST /stats/day [32m200[0m 73.734005ms 0
+2015/10/10 16:48:25 logger.go:38: [info] POST /stats/day [32m200[0m 25.751987ms 0
+2015/10/10 16:48:25 logger.go:38: [info] POST /stats/day [32m200[0m 27.635632ms 0
+2015/10/10 16:48:25 logger.go:38: [info] POST /stats/day [32m200[0m 26.675209ms 0
+2015/10/10 16:53:36 logger.go:38: [info] POST /stats/day [32m200[0m 60.63713ms 0
+2015/10/10 16:53:43 logger.go:38: [info] POST /stats/day [32m200[0m 63.165798ms 0
+2015/10/10 16:53:44 logger.go:38: [info] POST /stats/day [32m200[0m 71.690426ms 0
+2015/10/10 16:53:44 logger.go:38: [info] POST /stats/day [32m200[0m 64.245586ms 0
+2015/10/10 16:53:44 logger.go:38: [info] POST /stats/day [32m200[0m 24.516672ms 0
+2015/10/10 16:53:44 logger.go:38: [info] POST /stats/day [32m200[0m 28.442951ms 0
+2015/10/10 17:10:14 logger.go:38: [info] POST /stats/sidebar [33m404[0m 49.207µs 10
+2015/10/10 17:10:27 sidebar.go:37: [error] Error 1054: Unknown column 'favorite' in 'field list' 
+2015/10/10 17:10:27 logger.go:38: [info] POST /stats/sidbar [32m200[0m 4.699437ms 0
+2015/10/10 17:11:07 logger.go:38: [info] POST /stats/sidbar [32m200[0m 115.535065ms 0
+2015/10/10 17:11:13 logger.go:38: [info] POST /stats/sidbar [32m200[0m 34.525433ms 0
+2015/10/10 17:11:22 logger.go:38: [info] POST /stats/sidbar [32m200[0m 55.07083ms 0
+2015/10/10 17:11:33 logger.go:38: [info] POST /stats/sidbar [32m200[0m 56.499738ms 0
+2015/10/10 17:11:40 logger.go:38: [info] POST /stats/sidbar [32m200[0m 51.225921ms 0
+2015/10/10 17:11:46 logger.go:38: [info] POST /stats/sidbar [32m200[0m 74.885303ms 0
+2015/10/10 17:11:53 logger.go:38: [info] POST /stats/sidbar [32m200[0m 75.110761ms 0

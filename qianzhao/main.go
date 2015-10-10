@@ -7,23 +7,18 @@ package main
 
 import (
 	"fmt"
-	"html/template"
-	"io"
-
-	"github.com/ngaut/log"
-
-	"github.com/qgweb/gopro/qianzhao/common/config"
-	"github.com/qgweb/gopro/qianzhao/router"
-
 	"github.com/astaxie/beego/grace"
-
-	"os"
-
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
+	"github.com/ngaut/log"
+	"github.com/qgweb/gopro/qianzhao/common/config"
 	_ "github.com/qgweb/gopro/qianzhao/common/redis"
 	_ "github.com/qgweb/gopro/qianzhao/common/session"
 	_ "github.com/qgweb/gopro/qianzhao/model"
+	"github.com/qgweb/gopro/qianzhao/router"
+	"html/template"
+	"io"
+	"os"
 )
 
 const (
@@ -91,7 +86,6 @@ func main() {
 	router.Router(e)
 
 	e.SetRenderer(t)
-
 	grace.ListenAndServe(fmt.Sprintf("%s:%s", host, port), e)
 }
 

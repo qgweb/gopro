@@ -2,6 +2,8 @@ package model
 
 import (
 	"io/ioutil"
+	"math"
+	"strings"
 	"time"
 
 	"github.com/codegangsta/cli"
@@ -71,7 +73,7 @@ func (this *UserTrace) Do(c *cli.Context) {
 		table     = "useraction"
 		table_put = "useraction_put"
 		list_put  []interface{}
-		list      []map[string]interface{}
+		list      map[string][]map[string]interface{}
 		list1     []map[string]interface{}
 		list2     []map[string]interface{}
 		list3     []map[string]interface{}
@@ -93,57 +95,79 @@ func (this *UserTrace) Do(c *cli.Context) {
 
 	// 第前3天的小时数据
 	if err := sess.DB(db).C(table).Find(bson.M{"day": b3day, "hour": bson.M{
-		"$lte": hour, "$gte": "23"},
+		"$gte": hour, "$lte": "23"},
 	}).All(&list3); err != nil {
 		log.Error(err)
 	}
 
 	var appendFun = func(l []map[string]interface{}) {
 		for _, v := range l {
-			ise := false
-			for k, v1 := range list {
-				if v["UA"] == v1["UA"] && v["AD"] == v1["AD"] {
-					//去重
-					for _, tv := range v["tag"].([]interface{}) {
-						isee := false
-						tvm := tv.(map[string]interface{})
-						for _, tv1 := range v1["tag"].([]interface{}) {
-							tv1m := tv1.(map[string]interface{})
-							if tvm["tagId"] == tv1m["tagId"] {
-								isee = true
-								break
-							}
-						}
-						if !isee {
-							list[k]["tag"] = append(list[k]["tag"].([]interface{}), tvm)
+			key := v["AD"].(string) + "_" + v["UA"].(string)
+			if tag, ok := list[key]; ok {
+				//去重
+				for _, tv := range v["tag"].([]interface{}) {
+					isee := false
+					tvm := tv.(map[string]interface{})
+					for _, tv1 := range tag {
+						if tvm["tagId"] == tv1["tagId"] {
+							isee = true
+							break
 						}
 					}
-					ise = true
+					if !isee {
+						list[key] = append(list[key], tvm)
+					}
 				}
-			}
-			if !ise {
-				list = append(list, bson.M{
-					"UA":  v["UA"],
-					"AD":  v["AD"],
-					"tag": v["tag"],
-				})
+			} else {
+				tag := make([]map[string]interface{}, 0, len(v["tag"].([]interface{})))
+				for _, vv := range v["tag"].([]interface{}) {
+					tag = append(tag, vv.(map[string]interface{}))
+				}
+				list[key] = tag
 			}
 		}
 	}
 
 	// 合并数据
+	list = make(map[string][]map[string]interface{})
+	log.Error(len(list1))
+	log.Error(len(list2))
+	log.Error(len(list3))
 	appendFun(list1)
+	log.Error(len(list))
 	appendFun(list2)
+	log.Error(len(list))
 	appendFun(list3)
+	log.Error(len(list))
 
 	//更新投放表
 	list_put = make([]interface{}, 0, len(list))
-	for _, v := range list {
-		list_put = append(list_put, v)
+	for k, v := range list {
+		uaads := strings.Split(k, "_")
+		list_put = append(list_put, bson.M{
+			"AD":  uaads[0],
+			"UA":  uaads[1],
+			"tag": v,
+		})
 	}
 
 	sess.DB(db).C(table_put).DropCollection()
-	sess.DB(db).C(table_put).Insert(list_put...)
+	//批量插入
+	var (
+		size  = 10000
+		count = int(math.Ceil(float64(len(list_put)) / float64(size)))
+	)
+
+	for i := 1; i <= count; i++ {
+		end := (i-1)*size + size
+		if end > len(list_put) {
+			end = len(list_put)
+		}
+
+		sess.DB(db).C(table_put).Insert(list_put[(i-1)*size : end]...)
+		log.Error(i, size)
+	}
+
 	sess.Close()
 	log.Info("ok")
 }
