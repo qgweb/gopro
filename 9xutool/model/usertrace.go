@@ -142,7 +142,7 @@ func (this *UserTrace) Do(c *cli.Context) {
 		list_put = append(list_put, v)
 	}
 
-	sess.DB(db).C(table_put).Remove(bson.M{})
+	sess.DB(db).C(table_put).DropCollection()
 	sess.DB(db).C(table_put).Insert(list_put...)
 	sess.Close()
 	log.Info("ok")
