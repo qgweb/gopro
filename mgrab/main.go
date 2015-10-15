@@ -39,8 +39,10 @@ var (
 	iniFile     *ini.File
 	conf        = flag.String("conf", "conf.ini", "conf.ini")
 	err         error
-	queueSize   = 1
-	dataQueue   = make(chan QueueData, queueSize)
+	queueAdSize = 100000
+	queueCkSize = 1000
+	dataAdQueue = make(chan QueueData, queueAdSize)
+	dataCkQueue = make(chan QueueData, queueCkSize)
 	grabFactory *GrabFactory
 )
 
@@ -61,26 +63,26 @@ func init() {
 	initNsqConn()
 }
 
-func bootstrap(px string) {
-	for {
-		data := httpsqsQueue(px)
-		if data == nil {
-			time.Sleep(time.Minute)
-			continue
-		}
+// func bootstrap(px string) {
+// 	for {
+// 		data := httpsqsQueue(px)
+// 		if data == nil {
+// 			time.Sleep(time.Minute)
+// 			continue
+// 		}
 
-		//数据存放在队列中
-		nt := time.NewTicker(time.Minute * 10)
-		select {
-		case dataQueue <- QueueData{Data: data, Px: px}:
-		case <-nt.C:
-			log.Warn("队列超时")
-		}
+// 		//数据存放在队列中
+// 		nt := time.NewTicker(time.Minute * 10)
+// 		select {
+// 		case dataQueue <- QueueData{Data: data, Px: px}:
+// 		case <-nt.C:
+// 			log.Warn("队列超时")
+// 		}
 
-		seed := time.Duration(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(200))
-		time.Sleep(time.Millisecond * seed)
-	}
-}
+// 		seed := time.Duration(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(200))
+// 		time.Sleep(time.Millisecond * seed)
+// 	}
+// }
 
 // nsq版本
 func bootstrapNsq(px string) {
@@ -90,7 +92,9 @@ func bootstrapNsq(px string) {
 		port  = iniFile.Section("nsq").Key("port").String()
 	)
 
-	cus, err := nsq.NewConsumer(topic+px, topic, nsq.NewConfig())
+	cfg := nsq.NewConfig()
+
+	cus, err := nsq.NewConsumer(topic+px, topic, cfg)
 	if err != nil {
 		log.Fatal("连接nsq失败")
 	}
@@ -105,18 +109,12 @@ func bootstrapNsq(px string) {
 
 // 分配数据
 func dispath(data url.Values, px string) {
-	if px == "_ad" && data.Get("date") != time.Now().Format("2006-01-02") {
-		//return
-	}
-
 	data.Set("ua", encrypt.DefaultBase64.Decode(data.Get("ua")))
 	uidsAry := strings.Split(data.Get("uids"), ",")
 
 	ginfoAry := NewMapGoods(len(uidsAry))
 
 	info := make(map[string]interface{})
-	log.Error(len(uidsAry))
-	bt := time.Now()
 	wg := sync.WaitGroup{}
 
 	for i := 0; i < len(uidsAry); i++ {
@@ -148,7 +146,6 @@ func dispath(data url.Values, px string) {
 	}
 
 	wg.Wait()
-	log.Debug(time.Now().Sub(bt).Seconds())
 
 	for k, _ := range data {
 		info[k] = data.Get(k)
@@ -166,22 +163,46 @@ func dispath(data url.Values, px string) {
 }
 
 //循环读取队列
-func loopQueue() {
+func loopAdQueue() {
 	wg := sync.WaitGroup{}
 	for {
-		if len(dataQueue) == queueSize {
-			for i := 0; i < queueSize; i++ {
+		if len(dataAdQueue) >= 20 {
+			bt := time.Now()
+			for i := 0; i < 20; i++ {
 				wg.Add(1)
-				go func() {
-					d := <-dataQueue
+				go func(d QueueData) {
 					dispath(d.Data, d.Px)
 					wg.Done()
-				}()
+				}(<-dataAdQueue)
 			}
 			wg.Wait()
+			log.Info(time.Now().Sub(bt).Seconds())
 			r := rand.New(rand.NewSource(time.Now().UnixNano()))
 			time.Sleep(time.Millisecond * time.Duration(r.Intn(1500)+1000))
 		}
+		runtime.Gosched()
+	}
+}
+
+//循环读取队列
+func loopCkQueue() {
+	wg := sync.WaitGroup{}
+	for {
+		if len(dataCkQueue) >= 20 {
+			bt := time.Now()
+			for i := 0; i < 20; i++ {
+				wg.Add(1)
+				go func(d QueueData) {
+					dispath(d.Data, d.Px)
+					wg.Done()
+				}(<-dataCkQueue)
+			}
+			wg.Wait()
+			log.Info(time.Now().Sub(bt).Seconds())
+			r := rand.New(rand.NewSource(time.Now().UnixNano()))
+			time.Sleep(time.Millisecond * time.Duration(r.Intn(1500)+1000))
+		}
+		runtime.Gosched()
 	}
 }
 
@@ -192,7 +213,8 @@ func main() {
 	//go bootstrap("_ck")
 	go bootstrapNsq("_ad")
 	go bootstrapNsq("_ck")
-	go loopQueue()
+	go loopAdQueue()
+	go loopCkQueue()
 	//go checkProxyHealth()
 	select {}
 }

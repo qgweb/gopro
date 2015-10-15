@@ -5,7 +5,7 @@
     "depth": 2,
     "exclude": [],
     "include": [
-        "\\.(go|py|php|java|cpp|h|rb)$"
+        "\\.(go|py|php|java|cpp|h|rb|css|js|html)$"
     ],
     "env": {
         "POWERD_BY": "github.com/codeskyblue/fswatch"

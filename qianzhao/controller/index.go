@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"strconv"
-
 	"github.com/labstack/echo"
 	"github.com/qgweb/gopro/qianzhao/model"
 )
@@ -10,11 +8,11 @@ import (
 type Index struct {
 }
 
-//qianzhao-主版本号.次版本号.修订版本号-类型号-渠道号
+//qzbrower-主版本号.次版本号.修订版本号-类型号
 func (this *Index) Update(ctx *echo.Context) error {
 	var (
-		version  = ctx.Form("version")
-		btype    = ctx.Form("type")
+		version  = ctx.Query("version")
+		btype    = ctx.Query("type")
 		mversion = model.Version{}
 	)
 
@@ -30,8 +28,8 @@ func (this *Index) Update(ctx *echo.Context) error {
 	return ctx.JSON(200, map[string]interface{}{
 		"code": "200",
 		"msg":  "",
-		"data": map[string]string{
-			"is_update":    strconv.FormatBool(v.IsUpdate),
+		"data": map[string]interface{}{
+			"is_update":    v.IsUpdate,
 			"download_url": v.Url,
 			"update_page":  v.Update_page,
 		},

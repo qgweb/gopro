@@ -52,8 +52,7 @@ func (this *Statistics) Download(ctx *echo.Context) error {
 		dlmodel.AddRecord(dlmodel)
 	}()
 
-	durl := fmt.Sprintf("%s/qgbrower_%s_%s.exe", config.GetDefault().Key("download").String(), v, t)
-	log.Error(durl)
+	durl := fmt.Sprintf("%s/qzbrower_%s_%s.exe", config.GetDefault().Key("download").String(), v, t)
 	return ctx.Redirect(302, durl)
 }
 
@@ -82,13 +81,14 @@ func (this *Statistics) DayActivity(ctx *echo.Context) error {
 func (this *Statistics) SideBar(ctx *echo.Context) error {
 	var (
 		t        = ctx.Form("t")        // 类型
+		v        = ctx.Form("v")        //版本号
 		favorite = ctx.Form("favorite") //收藏夹
 		email    = ctx.Form("email")    //邮箱
 		yixin    = ctx.Form("yixin")    //易信
 		sbmodel  = &model.SideBar{}
 	)
 
-	if t == "" {
+	if t == "" || v == "" {
 		ctx.String(404, "")
 	}
 
@@ -137,7 +137,7 @@ func (this *Statistics) getAccountByIp(ctx *echo.Context) string {
 // 通过ip获取城市
 func (this *Statistics) getCityByIp(ip string) string {
 	url := "http://ip.taobao.com/service/getIpInfo.php?ip=" + ip
-	if data, err := httplib.Get(url).Bytes(); err != nil {
+	if data, err := httplib.Get(url).Bytes(); err == nil {
 		js, err := simplejson.NewJson(data)
 		if err != nil {
 			return ""

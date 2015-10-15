@@ -48,12 +48,17 @@ func Router(e *echo.Echo) {
 	//// 宽带（双速网）
 	e.Post("/broadbrand/start", (&controller.BroadBand{}).Start)
 	e.Get("/broadbrand/resettime", (&controller.BroadBand{}).ResetTime)
-	e.Post("/version/update", (&controller.Index{}).Update)
+	e.Get("/version/update", (&controller.Index{}).Update)
 
 	//// 统计
 	e.Get("/download", (&controller.Statistics{}).Download)
 	e.Post("/stats/day", (&controller.Statistics{}).DayActivity)
 	e.Post("/stats/sidbar", (&controller.Statistics{}).SideBar)
+
+	//// 反馈
+	e.Get("/feedback", (&controller.FeedBack{}).Index)
+	e.Post("/feedback/post", (&controller.FeedBack{}).Post)
+	e.Get("/feedback/pic", (&controller.FeedBack{}).Pic)
 }
 
 //// 秒速浏览器用户注册

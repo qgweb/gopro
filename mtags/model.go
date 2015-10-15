@@ -163,7 +163,6 @@ func AddUidCids(param map[string]string) {
 			sess.DB(modb).C(t).Upsert(bson.M{"ad": param["ad"], "ua": param["ua"], "date": d},
 				bson.M{"$addToSet": bson.M{"shop": bson.M{"id": v}}})
 		}
-
 	} else {
 		sess.DB(modb).C(tableName).Upsert(bson.M{"cookie": param["cookie"]},
 			bson.M{"$set": bson.M{"cids": param["cids"], "ad": param["ad"]}})
@@ -230,7 +229,7 @@ func userLocusCombine(ul UserLocus) {
 			"tagType":  "1",
 		})
 	}
-	log.Error(ul)
+
 	err := sess.DB(modb).C(motable).Find(bson.M{"AD": ul.AD, "UA": ul.UA,
 		"hour": ul.Hour, "day": day}).One(&info)
 	if err == mgo.ErrNotFound {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"runtime"
+	"time"
 
 	"github.com/ngaut/log"
 
@@ -15,8 +16,9 @@ import (
 )
 
 var (
-	conf    = flag.String("conf", "conf.ini", "配置文件")
-	iniFile *ini.File
+	conf      = flag.String("conf", "conf.ini", "配置文件")
+	iniFile   *ini.File
+	queueChan = make(chan *CombinationData, 20)
 )
 
 func init() {
@@ -43,8 +45,11 @@ func (th *TailHandler) HandleMessage(m *nsq.Message) error {
 		return err
 	}
 
-	//分配
-	dispath(data)
+	go dispath(data)
+
+	if time.Now().Minute()%2 == 0 {
+		time.Sleep(time.Minute * 2)
+	}
 
 	return nil
 }

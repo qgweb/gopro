@@ -66,11 +66,24 @@ func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 	}
 
 	//数据存放在队列中
+	if urlData.Get("date") != time.Now().Format("2006-01-02") {
+		return nil
+	}
+
 	nt := time.NewTicker(time.Minute * 10)
-	select {
-	case dataQueue <- QueueData{Data: urlData, Px: this.Px}:
-	case <-nt.C:
-		log.Error("队列超时")
+	if this.Px == "_ck" {
+		select {
+		case dataCkQueue <- QueueData{Data: urlData, Px: this.Px}:
+		case <-nt.C:
+			log.Error("队列超时")
+		}
+	}
+	if this.Px == "_ad" {
+		select {
+		case dataAdQueue <- QueueData{Data: urlData, Px: this.Px}:
+		case <-nt.C:
+			log.Error("队列超时")
+		}
 	}
 
 	return nil
@@ -139,7 +152,7 @@ LABEL:
 
 	if strings.Contains(title, "访问受限") {
 		log.Error("访问受限,id为", gid)
-		time.Sleep(time.Minute*2)
+		time.Sleep(time.Minute * 2)
 		goto LABEL
 		return nil
 	}
