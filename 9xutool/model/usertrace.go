@@ -21,9 +21,8 @@ type UserTrace struct {
 
 func NewUserTraceCli() cli.Command {
 	return cli.Command{
-		Name:    "user_trace_merge",
-		Aliases: []string{"a"},
-		Usage:   "生成用户最近3天浏览轨迹,供九旭精准投放",
+		Name:  "user_trace_merge",
+		Usage: "生成用户最近3天浏览轨迹,供九旭精准投放",
 		Action: func(c *cli.Context) {
 			defer func() {
 				//				if msg := recover(); msg != nil {
@@ -130,15 +129,9 @@ func (this *UserTrace) Do(c *cli.Context) {
 
 	// 合并数据
 	list = make(map[string][]map[string]interface{})
-	log.Error(len(list1))
-	log.Error(len(list2))
-	log.Error(len(list3))
 	appendFun(list1)
-	log.Error(len(list))
 	appendFun(list2)
-	log.Error(len(list))
 	appendFun(list3)
-	log.Error(len(list))
 
 	//更新投放表
 	list_put = make([]interface{}, 0, len(list))
