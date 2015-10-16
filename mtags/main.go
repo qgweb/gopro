@@ -13,12 +13,14 @@ import (
 	"gopkg.in/ini.v1"
 
 	"github.com/bitly/go-nsq"
+	"sync/atomic"
 )
 
 var (
 	conf      = flag.String("conf", "conf.ini", "配置文件")
 	iniFile   *ini.File
-	queueChan = make(chan *CombinationData, 20)
+	recvCount uint64
+	dealCount uint64
 )
 
 func init() {
@@ -45,12 +47,15 @@ func (th *TailHandler) HandleMessage(m *nsq.Message) error {
 		return err
 	}
 
+	recvCount = atomic.AddUint64(&recvCount, 1)
+
 	go dispath(data)
 
-	if time.Now().Minute()%2 == 0 {
-		time.Sleep(time.Minute * 2)
+	if atomic.LoadUint64(&recvCount)%400 == 0 {
+		time.Sleep(time.Minute * 1)
 	}
 
+	//log.Info("接收到数据:", atomic.LoadUint64(&recvCount), " | 处理数据:", atomic.LoadUint64(&dealCount))
 	return nil
 }
 

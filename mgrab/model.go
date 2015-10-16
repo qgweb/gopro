@@ -21,6 +21,7 @@ import (
 
 	"github.com/astaxie/beego/httplib"
 	"github.com/nsqio/go-nsq"
+	"sync/atomic"
 )
 
 var (
@@ -70,22 +71,16 @@ func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 		return nil
 	}
 
-	nt := time.NewTicker(time.Minute * 10)
-	if this.Px == "_ck" {
-		select {
-		case dataCkQueue <- QueueData{Data: urlData, Px: this.Px}:
-		case <-nt.C:
-			log.Error("队列超时")
-		}
-	}
-	if this.Px == "_ad" {
-		select {
-		case dataAdQueue <- QueueData{Data: urlData, Px: this.Px}:
-		case <-nt.C:
-			log.Error("队列超时")
-		}
+	recvCount = atomic.AddUint64(&recvCount, 1)
+
+	if atomic.LoadUint64(&recvCount)%20 == 0 {
+		//r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		//time.Sleep(+time.Second * time.Duration(15+r.Intn(30)))
 	}
 
+	dispath(urlData, this.Px)
+
+	log.Info("接收到数据:", atomic.LoadUint64(&recvCount), " | 处理数据:", atomic.LoadUint64(&dealCount))
 	return nil
 }
 

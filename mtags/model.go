@@ -13,6 +13,7 @@ import (
 	"github.com/qgweb/gopro/lib/encrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sync/atomic"
 )
 
 var (
@@ -83,6 +84,7 @@ func dispath(data *CombinationData) {
 		"ua": data.Ua, "cids": strings.Join(cids, ","),
 		"shops": strings.Join(shopids, ","),
 		"clock": data.Clock, "date": data.Date})
+	dealCount = atomic.AddUint64(&dealCount, 1)
 }
 
 // 添加店铺

@@ -4,21 +4,19 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/ngaut/log"
+	"github.com/nsqio/go-nsq"
 	"io/ioutil"
-	"math/rand"
 	"net/url"
 	"runtime"
 	"strings"
 	"sync"
-	"time"
-
-	"github.com/ngaut/log"
-	"github.com/nsqio/go-nsq"
 
 	"github.com/qgweb/gopro/lib/encrypt"
 
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
+	"sync/atomic"
 )
 
 type QueueData struct {
@@ -39,11 +37,9 @@ var (
 	iniFile     *ini.File
 	conf        = flag.String("conf", "conf.ini", "conf.ini")
 	err         error
-	queueAdSize = 100000
-	queueCkSize = 1000
-	dataAdQueue = make(chan QueueData, queueAdSize)
-	dataCkQueue = make(chan QueueData, queueCkSize)
 	grabFactory *GrabFactory
+	recvCount   uint64
+	dealCount   uint64
 )
 
 func init() {
@@ -155,55 +151,12 @@ func dispath(data url.Values, px string) {
 
 	j, err := json.Marshal(&info)
 	if err != nil {
-		log.Warn("err")
+		log.Warn(err)
 		return
 	}
 
 	pushMsgToNsq(j)
-}
-
-//循环读取队列
-func loopAdQueue() {
-	wg := sync.WaitGroup{}
-	for {
-		if len(dataAdQueue) >= 20 {
-			bt := time.Now()
-			for i := 0; i < 20; i++ {
-				wg.Add(1)
-				go func(d QueueData) {
-					dispath(d.Data, d.Px)
-					wg.Done()
-				}(<-dataAdQueue)
-			}
-			wg.Wait()
-			log.Info(time.Now().Sub(bt).Seconds())
-			r := rand.New(rand.NewSource(time.Now().UnixNano()))
-			time.Sleep(time.Millisecond * time.Duration(r.Intn(1500)+1000))
-		}
-		runtime.Gosched()
-	}
-}
-
-//循环读取队列
-func loopCkQueue() {
-	wg := sync.WaitGroup{}
-	for {
-		if len(dataCkQueue) >= 20 {
-			bt := time.Now()
-			for i := 0; i < 20; i++ {
-				wg.Add(1)
-				go func(d QueueData) {
-					dispath(d.Data, d.Px)
-					wg.Done()
-				}(<-dataCkQueue)
-			}
-			wg.Wait()
-			log.Info(time.Now().Sub(bt).Seconds())
-			r := rand.New(rand.NewSource(time.Now().UnixNano()))
-			time.Sleep(time.Millisecond * time.Duration(r.Intn(1500)+1000))
-		}
-		runtime.Gosched()
-	}
+	dealCount = atomic.AddUint64(&dealCount, 1)
 }
 
 func main() {
@@ -213,8 +166,6 @@ func main() {
 	//go bootstrap("_ck")
 	go bootstrapNsq("_ad")
 	go bootstrapNsq("_ck")
-	go loopAdQueue()
-	go loopCkQueue()
 	//go checkProxyHealth()
 	select {}
 }
