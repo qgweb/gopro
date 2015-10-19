@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"net"
 	"strings"
 	"sync"
 	"time"
@@ -10,10 +12,16 @@ import (
 
 	gs "github.com/qgweb/gopro/lib/grab"
 
+	"bytes"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"sync/atomic"
+
+	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"sync/atomic"
 )
 
 var (
@@ -53,6 +61,22 @@ type UserLocus struct {
 	UA     string
 	Hour   string
 	TagIds []string
+}
+
+// 主机信息
+type Hosts struct {
+	Name   string   `json:"name"`
+	Ip     string   `json:"ip"`
+	Pid    string   `json:"pid"` //区分同一个ip多台机器
+	Info   InfoData `json:"infodata"`
+	Uptime int64    `json:"time"` // 更新时间
+}
+
+// 反馈的数据
+type InfoData struct {
+	Type       string `json:"type"` //类型
+	ReceiveNum int    `json:"rnum"` //接收数据
+	DealNum    int    `json:"dnum"` //处理数据
 }
 
 //分配数据
@@ -309,4 +333,39 @@ func GetPutSession() *mgo.Session {
 	//高并发下会关闭连接,ping下会恢复
 	mdbputsession.Ping()
 	return mdbputsession.Copy()
+}
+
+func getIp() string {
+	if conn, err := net.Dial("udp", "www.baidu.com:80"); err == nil {
+		ip := conn.LocalAddr().String()
+		conn.Close()
+		return strings.Split(ip, ":")[0]
+	}
+	return ""
+}
+
+func MonitorLoop() {
+	t := time.NewTicker(time.Second * 10)
+	for {
+		select {
+		case <-t.C:
+			var (
+				host = iniFile.Section("monitor").Key("host").String()
+				port = iniFile.Section("monitor").Key("port").String()
+				url  = fmt.Sprintf("http://%s:%s/add", host, port)
+			)
+			data := Hosts{}
+			data.Name, _ = os.Hostname()
+			data.Ip = getIp()
+			data.Pid = convert.ToString(os.Getpid())
+			data.Info.DealNum = int(atomic.LoadUint64(&dealCount))
+			data.Info.ReceiveNum = int(atomic.LoadUint64(&recvCount))
+			data.Info.Type = "mtag"
+			by, err := json.Marshal(&data)
+			if err == nil {
+				http.Post(url, "application/json", ioutil.NopCloser(bytes.NewReader(by)))
+			}
+
+		}
+	}
 }

@@ -12,8 +12,9 @@ import (
 
 	"gopkg.in/ini.v1"
 
-	"github.com/bitly/go-nsq"
 	"sync/atomic"
+
+	"github.com/bitly/go-nsq"
 )
 
 var (
@@ -85,5 +86,6 @@ func bootstrap() {
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	go MonitorLoop()
 	bootstrap()
 }

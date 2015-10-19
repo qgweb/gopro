@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -19,9 +22,12 @@ import (
 
 	"sync"
 
+	"net"
+	"sync/atomic"
+
 	"github.com/astaxie/beego/httplib"
 	"github.com/nsqio/go-nsq"
-	"sync/atomic"
+	"github.com/qgweb/gopro/lib/convert"
 )
 
 var (
@@ -45,6 +51,22 @@ func (this *WaitGroup) Wrap(f func(p ...interface{}), param ...interface{}) {
 		f(param...)
 		this.Done()
 	}()
+}
+
+// 主机信息
+type Hosts struct {
+	Name   string   `json:"name"`
+	Ip     string   `json:"ip"`
+	Pid    string   `json:"pid"` //区分同一个ip多台机器
+	Info   InfoData `json:"infodata"`
+	Uptime int64    `json:"time"` // 更新时间
+}
+
+// 反馈的数据
+type InfoData struct {
+	Type       string `json:"type"` //类型
+	ReceiveNum int    `json:"rnum"` //接收数据
+	DealNum    int    `json:"dnum"` //处理数据
 }
 
 type NSQHandler struct {
@@ -72,15 +94,7 @@ func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 	}
 
 	recvCount = atomic.AddUint64(&recvCount, 1)
-
-	if atomic.LoadUint64(&recvCount)%20 == 0 {
-		//r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		//time.Sleep(+time.Second * time.Duration(15+r.Intn(30)))
-	}
-
 	dispath(urlData, this.Px)
-
-	log.Info("接收到数据:", atomic.LoadUint64(&recvCount), " | 处理数据:", atomic.LoadUint64(&dealCount))
 	return nil
 }
 
@@ -383,4 +397,39 @@ func checkProxyHealth() {
 
 func initGrabFactory() {
 	grabFactory = NewFactory(200, 100)
+}
+
+func getIp() string {
+	if conn, err := net.Dial("udp", "www.baidu.com:80"); err == nil {
+		ip := conn.LocalAddr().String()
+		conn.Close()
+		return strings.Split(ip, ":")[0]
+	}
+	return ""
+}
+
+func MonitorLoop() {
+	t := time.NewTicker(time.Second * 10)
+	for {
+		select {
+		case <-t.C:
+			var (
+				host = iniFile.Section("monitor").Key("host").String()
+				port = iniFile.Section("monitor").Key("port").String()
+				url  = fmt.Sprintf("http://%s:%s/add", host, port)
+			)
+			data := Hosts{}
+			data.Name, _ = os.Hostname()
+			data.Ip = getIp()
+			data.Pid = convert.ToString(os.Getpid())
+			data.Info.DealNum = int(atomic.LoadUint64(&dealCount))
+			data.Info.ReceiveNum = int(atomic.LoadUint64(&recvCount))
+			data.Info.Type = "mgrab"
+			by, err := json.Marshal(&data)
+			if err == nil {
+				http.Post(url, "application/json", ioutil.NopCloser(bytes.NewReader(by)))
+			}
+
+		}
+	}
 }

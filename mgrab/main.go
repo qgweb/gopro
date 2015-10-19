@@ -167,5 +167,6 @@ func main() {
 	go bootstrapNsq("_ad")
 	go bootstrapNsq("_ck")
 	//go checkProxyHealth()
+	go MonitorLoop()
 	select {}
 }
