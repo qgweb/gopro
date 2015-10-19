@@ -112,6 +112,9 @@ a{
     color:#6b6b6b;
     font-weight:400;
 }
+.right_content h6 span{
+    font-size:12px;
+}
 .right_content p{
     line-height:30px;
     font-size:14px;
