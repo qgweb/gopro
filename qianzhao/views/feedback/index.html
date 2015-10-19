@@ -1,5 +1,6 @@
 {{define "feedback_index"}}
 <!DOCTYPE html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -44,7 +45,7 @@
                 <h6>2、问题分类</h6>
                 <div class="feedback_problem1">
                     <label>
-                        <input type="radio" name="qtype" value="1" checked="checked"/>
+                        <input type="radio" name="qtype" value="1" checked="checked" />
                         <span>浏览器使用不习惯，缺少一些常用功能</span>
                     </label>
                     <label>
@@ -92,4 +93,15 @@
     </div>
     <script src="http://s0.qhimg.com/lib/jquery/172.js"></script>
 </body>
+<script type="text/javascript">
+$('#content').on('keyup', function() {
+    var len = $('#content').val().length * 1;
+    $('#contentnum').html(800 - len);
+    if (len > 800) {
+        var val = $('#content').val().substring(0, 799);
+        $('#content').val(val);
+        $('#contentnum').html(0);
+    }
+})
+</script>
 {{end}}
