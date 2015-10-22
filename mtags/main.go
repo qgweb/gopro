@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"runtime"
-	"time"
+	//	"time"
 
 	"github.com/ngaut/log"
 
@@ -50,10 +50,10 @@ func (th *TailHandler) HandleMessage(m *nsq.Message) error {
 
 	recvCount = atomic.AddUint64(&recvCount, 1)
 
-	go dispath(data)
+	dispath(data)
 
 	if atomic.LoadUint64(&recvCount)%400 == 0 {
-		time.Sleep(time.Minute * 1)
+		//time.Sleep(time.Minute * 1)
 	}
 
 	//log.Info("接收到数据:", atomic.LoadUint64(&recvCount), " | 处理数据:", atomic.LoadUint64(&dealCount))

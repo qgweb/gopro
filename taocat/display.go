@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+
 	"github.com/ngaut/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -16,7 +17,7 @@ var (
 	mo_host    = "192.168.1.199"
 	mo_port    = "27017"
 	mo_db      = "xu_precise"
-	mo_table   = "tao_cat"
+	mo_table   = "taocat_big"
 )
 
 type Category struct {

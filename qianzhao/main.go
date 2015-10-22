@@ -7,6 +7,10 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"io"
+	"os"
+
 	"github.com/astaxie/beego/grace"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
@@ -16,9 +20,6 @@ import (
 	_ "github.com/qgweb/gopro/qianzhao/common/session"
 	_ "github.com/qgweb/gopro/qianzhao/model"
 	"github.com/qgweb/gopro/qianzhao/router"
-	"html/template"
-	"io"
-	"os"
 )
 
 const (
@@ -41,9 +42,7 @@ func flagParse() {
 		}
 
 		if v == "-h" {
-			fmt.Println(`
-				-v : 版本号
-			`)
+			fmt.Println(`-v : 版本号`)
 		}
 	}
 }

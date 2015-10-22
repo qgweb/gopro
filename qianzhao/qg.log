@@ -1733,3 +1733,142 @@
 2015/10/19 15:41:23 logger.go:38: [info] GET /feedback [32m200[0m 259.094µs 4948
 2015/10/19 15:41:24 logger.go:38: [info] GET /css/main/layout.css [36m304[0m 37.709µs 0
 2015/10/19 15:41:24 logger.go:38: [info] GET /feedback/pic [32m200[0m 5.377263ms 1044
+2015/10/20 13:43:35 logger.go:38: [info] GET / [32m200[0m 38.741295ms 88
+2015/10/20 13:43:35 logger.go:38: [info] GET /favicon.ico [32m200[0m 59.195µs 0
+2015/10/20 13:43:38 logger.go:38: [info] GET / [36m304[0m 45.442µs 0
+2015/10/20 13:44:00 feedback.go:31: [error] id 
+2015/10/20 13:44:00 feedback.go:31: [error] type 
+2015/10/20 13:44:00 feedback.go:31: [error] qtype 
+2015/10/20 13:44:00 feedback.go:31: [error] qdescribe 
+2015/10/20 13:44:00 feedback.go:31: [error] qpic 
+2015/10/20 13:44:00 feedback.go:31: [error] contact 
+2015/10/20 13:44:00 feedback.go:31: [error] tcontact 
+2015/10/20 13:44:00 feedback.go:31: [error] status 
+2015/10/20 13:44:00 feedback.go:31: [error] time 
+2015/10/20 13:44:00 logger.go:38: [info] GET /feedback [32m200[0m 2.432096ms 4948
+2015/10/20 13:44:00 logger.go:38: [info] GET /feedback/pic [32m200[0m 4.261036ms 1117
+2015/10/20 13:44:00 logger.go:38: [info] GET /css/main/layout.css [32m200[0m 35.634954ms 4629
+2015/10/20 13:44:01 logger.go:38: [info] GET /img/main/logo.gif [32m200[0m 67.869062ms 2370
+2015/10/20 13:44:01 logger.go:38: [info] GET /img/main/logo.ico [32m200[0m 12.833092ms 1150
+2015/10/20 13:44:22 feedback.go:31: [error] id 
+2015/10/20 13:44:22 feedback.go:31: [error] type 
+2015/10/20 13:44:22 feedback.go:31: [error] qtype 
+2015/10/20 13:44:22 feedback.go:31: [error] qdescribe 
+2015/10/20 13:44:22 feedback.go:31: [error] qpic 
+2015/10/20 13:44:22 feedback.go:31: [error] contact 
+2015/10/20 13:44:22 feedback.go:31: [error] tcontact 
+2015/10/20 13:44:22 feedback.go:31: [error] status 
+2015/10/20 13:44:22 feedback.go:31: [error] time 
+2015/10/20 13:44:22 logger.go:38: [info] GET /feedback [32m200[0m 293.227µs 4948
+2015/10/20 13:44:22 logger.go:38: [info] GET /css/main/layout.css [32m200[0m 148.842µs 4629
+2015/10/20 13:44:22 logger.go:38: [info] GET /feedback/pic [32m200[0m 5.007032ms 1107
+2015/10/20 13:44:22 logger.go:38: [info] GET /img/main/logo.ico [32m200[0m 108.463µs 1150
+2015/10/20 13:44:22 logger.go:38: [info] GET /img/main/logo.gif [32m200[0m 76.655µs 2370
+2015/10/20 13:44:47 logger.go:38: [info] POST /feedback/post [32m200[0m 117.983604ms 105
+2015/10/20 13:44:49 logger.go:38: [info] GET /favicon.ico [32m200[0m 79.073µs 0
+2015/10/20 13:44:49 feedback.go:31: [error] id 
+2015/10/20 13:44:49 feedback.go:31: [error] type 
+2015/10/20 13:44:49 feedback.go:31: [error] qtype 
+2015/10/20 13:44:49 feedback.go:31: [error] qdescribe 
+2015/10/20 13:44:49 feedback.go:31: [error] qpic 
+2015/10/20 13:44:49 feedback.go:31: [error] contact 
+2015/10/20 13:44:49 feedback.go:31: [error] tcontact 
+2015/10/20 13:44:49 feedback.go:31: [error] status 
+2015/10/20 13:44:49 feedback.go:31: [error] time 
+2015/10/20 13:44:49 logger.go:38: [info] GET /feedback [32m200[0m 245.892µs 4948
+2015/10/20 13:44:49 logger.go:38: [info] GET /feedback/pic [32m200[0m 2.874766ms 1037
+2015/10/20 13:45:37 logger.go:38: [info] POST /feedback/post [32m200[0m 1.736213ms 113
+2015/10/20 13:45:38 feedback.go:31: [error] id 
+2015/10/20 13:45:38 feedback.go:31: [error] type 
+2015/10/20 13:45:38 feedback.go:31: [error] qtype 
+2015/10/20 13:45:38 feedback.go:31: [error] qdescribe 
+2015/10/20 13:45:38 feedback.go:31: [error] qpic 
+2015/10/20 13:45:38 feedback.go:31: [error] contact 
+2015/10/20 13:45:38 feedback.go:31: [error] tcontact 
+2015/10/20 13:45:38 feedback.go:31: [error] status 
+2015/10/20 13:45:38 feedback.go:31: [error] time 
+2015/10/20 13:45:38 logger.go:38: [info] GET /feedback [32m200[0m 256.898µs 4948
+2015/10/20 13:45:39 logger.go:38: [info] GET /feedback/pic [32m200[0m 4.978899ms 1131
+2015/10/20 13:45:57 feedback.go:102: [error] http: no such file 
+2015/10/20 13:45:57 feedback.go:74: [error] http: no such file 
+2015/10/20 13:45:58 logger.go:38: [info] POST /feedback/post [32m200[0m 103.304881ms 105
+2015/10/20 13:45:59 feedback.go:31: [error] id 
+2015/10/20 13:45:59 feedback.go:31: [error] type 
+2015/10/20 13:45:59 feedback.go:31: [error] qtype 
+2015/10/20 13:45:59 feedback.go:31: [error] qdescribe 
+2015/10/20 13:45:59 feedback.go:31: [error] qpic 
+2015/10/20 13:45:59 feedback.go:31: [error] contact 
+2015/10/20 13:45:59 feedback.go:31: [error] tcontact 
+2015/10/20 13:45:59 feedback.go:31: [error] status 
+2015/10/20 13:45:59 feedback.go:31: [error] time 
+2015/10/20 13:45:59 logger.go:38: [info] GET /feedback [32m200[0m 249.11µs 4948
+2015/10/20 13:45:59 logger.go:38: [info] GET /feedback/pic [32m200[0m 4.700525ms 1148
+2015/10/20 13:47:02 logger.go:38: [info] POST /feedback/post [32m200[0m 51.734966ms 105
+2015/10/20 13:47:03 feedback.go:31: [error] id 
+2015/10/20 13:47:03 feedback.go:31: [error] type 
+2015/10/20 13:47:03 feedback.go:31: [error] qtype 
+2015/10/20 13:47:03 feedback.go:31: [error] qdescribe 
+2015/10/20 13:47:03 feedback.go:31: [error] qpic 
+2015/10/20 13:47:03 feedback.go:31: [error] contact 
+2015/10/20 13:47:03 feedback.go:31: [error] tcontact 
+2015/10/20 13:47:03 feedback.go:31: [error] status 
+2015/10/20 13:47:03 feedback.go:31: [error] time 
+2015/10/20 13:47:03 logger.go:38: [info] GET /feedback [32m200[0m 253.653µs 4948
+2015/10/20 13:47:03 logger.go:38: [info] GET /feedback/pic [32m200[0m 2.947241ms 1060
+2015/10/20 13:57:16 logger.go:38: [info] GET /feedback/pic [32m200[0m 5.20501ms 1037
+2015/10/20 13:57:22 feedback.go:102: [error] http: no such file 
+2015/10/20 13:57:22 feedback.go:74: [error] http: no such file 
+2015/10/20 13:57:22 logger.go:38: [info] POST /feedback/post [32m200[0m 53.339823ms 105
+2015/10/20 13:57:23 feedback.go:31: [error] id 
+2015/10/20 13:57:23 feedback.go:31: [error] type 
+2015/10/20 13:57:23 feedback.go:31: [error] qtype 
+2015/10/20 13:57:23 feedback.go:31: [error] qdescribe 
+2015/10/20 13:57:23 feedback.go:31: [error] qpic 
+2015/10/20 13:57:23 feedback.go:31: [error] contact 
+2015/10/20 13:57:23 feedback.go:31: [error] tcontact 
+2015/10/20 13:57:23 feedback.go:31: [error] status 
+2015/10/20 13:57:23 feedback.go:31: [error] time 
+2015/10/20 13:57:23 logger.go:38: [info] GET /feedback [32m200[0m 259.057µs 4948
+2015/10/20 13:57:23 logger.go:38: [info] GET /feedback/pic [32m200[0m 5.259441ms 1158
+2015/10/20 13:59:06 feedback.go:102: [error] http: no such file 
+2015/10/20 13:59:06 feedback.go:74: [error] http: no such file 
+2015/10/20 13:59:06 logger.go:38: [info] POST /feedback/post [32m200[0m 77.492005ms 105
+2015/10/20 13:59:08 feedback.go:31: [error] id 
+2015/10/20 13:59:08 feedback.go:31: [error] type 
+2015/10/20 13:59:08 feedback.go:31: [error] qtype 
+2015/10/20 13:59:08 feedback.go:31: [error] qdescribe 
+2015/10/20 13:59:08 feedback.go:31: [error] qpic 
+2015/10/20 13:59:08 feedback.go:31: [error] contact 
+2015/10/20 13:59:08 feedback.go:31: [error] tcontact 
+2015/10/20 13:59:08 feedback.go:31: [error] status 
+2015/10/20 13:59:08 feedback.go:31: [error] time 
+2015/10/20 13:59:08 logger.go:38: [info] GET /feedback [32m200[0m 249.591µs 4948
+2015/10/20 13:59:08 logger.go:38: [info] GET /feedback/pic [32m200[0m 2.933502ms 1015
+2015/10/20 14:26:52 feedback.go:102: [error] http: no such file 
+2015/10/20 14:26:52 feedback.go:74: [error] http: no such file 
+2015/10/20 14:26:52 logger.go:38: [info] POST /feedback/post [32m200[0m 53.957501ms 105
+2015/10/20 14:26:54 feedback.go:31: [error] id 
+2015/10/20 14:26:54 feedback.go:31: [error] type 
+2015/10/20 14:26:54 feedback.go:31: [error] qtype 
+2015/10/20 14:26:54 feedback.go:31: [error] qdescribe 
+2015/10/20 14:26:54 feedback.go:31: [error] qpic 
+2015/10/20 14:26:54 feedback.go:31: [error] contact 
+2015/10/20 14:26:54 feedback.go:31: [error] tcontact 
+2015/10/20 14:26:54 feedback.go:31: [error] status 
+2015/10/20 14:26:54 feedback.go:31: [error] time 
+2015/10/20 14:26:54 logger.go:38: [info] GET /feedback [32m200[0m 258.283µs 4948
+2015/10/20 14:26:54 logger.go:38: [info] GET /feedback/pic [32m200[0m 5.306217ms 1040
+2015/10/20 14:44:57 feedback.go:102: [error] http: no such file 
+2015/10/20 14:44:57 feedback.go:74: [error] http: no such file 
+2015/10/20 14:44:57 logger.go:38: [info] POST /feedback/post [32m200[0m 33.447806ms 105
+2015/10/20 14:44:58 feedback.go:31: [error] id 
+2015/10/20 14:44:58 feedback.go:31: [error] type 
+2015/10/20 14:44:58 feedback.go:31: [error] qtype 
+2015/10/20 14:44:58 feedback.go:31: [error] qdescribe 
+2015/10/20 14:44:58 feedback.go:31: [error] qpic 
+2015/10/20 14:44:58 feedback.go:31: [error] contact 
+2015/10/20 14:44:58 feedback.go:31: [error] tcontact 
+2015/10/20 14:44:58 feedback.go:31: [error] status 
+2015/10/20 14:44:58 feedback.go:31: [error] time 
+2015/10/20 14:44:58 logger.go:38: [info] GET /feedback [32m200[0m 185.184µs 4948
+2015/10/20 14:44:58 logger.go:38: [info] GET /feedback/pic [32m200[0m 3.4237ms 1085

@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/astaxie/beego/httplib"
 	"net/url"
+
+	"github.com/astaxie/beego/httplib"
 	//"github.com/bradfitz/gomemcache/memcache"
 	//"time"
 )
