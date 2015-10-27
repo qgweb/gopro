@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/qgweb/gopro/qianzhao-dz-tcpserver/protocol"
 	"log"
 	"net"
 	"time"
+
+	"github.com/qgweb/gopro/qianzhao-dz-tcpserver/protocol"
 )
 
 const (
@@ -76,7 +77,7 @@ func ProtocolUnPack(data []byte) []byte {
 }
 
 func main() {
-	addr, _ := net.ResolveTCPAddr("tcp4", "122.225.98.80:9091")
+	addr, _ := net.ResolveTCPAddr("tcp4", "122.225.98.80:9092")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
 		log.Fatalln("fuck")

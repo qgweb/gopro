@@ -26,9 +26,9 @@ func NewShopTraceCli() cli.Command {
 		Usage: "生成用户最近3天店铺轨迹,供九旭精准投放",
 		Action: func(c *cli.Context) {
 			defer func() {
-				//				if msg := recover(); msg != nil {
-				//					log.Error(msg)
-				//				}
+				if msg := recover(); msg != nil {
+					log.Error(msg)
+				}
 			}()
 
 			// 获取配置文件

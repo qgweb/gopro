@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	ossh "code.google.com/p/go.crypto/ssh"
 	"github.com/codegangsta/cli"
@@ -80,7 +81,7 @@ func NewAdCate() cli.Command {
 	}
 }
 
-func Run() {
+func getDataByUserAction() map[string]map[string]int {
 	var (
 		db    = iniFile.Section("mongo").Key("db").String()
 		table = "useraction"
@@ -88,9 +89,7 @@ func Run() {
 	sess := mp.GetRemoteSession(mgoConf, client)
 	defer sess.Close()
 
-	list := make(map[string]int)
 	list1 := make(map[string]map[string]int)
-	list2 := make(map[string]int)
 	var alist []map[string]interface{}
 	//var blist []map[string]interface{}
 
@@ -117,6 +116,61 @@ func Run() {
 			list1[vvm["tagId"].(string)][v["AD"].(string)] = 1
 		}
 	}
+
+	return list1
+}
+
+func getDataByXuPrecise() map[string]map[string]int {
+	var (
+		db    = iniFile.Section("mongo").Key("db").String()
+		table = "zhejiang_ad_tags_clock"
+		date  = "2015-10-22"
+	)
+	sess := mp.GetRemoteSession(mgoConf, client)
+	defer sess.Close()
+
+	list1 := make(map[string]map[string]int)
+	var alist []map[string]interface{}
+	//var blist []map[string]interface{}
+
+	// 统计数量
+	//	sess.DB(db).C(table).Find(bson.M{"day": "20151019"}).Select(bson.M{"_id": 0, "AD": 1}).All(&blist)
+	//	for _, v := range blist {
+	//		list2[v["AD"].(string)] = 1
+	//	}
+
+	err = sess.DB(db).C(table).Find(bson.M{"date": date}).Select(bson.M{"_id": 1, "cids": 1, "ad": 1}).All(&alist)
+	log.Error(err)
+
+	for _, v := range alist {
+		for _, vv := range v["cids"].(map[string]interface{}) {
+			cids := strings.Split(vv.(string), ",")
+			for _, cid := range cids {
+				if cid == "" {
+					continue
+				}
+
+				if _, ok := list1[cid]; !ok {
+					list1[cid] = make(map[string]int)
+				}
+
+				list1[cid][v["ad"].(string)] = 1
+			}
+		}
+	}
+
+	return list1
+}
+
+func Run() {
+	var (
+		db = iniFile.Section("mongo").Key("db").String()
+	)
+	sess := mp.GetRemoteSession(mgoConf, client)
+	defer sess.Close()
+	list := make(map[string]int)
+
+	list1 := getDataByXuPrecise()
 
 	for k, v := range list1 {
 		list[k] = len(v)
@@ -147,9 +201,6 @@ func Run() {
 
 	s := grab.NewMapSorter(list)
 	s.Sort()
-	log.Info(catMap)
-	log.Error(s[0])
-	log.Error(len(list2))
 
 	for k, v := range catMap {
 		f, _ := os.Create(k + ".txt")

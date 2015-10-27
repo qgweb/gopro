@@ -25,9 +25,9 @@ func NewUserTraceCli() cli.Command {
 		Usage: "生成用户最近3天浏览轨迹,供九旭精准投放",
 		Action: func(c *cli.Context) {
 			defer func() {
-				//				if msg := recover(); msg != nil {
-				//					log.Error(msg)
-				//				}
+				if msg := recover(); msg != nil {
+					log.Error(msg)
+				}
 			}()
 
 			// 获取配置文件
@@ -61,43 +61,71 @@ func NewUserTraceCli() cli.Command {
 
 func (this *UserTrace) Do(c *cli.Context) {
 	var (
-		date      = time.Now()
-		day       = date.Format("20060102")
-		hour      = convert.ToString(date.Hour() - 1)
-		b1day     = date.AddDate(0, 0, -1).Format("20060102") //1天前
-		b2day     = date.AddDate(0, 0, -2).Format("20060102") //2天前
-		b3day     = date.AddDate(0, 0, -3).Format("20060102") //3天前
-		sess      = this.mp.Get()
-		db        = this.iniFile.Section("mongo").Key("db").String()
-		table     = "useraction"
-		table_put = "useraction_put"
-		list_put  []interface{}
-		list      map[string][]map[string]interface{}
-		list1     []map[string]interface{}
-		list2     []map[string]interface{}
-		list3     []map[string]interface{}
+		date          = time.Now()
+		day           = date.Format("20060102")
+		hour          = convert.ToString(date.Hour() - 1)
+		b1day         = date.AddDate(0, 0, -1).Format("20060102") //1天前
+		b2day         = date.AddDate(0, 0, -2).Format("20060102") //2天前
+		b3day         = date.AddDate(0, 0, -3).Format("20060102") //3天前
+		sess          = this.mp.Get()
+		db            = this.iniFile.Section("mongo").Key("db").String()
+		table         = "useraction"
+		table_put     = "useraction_put"
+		table_put_big = "useraction_put_big"
+		list_put      []interface{}
+		list_put_big  []interface{}
+		list          map[string][]map[string]interface{}
+		list1         []map[string]interface{}
+		list2         []map[string]interface{}
+		list3         []map[string]interface{}
 	)
 
-	// 当天前一个小时前的数据
-	if err := sess.DB(db).C(table).Find(bson.M{"day": day, "hour": bson.M{
-		"$lte": hour, "$gte": "00"},
-	}).All(&list1); err != nil {
-		log.Error(err)
+	// 读取数据函数
+	readDataFun := func(query bson.M) []map[string]interface{} {
+		var (
+			list      []map[string]interface{}
+			count     = 0
+			page      = 1
+			pageSize  = 1000
+			totalPage = 0
+		)
+
+		count, err := sess.DB(db).C(table).Find(query).Count()
+		if err != nil {
+			log.Error(err)
+			return nil
+		}
+
+		totalPage = int(math.Ceil(float64(count) / float64(pageSize)))
+
+		for ; page <= totalPage; page++ {
+			var tmpList []map[string]interface{}
+			if err := sess.DB(db).C(table).Find(query).Limit(pageSize).
+				Skip((page - 1) * pageSize).All(&tmpList); err != nil {
+				log.Error(err)
+				continue
+			}
+
+			list = append(list, tmpList...)
+		}
+
+		return list
 	}
+
+	// 当天前一个小时前的数据
+	list1 = readDataFun(bson.M{"day": day, "hour": bson.M{
+		"$lte": hour, "$gte": "00"},
+	})
 
 	// 前2天数据
-	if err := sess.DB(db).C(table).Find(bson.M{"day": bson.M{
+	list2 = readDataFun(bson.M{"day": bson.M{
 		"$lte": b1day, "$gte": b2day},
-	}).All(&list2); err != nil {
-		log.Error(err)
-	}
+	})
 
 	// 第前3天的小时数据
-	if err := sess.DB(db).C(table).Find(bson.M{"day": b3day, "hour": bson.M{
+	list3 = readDataFun(bson.M{"day": b3day, "hour": bson.M{
 		"$gte": hour, "$lte": "23"},
-	}).All(&list3); err != nil {
-		log.Error(err)
-	}
+	})
 
 	var appendFun = func(l []map[string]interface{}) {
 		for _, v := range l {
@@ -135,16 +163,32 @@ func (this *UserTrace) Do(c *cli.Context) {
 
 	//更新投放表
 	list_put = make([]interface{}, 0, len(list))
+	list_put_big = make([]interface{}, 0, len(list))
 	for k, v := range list {
 		uaads := strings.Split(k, "_")
+
 		list_put = append(list_put, bson.M{
 			"AD":  uaads[0],
 			"UA":  uaads[1],
 			"tag": v,
 		})
+
+		bv := this.copy(v)
+		for k, vv := range bv {
+			if bv[k]["tagmongo"].(string) == "0" {
+				bv[k]["tagId"] = this.getBigCat(vv["tagId"].(string))
+			}
+		}
+
+		list_put_big = append(list_put_big, bson.M{
+			"AD":  uaads[0],
+			"UA":  uaads[1],
+			"tag": bv,
+		})
 	}
 
 	sess.DB(db).C(table_put).DropCollection()
+	sess.DB(db).C(table_put_big).DropCollection()
 	//批量插入
 	var (
 		size  = 10000
@@ -158,9 +202,43 @@ func (this *UserTrace) Do(c *cli.Context) {
 		}
 
 		sess.DB(db).C(table_put).Insert(list_put[(i-1)*size : end]...)
+		sess.DB(db).C(table_put_big).Insert(list_put_big[(i-1)*size : end]...)
 		log.Error(i, size)
 	}
 
 	sess.Close()
 	log.Info("ok")
+}
+
+// 复制对象
+func (this *UserTrace) copy(src []map[string]interface{}) []map[string]interface{} {
+	var dis = make([]map[string]interface{}, 0, len(src))
+	for _, v := range src {
+		var node = make(map[string]interface{})
+		for kk, vv := range v {
+			node[kk] = vv
+		}
+		dis = append(dis, node)
+	}
+
+	return dis
+}
+
+// 获取大分类
+func (this *UserTrace) getBigCat(catId string) string {
+	var (
+		db    = this.iniFile.Section("mongo").Key("db").String()
+		table = "taocat"
+		sess  = this.mp.Get()
+	)
+
+	defer sess.Close()
+
+	var info map[string]interface{}
+	err := sess.DB(db).C(table).Find(bson.M{"cid": catId}).Select(bson.M{"bid": 1}).One(&info)
+	if err == nil {
+		return info["bid"].(string)
+	}
+
+	return ""
 }
