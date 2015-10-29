@@ -242,11 +242,16 @@ func userLocusCombine(ul UserLocus) {
 
 	var (
 		modb    = iniFile.Section("mongo-put").Key("db").String()
+		prefix = iniFile.Section("queuekey").Key("prefix").String()
 		motable = "useraction"
 		tags    = make([]bson.M, 0, len(ul.TagIds))
 		day     = time.Now().Format("20060102")
 		info    map[string]interface{}
 	)
+	
+	if prefix == "jiangsu_" {
+		motable = motable + "_jiangsu"
+	}
 
 	for _, v := range ul.TagIds {
 		tags = append(tags, bson.M{

@@ -11,6 +11,7 @@ import (
 	"github.com/qgweb/gopro/9xutool/common.go"
 	"github.com/qgweb/gopro/lib/convert"
 	"gopkg.in/ini.v1"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -86,7 +87,7 @@ func (this *UserTrace) Do(c *cli.Context) {
 			list      []map[string]interface{}
 			count     = 0
 			page      = 1
-			pageSize  = 1000
+			pageSize  = 10000
 			totalPage = 0
 		)
 
@@ -116,17 +117,17 @@ func (this *UserTrace) Do(c *cli.Context) {
 	list1 = readDataFun(bson.M{"day": day, "hour": bson.M{
 		"$lte": hour, "$gte": "00"},
 	})
-
+	log.Error(len(list1))
 	// 前2天数据
 	list2 = readDataFun(bson.M{"day": bson.M{
 		"$lte": b1day, "$gte": b2day},
 	})
-
+	log.Error(len(list2))
 	// 第前3天的小时数据
 	list3 = readDataFun(bson.M{"day": b3day, "hour": bson.M{
 		"$gte": hour, "$lte": "23"},
 	})
-
+	log.Error(len(list3))
 	var appendFun = func(l []map[string]interface{}) {
 		for _, v := range l {
 			key := v["AD"].(string) + "_" + v["UA"].(string)
@@ -142,7 +143,7 @@ func (this *UserTrace) Do(c *cli.Context) {
 						}
 					}
 					if !isee {
-						list[key] = append(list[key], tvm)
+						list[key] = appendg(list[key], tvm)
 					}
 				}
 			} else {
@@ -160,7 +161,7 @@ func (this *UserTrace) Do(c *cli.Context) {
 	appendFun(list1)
 	appendFun(list2)
 	appendFun(list3)
-
+	log.Error(len(list))
 	//更新投放表
 	list_put = make([]interface{}, 0, len(list))
 	list_put_big = make([]interface{}, 0, len(list))
@@ -187,10 +188,13 @@ func (this *UserTrace) Do(c *cli.Context) {
 		})
 	}
 
+	log.Info(len(list_put))
 	sess.DB(db).C(table_put).DropCollection()
 	sess.DB(db).C(table_put_big).DropCollection()
 
 	//加索引
+	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
 	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
 	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
 
@@ -208,10 +212,6 @@ func (this *UserTrace) Do(c *cli.Context) {
 
 		sess.DB(db).C(table_put).Insert(list_put[(i-1)*size : end]...)
 		sess.DB(db).C(table_put_big).Insert(list_put_big[(i-1)*size : end]...)
-
-		if i == 1 {
-
-		}
 
 		log.Error(i, size)
 	}

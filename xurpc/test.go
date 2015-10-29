@@ -11,11 +11,13 @@ type clientStub struct {
 	Swap       func(int, int) (int, int)
 	Sum        func(...int) (int, error)
 	GetTaoData func(string) int
+	GetTag     func(string, string) []byte
 }
 
 func main1() {
-	client := hprose.NewClient("http://192.168.1.199:12344/")
+	client := hprose.NewClient("http://127.0.0.1:12345/")
 	var ro clientStub
 	client.UseService(&ro)
 	fmt.Println(ro.GetTaoData("World"))
+	fmt.Println(string(ro.GetTag("42591253308", "")))
 }

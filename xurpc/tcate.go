@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/qgweb/gopro/lib/grab"
 
 	"log"
@@ -181,10 +182,15 @@ func (this Taotag) GetTag(gid string, taokeUrl string) []byte {
 
 		AddGoodsInfo(gid)
 
-		return jsonReturn(map[string]interface{}{"tagid": cid, "tagname": info["name"]}, nil)
+		return jsonReturn(map[string]interface{}{"tagid": info["bid"], "tagname": info["name"]}, nil)
 
 	} else if err == nil {
-		return jsonReturn(info, nil)
+		//获取大标签
+		catinfo, err := GetTaoCat(info["tagid"].(string))
+		if err == nil {
+			info["tagid"] = catinfo["bid"]
+			return jsonReturn(info, nil)
+		}
 	}
 
 	return jsonReturn("", err)
