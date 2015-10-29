@@ -189,6 +189,11 @@ func (this *UserTrace) Do(c *cli.Context) {
 
 	sess.DB(db).C(table_put).DropCollection()
 	sess.DB(db).C(table_put_big).DropCollection()
+
+	//加索引
+	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
+
 	//批量插入
 	var (
 		size  = 10000
@@ -203,6 +208,11 @@ func (this *UserTrace) Do(c *cli.Context) {
 
 		sess.DB(db).C(table_put).Insert(list_put[(i-1)*size : end]...)
 		sess.DB(db).C(table_put_big).Insert(list_put_big[(i-1)*size : end]...)
+
+		if i == 1 {
+
+		}
+
 		log.Error(i, size)
 	}
 

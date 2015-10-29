@@ -40,9 +40,7 @@ func (this TaoCatData) GetHospitalData(cid string) int {
 		return 0
 	}
 
-	tid := bson.ObjectIdHex(cid)
-
-	c, err := sess.DB(db).C(table).Find(bson.M{"tag.tagId": tid}).Count()
+	c, err := sess.DB(db).C(table).Find(bson.M{"tag.tagId": cid}).Count()
 	if err != nil {
 		return 0
 	}
