@@ -96,11 +96,11 @@ func dispath(data *CombinationData) {
 
 		if g.Exists == 0 {
 			//添加商品
-			go addGoods(g)
+			addGoods(g)
 		}
 
 		//添加店铺
-		go addShop(g)
+		addShop(g)
 	}
 
 	AddUidCids(map[string]string{
@@ -114,7 +114,6 @@ func dispath(data *CombinationData) {
 // 添加店铺
 func addShop(g Goods) {
 	sess := GetSession()
-	defer sess.Close()
 
 	var (
 		modb = iniFile.Section("mongo").Key("db").String()
@@ -127,22 +126,24 @@ func addShop(g Goods) {
 			"shop_boss": g.Shop_boss,
 		},
 	})
+
+	sess.Close()
 }
 
 //添加商品
 func addGoods(g Goods) {
 	var (
 		modb = iniFile.Section("mongo").Key("db").String()
+		sess = GetSession()
 	)
-
-	sess := GetSession()
-	defer sess.Close()
 
 	sess.DB(modb).C("goods").Upsert(bson.M{"gid": g.Gid}, bson.M{"$set": bson.M{
 		"tagname": g.Tagname, "tagid": g.Tagid, "features": g.Features,
 		"attrbuites": g.Attrbuites, "sex": g.Sex, "people": g.People,
 		"shop_id": g.Shop_id, "shop_name": g.Shop_name, "shop_url": g.Shop_url,
 		"shop_box": g.Shop_boss, "count": g.Count}})
+
+	sess.Close()
 }
 
 //添加用户id对应分类id
@@ -176,7 +177,7 @@ func AddUidCids(param map[string]string) {
 			bson.M{"$set": bson.M{c: param["cids"]}})
 
 		//合并到用户轨迹上
-		userLocusCombine(UserLocus{
+		go userLocusCombine(UserLocus{
 			AD:     param["ad"],
 			Hour:   param["clock"],
 			TagIds: strings.Split(param["cids"], ","),
@@ -242,13 +243,13 @@ func userLocusCombine(ul UserLocus) {
 
 	var (
 		modb    = iniFile.Section("mongo-put").Key("db").String()
-		prefix = iniFile.Section("queuekey").Key("prefix").String()
+		prefix  = iniFile.Section("queuekey").Key("prefix").String()
 		motable = "useraction"
 		tags    = make([]bson.M, 0, len(ul.TagIds))
 		day     = time.Now().Format("20060102")
 		info    map[string]interface{}
 	)
-	
+
 	if prefix == "jiangsu_" {
 		motable = motable + "_jiangsu"
 	}

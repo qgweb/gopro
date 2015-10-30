@@ -65,9 +65,11 @@ func (this *UserTrace) Do(c *cli.Context) {
 		date          = time.Now()
 		day           = date.Format("20060102")
 		hour          = convert.ToString(date.Hour() - 1)
-		b1day         = date.AddDate(0, 0, -1).Format("20060102") //1天前
-		b2day         = date.AddDate(0, 0, -2).Format("20060102") //2天前
-		b3day         = date.AddDate(0, 0, -3).Format("20060102") //3天前
+		b1day         = date.AddDate(0, 0, -1).Format("20060102")  //1天前
+		b2day         = date.AddDate(0, 0, -2).Format("20060102")  //2天前
+		b3day         = date.AddDate(0, 0, -3).Format("20060102")  //3天前
+		b14day        = date.AddDate(0, 0, -14).Format("20060102") //14天前
+		b15day        = date.AddDate(0, 0, -15).Format("20060102") //15天前
 		sess          = this.mp.Get()
 		db            = this.iniFile.Section("mongo").Key("db").String()
 		table         = "useraction"
@@ -113,21 +115,38 @@ func (this *UserTrace) Do(c *cli.Context) {
 		return list
 	}
 
+	// domainId 0 电商  1 医疗 4 金融
 	// 当天前一个小时前的数据
 	list1 = readDataFun(bson.M{"day": day, "hour": bson.M{
-		"$lte": hour, "$gte": "00"},
+		"$lte": hour, "$gte": "00", "domainId": "0"},
 	})
+	// == 医疗金融
+	list1 = append(list1, readDataFun(bson.M{"day": day, "hour": bson.M{
+		"$lte": hour, "$gte": "00", "domainId": bson.M{"$ne": "0"}},
+	})...)
+
 	log.Error(len(list1))
+
 	// 前2天数据
 	list2 = readDataFun(bson.M{"day": bson.M{
-		"$lte": b1day, "$gte": b2day},
+		"$lte": b1day, "$gte": b2day, "domainId": "0"},
 	})
+
+	list2 = append(list2, readDataFun(bson.M{"day": bson.M{
+		"$lte": b1day, "$gte": b14day, "domainId": bson.M{"$ne": "0"}},
+	})...)
+
 	log.Error(len(list2))
+
 	// 第前3天的小时数据
 	list3 = readDataFun(bson.M{"day": b3day, "hour": bson.M{
-		"$gte": hour, "$lte": "23"},
+		"$gte": hour, "$lte": "23", "domainId": "0"},
 	})
+	list3 = append(list3, readDataFun(bson.M{"day": b15day, "hour": bson.M{
+		"$gte": hour, "$lte": "23", "domainId": bson.M{"$ne": "0"}},
+	})...)
 	log.Error(len(list3))
+
 	var appendFun = func(l []map[string]interface{}) {
 		for _, v := range l {
 			key := v["AD"].(string) + "_" + v["UA"].(string)
@@ -143,7 +162,7 @@ func (this *UserTrace) Do(c *cli.Context) {
 						}
 					}
 					if !isee {
-						list[key] = appendg(list[key], tvm)
+						list[key] = append(list[key], tvm)
 					}
 				}
 			} else {

@@ -4,19 +4,21 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/ngaut/log"
-	"github.com/nsqio/go-nsq"
 	"io/ioutil"
 	"net/url"
 	"runtime"
 	"strings"
 	"sync"
 
+	"github.com/ngaut/log"
+	"github.com/nsqio/go-nsq"
+
 	"github.com/qgweb/gopro/lib/encrypt"
+
+	"sync/atomic"
 
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
-	"sync/atomic"
 )
 
 type QueueData struct {
@@ -113,7 +115,22 @@ func dispath(data url.Values, px string) {
 	info := make(map[string]interface{})
 	wg := sync.WaitGroup{}
 
+	// 先查询mongo,避免并发查询monggo
+	// 去掉存在的
+
+	var uuidsAry = make([]string, 0, 10)
 	for i := 0; i < len(uidsAry); i++ {
+		ginfo, err := checkGoodsExist(uidsAry[i])
+		if err == mgo.ErrNotFound {
+			uuidsAry = append(uuidsAry, uidsAry[i])
+		} else {
+			ginfo["exists"] = 1
+			ginfoAry.Goods = append(ginfoAry.Goods, ginfo)
+		}
+	}
+
+	//并发抓取
+	for i := 0; i < len(uuidsAry); i++ {
 		wg.Add(1)
 		go func(gid string) {
 			defer func() {
@@ -122,16 +139,10 @@ func dispath(data url.Values, px string) {
 				}
 			}()
 
-			//判断是否存在
-			ginfo, err := checkGoodsExist(gid)
-			if err == mgo.ErrNotFound {
-				//抓取
-				ginfo = GrabGoodsInfo(gid)
-				if ginfo != nil {
-					ginfo["exists"] = 0
-				}
-			} else {
-				ginfo["exists"] = 1
+			//抓取数据
+			ginfo := GrabGoodsInfo(gid)
+			if ginfo != nil {
+				ginfo["exists"] = 0
 			}
 
 			ginfoAry.Lock()
