@@ -3,7 +3,8 @@ package model
 import (
 	"io/ioutil"
 	"math"
-	"strings"
+	"runtime"
+	"sync"
 	"time"
 
 	"github.com/codegangsta/cli"
@@ -18,6 +19,18 @@ import (
 type UserTrace struct {
 	mp      *common.MgoPool
 	iniFile *ini.File
+}
+
+type WaitGroup struct {
+	sync.WaitGroup
+}
+
+func (this *WaitGroup) Run(fun func(...interface{}), param ...interface{}) {
+	this.Add(1)
+	go func() {
+		fun(param...)
+		this.Done()
+	}()
 }
 
 func NewUserTraceCli() cli.Command {
@@ -61,6 +74,7 @@ func NewUserTraceCli() cli.Command {
 }
 
 func (this *UserTrace) Do(c *cli.Context) {
+	runtime.GOMAXPROCS(8)
 	var (
 		date          = time.Now()
 		day           = date.Format("20060102")
@@ -70,86 +84,19 @@ func (this *UserTrace) Do(c *cli.Context) {
 		b3day         = date.AddDate(0, 0, -3).Format("20060102")  //3天前
 		b14day        = date.AddDate(0, 0, -14).Format("20060102") //14天前
 		b15day        = date.AddDate(0, 0, -15).Format("20060102") //15天前
-		sess          = this.mp.Get()
 		db            = this.iniFile.Section("mongo").Key("db").String()
 		table         = "useraction"
-		table_put     = "useraction_put"
-		table_put_big = "useraction_put_big"
-		list_put      []interface{}
-		list_put_big  []interface{}
+		table_put     = "useraction_put1"
+		table_put_big = "useraction_put_big1"
 		list          map[string][]map[string]interface{}
-		list1         []map[string]interface{}
-		list2         []map[string]interface{}
-		list3         []map[string]interface{}
+		mux           sync.Mutex
 	)
 
-	// 读取数据函数
-	readDataFun := func(query bson.M) []map[string]interface{} {
-		var (
-			list      []map[string]interface{}
-			count     = 0
-			page      = 1
-			pageSize  = 10000
-			totalPage = 0
-		)
-
-		count, err := sess.DB(db).C(table).Find(query).Count()
-		if err != nil {
-			log.Error(err)
-			return nil
-		}
-
-		totalPage = int(math.Ceil(float64(count) / float64(pageSize)))
-
-		for ; page <= totalPage; page++ {
-			var tmpList []map[string]interface{}
-			if err := sess.DB(db).C(table).Find(query).Limit(pageSize).
-				Skip((page - 1) * pageSize).All(&tmpList); err != nil {
-				log.Error(err)
-				continue
-			}
-
-			list = append(list, tmpList...)
-		}
-
-		return list
-	}
-
-	// domainId 0 电商  1 医疗 4 金融
-	// 当天前一个小时前的数据
-	list1 = readDataFun(bson.M{"day": day, "hour": bson.M{
-		"$lte": hour, "$gte": "00", "domainId": "0"},
-	})
-	// == 医疗金融
-	list1 = append(list1, readDataFun(bson.M{"day": day, "hour": bson.M{
-		"$lte": hour, "$gte": "00", "domainId": bson.M{"$ne": "0"}},
-	})...)
-
-	log.Error(len(list1))
-
-	// 前2天数据
-	list2 = readDataFun(bson.M{"day": bson.M{
-		"$lte": b1day, "$gte": b2day, "domainId": "0"},
-	})
-
-	list2 = append(list2, readDataFun(bson.M{"day": bson.M{
-		"$lte": b1day, "$gte": b14day, "domainId": bson.M{"$ne": "0"}},
-	})...)
-
-	log.Error(len(list2))
-
-	// 第前3天的小时数据
-	list3 = readDataFun(bson.M{"day": b3day, "hour": bson.M{
-		"$gte": hour, "$lte": "23", "domainId": "0"},
-	})
-	list3 = append(list3, readDataFun(bson.M{"day": b15day, "hour": bson.M{
-		"$gte": hour, "$lte": "23", "domainId": bson.M{"$ne": "0"}},
-	})...)
-	log.Error(len(list3))
+	list = make(map[string][]map[string]interface{})
 
 	var appendFun = func(l []map[string]interface{}) {
 		for _, v := range l {
-			key := v["AD"].(string) + "_" + v["UA"].(string)
+			key := v["AD"].(string)
 			if tag, ok := list[key]; ok {
 				//去重
 				for _, tv := range v["tag"].([]interface{}) {
@@ -162,7 +109,9 @@ func (this *UserTrace) Do(c *cli.Context) {
 						}
 					}
 					if !isee {
+						mux.Lock()
 						list[key] = append(list[key], tvm)
+						mux.Unlock()
 					}
 				}
 			} else {
@@ -170,26 +119,110 @@ func (this *UserTrace) Do(c *cli.Context) {
 				for _, vv := range v["tag"].([]interface{}) {
 					tag = append(tag, vv.(map[string]interface{}))
 				}
+				mux.Lock()
 				list[key] = tag
+				mux.Unlock()
 			}
 		}
+
 	}
 
-	// 合并数据
-	list = make(map[string][]map[string]interface{})
-	appendFun(list1)
-	appendFun(list2)
-	appendFun(list3)
-	log.Error(len(list))
-	//更新投放表
-	list_put = make([]interface{}, 0, len(list))
-	list_put_big = make([]interface{}, 0, len(list))
-	for k, v := range list {
-		uaads := strings.Split(k, "_")
+	// 读取数据函数
+	readDataFun := func(query ...interface{}) {
+		var (
+			count     = 0
+			page      = 1
+			pageSize  = 100000
+			totalPage = 0
+			sess      = this.mp.Get()
+			querym    bson.M
+		)
 
+		if v, ok := query[0].(bson.M); ok {
+			querym = v
+		} else {
+			return
+		}
+
+		count, err := sess.DB(db).C(table).Find(querym).Count()
+		if err != nil {
+			log.Error(err)
+			return
+		}
+
+		totalPage = int(math.Ceil(float64(count) / float64(pageSize)))
+
+		for ; page <= totalPage; page++ {
+			var tmpList []map[string]interface{}
+			if err := sess.DB(db).C(table).Find(querym).Limit(pageSize).
+				Skip((page - 1) * pageSize).All(&tmpList); err != nil {
+				log.Error(err)
+				continue
+			}
+
+			appendFun(tmpList)
+			log.Warn(len(list))
+		}
+
+		sess.Close()
+	}
+
+	wg := &WaitGroup{}
+
+	// domainId 0 电商  1 医疗 4 金融
+	// 当天前一个小时前的数据
+	wg.Run(readDataFun, bson.M{"day": day, "hour": bson.M{
+		"$lte": hour, "$gte": "00"}, "domainId": "0",
+	})
+
+	// == 医疗金融
+	wg.Run(readDataFun, bson.M{"day": day, "hour": bson.M{
+		"$lte": hour, "$gte": "00"}, "domainId": bson.M{"$ne": "0"},
+	})
+
+	// 前2天数据
+	wg.Run(readDataFun, bson.M{"day": bson.M{
+		"$lte": b1day, "$gte": b2day}, "domainId": "0",
+	})
+
+	wg.Run(readDataFun, bson.M{"day": bson.M{
+		"$lte": b1day, "$gte": b14day}, "domainId": bson.M{"$ne": "0"},
+	})
+
+	// 第前3天的小时数据
+	wg.Run(readDataFun, bson.M{"day": b3day, "hour": bson.M{
+		"$gte": hour, "$lte": "23"}, "domainId": "0",
+	})
+
+	wg.Run(readDataFun, bson.M{"day": b15day, "hour": bson.M{
+		"$gte": hour, "$lte": "23"}, "domainId": bson.M{"$ne": "0"},
+	})
+
+	wg.Wait()
+
+	//更新投放表
+	log.Info(len(list))
+	sess := this.mp.Get()
+	sess.DB(db).C(table_put).DropCollection()
+	sess.DB(db).C(table_put_big).DropCollection()
+
+	//加索引
+	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
+
+	var (
+		size     = 40000
+		list_num = len(list)
+	)
+
+	list_put := make([]interface{}, 0, size)
+	list_put_big := make([]interface{}, 0, size)
+
+	for k, v := range list {
 		list_put = append(list_put, bson.M{
-			"AD":  uaads[0],
-			"UA":  uaads[1],
+			"AD":  k,
 			"tag": v,
 		})
 
@@ -201,39 +234,26 @@ func (this *UserTrace) Do(c *cli.Context) {
 		}
 
 		list_put_big = append(list_put_big, bson.M{
-			"AD":  uaads[0],
-			"UA":  uaads[1],
+			"AD":  k,
 			"tag": bv,
 		})
-	}
 
-	log.Info(len(list_put))
-	sess.DB(db).C(table_put).DropCollection()
-	sess.DB(db).C(table_put_big).DropCollection()
+		if len(list_put) == size || len(list_put) == list_num {
+			wg.Run(func(list1 ...interface{}) {
+				sess := this.mp.Get()
+				sess.DB(db).C(table_put).Insert(list1[0].([]interface{})...)
+				sess.DB(db).C(table_put_big).Insert(list1[1].([]interface{})...)
+				sess.Close()
+			}, list_put, list_put_big)
 
-	//加索引
-	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
-	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
-	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
-	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
-
-	//批量插入
-	var (
-		size  = 10000
-		count = int(math.Ceil(float64(len(list_put)) / float64(size)))
-	)
-
-	for i := 1; i <= count; i++ {
-		end := (i-1)*size + size
-		if end > len(list_put) {
-			end = len(list_put)
+			list_put = make([]interface{}, 0, size)
+			list_put_big = make([]interface{}, 0, size)
+			list_num = list_num - size
+			log.Warn(len(list_put))
 		}
-
-		sess.DB(db).C(table_put).Insert(list_put[(i-1)*size : end]...)
-		sess.DB(db).C(table_put_big).Insert(list_put_big[(i-1)*size : end]...)
-
-		log.Error(i, size)
 	}
+
+	wg.Wait()
 
 	sess.Close()
 	log.Info("ok")
