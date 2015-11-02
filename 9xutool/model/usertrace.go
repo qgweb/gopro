@@ -90,7 +90,11 @@ func (this *UserTrace) Do(c *cli.Context) {
 		table_put_big = "useraction_put_big1"
 		list          map[string][]map[string]interface{}
 		mux           sync.Mutex
+		taoCategory   map[string]string
 	)
+
+	//初始化淘宝分类
+	taoCategory = this.getBigCat()
 
 	list = make(map[string][]map[string]interface{})
 
@@ -154,7 +158,9 @@ func (this *UserTrace) Do(c *cli.Context) {
 
 		for ; page <= totalPage; page++ {
 			var tmpList []map[string]interface{}
-			if err := sess.DB(db).C(table).Find(querym).Limit(pageSize).
+			if err := sess.DB(db).C(table).Find(querym).
+				Select(bson.M{"_id": 0, "AD": 1, "tag": 1}).
+				Limit(pageSize).
 				Skip((page - 1) * pageSize).All(&tmpList); err != nil {
 				log.Error(err)
 				continue
@@ -213,7 +219,7 @@ func (this *UserTrace) Do(c *cli.Context) {
 	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
 
 	var (
-		size     = 40000
+		size     = 10000
 		list_num = len(list)
 	)
 
@@ -229,7 +235,9 @@ func (this *UserTrace) Do(c *cli.Context) {
 		bv := this.copy(v)
 		for k, vv := range bv {
 			if bv[k]["tagmongo"].(string) == "0" {
-				bv[k]["tagId"] = this.getBigCat(vv["tagId"].(string))
+				if cid, ok := taoCategory[vv["tagId"].(string)]; ok {
+					bv[k]["tagId"] = cid
+				}
 			}
 		}
 
@@ -239,12 +247,10 @@ func (this *UserTrace) Do(c *cli.Context) {
 		})
 
 		if len(list_put) == size || len(list_put) == list_num {
-			wg.Run(func(list1 ...interface{}) {
-				sess := this.mp.Get()
-				sess.DB(db).C(table_put).Insert(list1[0].([]interface{})...)
-				sess.DB(db).C(table_put_big).Insert(list1[1].([]interface{})...)
-				sess.Close()
-			}, list_put, list_put_big)
+			sess := this.mp.Get()
+			sess.DB(db).C(table_put).Insert(list_put...)
+			sess.DB(db).C(table_put_big).Insert(list_put_big...)
+			sess.Close()
 
 			list_put = make([]interface{}, 0, size)
 			list_put_big = make([]interface{}, 0, size)
@@ -274,7 +280,7 @@ func (this *UserTrace) copy(src []map[string]interface{}) []map[string]interface
 }
 
 // 获取大分类
-func (this *UserTrace) getBigCat(catId string) string {
+func (this *UserTrace) getBigCat() map[string]string {
 	var (
 		db    = this.iniFile.Section("mongo").Key("db").String()
 		table = "taocat"
@@ -283,11 +289,14 @@ func (this *UserTrace) getBigCat(catId string) string {
 
 	defer sess.Close()
 
-	var info map[string]interface{}
-	err := sess.DB(db).C(table).Find(bson.M{"cid": catId}).Select(bson.M{"bid": 1}).One(&info)
+	var info []map[string]interface{}
+	var list = make(map[string]string)
+	err := sess.DB(db).C(table).Find(bson.M{"type": "0"}).Select(bson.M{"bid": 1, "cid": 1}).All(&info)
 	if err == nil {
-		return info["bid"].(string)
+		for _, v := range info {
+			list[v["cid"].(string)] = v["bid"].(string)
+		}
+		return list
 	}
-
-	return ""
+	return nil
 }

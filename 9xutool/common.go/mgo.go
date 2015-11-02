@@ -51,5 +51,5 @@ func (this *MgoPool) Get() *mgo.Session {
 	}
 	//高并发下会关闭连接,ping下会恢复
 	this.db.Ping()
-	return this.db.Copy()
+	return this.db.Clone()
 }
