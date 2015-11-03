@@ -33,7 +33,7 @@ func (this *BDInterfaceManager) CanStart(ip string) string {
 	)
 
 	// 正式删除
-	return "1111"
+	//return "1111"
 
 	req := httplib.Post(EBIT_BASE_URL + "user/query")
 	req.JsonBody(map[string]string{
@@ -53,7 +53,6 @@ func (this *BDInterfaceManager) CanStart(ip string) string {
 	if task_id, ok := res["task_id"]; ok {
 		time.Sleep(time.Second * 3)
 		info := TaskQuery(task_id.(string))
-		log.Error(info)
 		if CheckError(info) {
 			return ""
 		}
@@ -73,7 +72,7 @@ func (this *BDInterfaceManager) Start(account string, ip string) Respond {
 	)
 
 	//// 正式删除
-	return Respond{Code: "200", Msg: "xxxxxxxxxxx"}
+	//return Respond{Code: "200", Msg: "xxxxxxxxxxx"}
 
 	req := httplib.Post(EBIT_BASE_URL + "speedup/open")
 	req.JsonBody(map[string]string{
@@ -97,7 +96,7 @@ func (this *BDInterfaceManager) Start(account string, ip string) Respond {
 		if CheckError(info) {
 			return Respond{Code: "500", Msg: errmsg}
 		}
-		return Respond{Code: "200", Msg: res["channel_id"].(string)}
+		return Respond{Code: "200", Msg: info["channel_id"].(string)}
 	}
 
 	return Respond{Code: "500", Msg: errmsg}
@@ -111,7 +110,7 @@ func (this *BDInterfaceManager) Stop(channel_id string) Respond {
 		errmsg    = "抱歉，程序发生错误,提速关闭失败"
 	)
 	//// 正式删除
-	return Respond{Code: "200", Msg: ""}
+	//return Respond{Code: "200", Msg: ""}
 
 	req := httplib.Post(EBIT_BASE_URL + "speedup/open")
 	req.JsonBody(map[string]string{

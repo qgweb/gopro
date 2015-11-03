@@ -8,13 +8,17 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/qianzhao-dz-tcpserver/logger"
 	"github.com/qgweb/gopro/qianzhao-dz-tcpserver/server"
 )
 
 func main() {
+	log.SetHighlighting(false)
+	log.SetOutputByName("./dztcp.log")
+
 	var (
-		log      = logger.New("qianzhao-dz-tcpserver")
+		nlog     = logger.New("qianzhao-dz-tcpserver")
 		fileName = fmt.Sprintf("./data/%d.dat", os.Getpid())
 		s        *server.Server
 		err      error
@@ -22,10 +26,10 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	if os.Getenv("_GRACEFUL_RESTART") == "true" {
-		s, err = server.NewFromFD(log, 3)
+	if os.Getenv("_GRACEFUL_RESTART_DZ_TCP") == "true" {
+		s, err = server.NewFromFD(nlog, 3)
 	} else {
-		s, err = server.New(log, "", "9092")
+		s, err = server.New(nlog, "", "9092")
 		d := server.GetLastFile("./data")
 		if d != nil {
 			server.DealData(d)
@@ -33,10 +37,10 @@ func main() {
 	}
 
 	if err != nil {
-		log.Fatalln("fail to init server:", err)
+		nlog.Fatalln("fail to init server:", err)
 	}
 
-	log.Println("Listen on", s.Addr())
+	nlog.Println("Listen on", s.Addr())
 
 	go s.StartAcceptLoop()
 	go s.GetAccountManager().TimeFlushDisk(fileName)
@@ -62,11 +66,11 @@ func main() {
 			// Wait a maximum of 10 seconds for existing connections to finish
 			err := s.WaitWithTimeout(10 * time.Second)
 			if err == server.WaitTimeoutError {
-				log.Printf("Timeout when stop  ping server, %d active connections will be cut.\n", s.ConnectionsCounter())
+				nlog.Printf("Timeout when stop  ping server, %d active connections will be cut.\n", s.ConnectionsCounter())
 				os.Exit(-127)
 			}
 			// Then the program exists
-			log.Println("Server shutdown successful")
+			nlog.Println("Server shutdown successful")
 			os.Exit(0)
 		} else if sig == syscall.SIGHUP {
 			// Stop accepting requests
@@ -74,10 +78,10 @@ func main() {
 			// Get socket file descriptor to pass it to fork
 			listenerFD, err := s.ListenerFD()
 			if err != nil {
-				log.Fatalln("Fail to get socket file descriptor:", err)
+				nlog.Fatalln("Fail to get socket file descriptor:", err)
 			}
 			// Set a flag for the new process start process
-			os.Setenv("_GRACEFUL_RESTART", "true")
+			os.Setenv("_GRACEFUL_RESTART_DZ_TCP", "true")
 			execSpec := &syscall.ProcAttr{
 				Env:   os.Environ(),
 				Files: []uintptr{os.Stdin.Fd(), os.Stdout.Fd(), os.Stderr.Fd(), listenerFD},
@@ -85,12 +89,12 @@ func main() {
 			// Fork exec the new version of your server
 			fork, err := syscall.ForkExec(os.Args[0], os.Args, execSpec)
 			if err != nil {
-				log.Fatalln("Fail to fork", err)
+				nlog.Fatalln("Fail to fork", err)
 			}
-			log.Println("SIGHUP received: fork-exec to", fork)
+			nlog.Println("SIGHUP received: fork-exec to", fork)
 			// Wait for all conections to be finished
 			s.Wait()
-			log.Println(os.Getpid(), "Server gracefully shutdown")
+			nlog.Println(os.Getpid(), "Server gracefully shutdown")
 
 			// Stop the old server, all the connections have been closed and the new one is running
 			os.Exit(0)

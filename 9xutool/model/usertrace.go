@@ -86,8 +86,8 @@ func (this *UserTrace) Do(c *cli.Context) {
 		b15day        = date.AddDate(0, 0, -15).Format("20060102") //15天前
 		db            = this.iniFile.Section("mongo").Key("db").String()
 		table         = "useraction"
-		table_put     = "useraction_put1"
-		table_put_big = "useraction_put_big1"
+		table_put     = "useraction_put"
+		table_put_big = "useraction_put_big"
 		list          map[string][]map[string]interface{}
 		mux           sync.Mutex
 		taoCategory   map[string]string
