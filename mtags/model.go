@@ -87,20 +87,26 @@ func dispath(data *CombinationData) {
 		}
 	}()
 
-	cids := make([]string, 0, len(data.Ginfos))
-	shopids := make([]string, 0, len(data.Ginfos))
+	var (
+		goodsLen = len(data.Ginfos)
+		cids     = make([]string, 0, goodsLen)
+		shopids  = make([]string, 0, goodsLen)
+		cf       = NewChanFactory(5, goodsLen)
+	)
 
 	for _, g := range data.Ginfos {
 		cids = append(cids, g.Tagid)
 		shopids = append(shopids, g.Shop_id)
-
-		if g.Exists == 0 {
-			//添加商品
-			addGoods(g)
+		f := ChanFunction{}
+		f.Fun = func(p ...interface{}) {
+			gs := p[0].(Goods)
+			if gs.Exists == 0 {
+				addGoods(gs)
+			}
+			addShop(gs)
 		}
-
-		//添加店铺
-		addShop(g)
+		f.Params = []interface{}{g}
+		cf.Push(f)
 	}
 
 	AddUidCids(map[string]string{

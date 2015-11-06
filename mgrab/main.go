@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/url"
 	"runtime"
 	"strings"
@@ -42,9 +43,10 @@ var (
 	grabFactory *GrabFactory
 	recvCount   uint64
 	dealCount   uint64
+	isAliyun    bool //是否是阿里云机器
 )
 
-func init() {
+func initConfigFile() {
 	flag.Parse()
 	d, err := ioutil.ReadFile(*conf)
 	if err != nil {
@@ -56,31 +58,14 @@ func init() {
 		log.Fatal("读取配置文件内容失败,错误信息为:", err)
 	}
 
-	initCateInfo()
-	initHttpProxy()
-	initNsqConn()
+	isAliyun = iniFile.Section("default").Key("mode").String() == "1"
 }
 
-// func bootstrap(px string) {
-// 	for {
-// 		data := httpsqsQueue(px)
-// 		if data == nil {
-// 			time.Sleep(time.Minute)
-// 			continue
-// 		}
-
-// 		//数据存放在队列中
-// 		nt := time.NewTicker(time.Minute * 10)
-// 		select {
-// 		case dataQueue <- QueueData{Data: data, Px: px}:
-// 		case <-nt.C:
-// 			log.Warn("队列超时")
-// 		}
-
-// 		seed := time.Duration(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(200))
-// 		time.Sleep(time.Millisecond * seed)
-// 	}
-// }
+func init() {
+	initConfigFile()
+	initCateInfo()
+	initNsqConn()
+}
 
 // nsq版本
 func bootstrapNsq(px string) {
@@ -105,57 +90,84 @@ func bootstrapNsq(px string) {
 	}
 }
 
+// 分页抓取商品
+func grabPage(uidsAry []string) *MapGoods {
+	var (
+		uidsLen   = len(uidsAry)
+		ginfoAry  = NewMapGoods(uidsLen)
+		wg        = sync.WaitGroup{}
+		uuidsAry  = uidsAry
+		pageSize  = 20
+		page      = 1
+		pageCount = int(math.Ceil(float64(uidsLen) / float64(pageSize)))
+	)
+
+	if !isAliyun {
+		uuidsAry = make([]string, 0, len(uidsAry))
+		for i := 0; i < len(uidsAry); i++ {
+			ginfo, err := checkGoodsExist(uidsAry[i])
+			if err == mgo.ErrNotFound {
+				uuidsAry = append(uuidsAry, uidsAry[i])
+			} else {
+				ginfo["exists"] = 1
+				ginfoAry.Goods = append(ginfoAry.Goods, ginfo)
+			}
+		}
+
+		pageCount = int(math.Ceil(float64(len(uuidsAry)) / float64(pageSize)))
+	}
+
+	for ; page <= pageCount; page++ {
+		begin := (page - 1) * pageSize
+		end := begin + pageSize
+		if page == pageCount {
+			end = uidsLen
+		}
+
+		for _, v := range uuidsAry[begin:end] {
+			wg.Add(1)
+			go func(gid string) {
+				defer func() {
+					wg.Done()
+					if msg := recover(); msg != nil {
+						log.Error(msg)
+					}
+				}()
+
+				//抓取数据
+				ginfo := GrabGoodsInfo(gid)
+				if ginfo != nil {
+					ginfo["exists"] = 0
+				}
+
+				if ginfo != nil {
+					ginfoAry.Lock()
+					ginfoAry.Goods = append(ginfoAry.Goods, ginfo)
+					ginfoAry.Unlock()
+				}
+			}(v)
+		}
+		wg.Wait()
+	}
+	return ginfoAry
+}
+
 // 分配数据
 func dispath(data url.Values, px string) {
+	var (
+		uidsAry  = strings.Split(data.Get("uids"), ",")
+		info     = make(map[string]interface{})
+		ginfoAry = grabPage(uidsAry)
+	)
+
 	data.Set("ua", encrypt.DefaultBase64.Decode(data.Get("ua")))
-	uidsAry := strings.Split(data.Get("uids"), ",")
-
-	ginfoAry := NewMapGoods(len(uidsAry))
-
-	info := make(map[string]interface{})
-	wg := sync.WaitGroup{}
-
-	// 先查询mongo,避免并发查询monggo
-	// 去掉存在的
-
-	var uuidsAry = make([]string, 0, 10)
-	for i := 0; i < len(uidsAry); i++ {
-		ginfo, err := checkGoodsExist(uidsAry[i])
-		if err == mgo.ErrNotFound {
-			uuidsAry = append(uuidsAry, uidsAry[i])
-		} else {
-			ginfo["exists"] = 1
-			ginfoAry.Goods = append(ginfoAry.Goods, ginfo)
-		}
-	}
-
-	//并发抓取
-	for i := 0; i < len(uuidsAry); i++ {
-		wg.Add(1)
-		go func(gid string) {
-			defer func() {
-				if msg := recover(); msg != nil {
-					log.Error(msg)
-				}
-			}()
-
-			//抓取数据
-			ginfo := GrabGoodsInfo(gid)
-			if ginfo != nil {
-				ginfo["exists"] = 0
-			}
-
-			ginfoAry.Lock()
-			ginfoAry.Goods = append(ginfoAry.Goods, ginfo)
-			ginfoAry.Unlock()
-			wg.Done()
-		}(uidsAry[i])
-	}
-
-	wg.Wait()
 
 	for k, _ := range data {
 		info[k] = data.Get(k)
+	}
+
+	if len(ginfoAry.Goods) == 0 {
+		return
 	}
 
 	info["ginfos"] = ginfoAry.Goods
@@ -171,13 +183,15 @@ func dispath(data url.Values, px string) {
 }
 
 func main() {
-	log.SetHighlighting(true)
+	log.SetHighlighting(false)
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	//go bootstrap("_ad")
-	//go bootstrap("_ck")
+
 	go bootstrapNsq("_ad")
 	go bootstrapNsq("_ck")
-	//go checkProxyHealth()
-	go MonitorLoop()
+
+	if !isAliyun {
+		go MonitorLoop()
+	}
+
 	select {}
 }

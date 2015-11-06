@@ -47,6 +47,22 @@ func (this TaoCatData) GetHospitalData(cid string) int {
 	return c
 }
 
+// 获取域名的数据
+func (this TaoCatData) GetDomainData(cid string) int {
+	var (
+		db    = IniFile.Section("mongo-data_source").Key("db").String()
+		table = "urltrack_put"
+		sess  = getcattjSession()
+	)
+	defer sess.Close()
+
+	c, err := sess.DB(db).C(table).Find(bson.M{"cids.id": cid}).Count()
+	if err != nil {
+		return 0
+	}
+	return c
+}
+
 //获取session
 func getcattjSession() *mgo.Session {
 	var (

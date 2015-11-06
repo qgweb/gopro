@@ -112,7 +112,7 @@ func (this *BDInterfaceManager) Stop(channel_id string) Respond {
 	//// 正式删除
 	//return Respond{Code: "200", Msg: ""}
 
-	req := httplib.Post(EBIT_BASE_URL + "speedup/open")
+	req := httplib.Post(EBIT_BASE_URL + "speedup/close")
 	req.JsonBody(map[string]string{
 		"app":        APP_KEY,
 		"secret":     secret,

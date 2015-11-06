@@ -128,7 +128,6 @@ func (this *UserTrace) Do(c *cli.Context) {
 				mux.Unlock()
 			}
 		}
-
 	}
 
 	// 读取数据函数
@@ -247,15 +246,13 @@ func (this *UserTrace) Do(c *cli.Context) {
 		})
 
 		if len(list_put) == size || len(list_put) == list_num {
-			sess := this.mp.Get()
 			sess.DB(db).C(table_put).Insert(list_put...)
 			sess.DB(db).C(table_put_big).Insert(list_put_big...)
-			sess.Close()
 
+			log.Warn(len(list_put))
 			list_put = make([]interface{}, 0, size)
 			list_put_big = make([]interface{}, 0, size)
 			list_num = list_num - size
-			log.Warn(len(list_put))
 		}
 	}
 

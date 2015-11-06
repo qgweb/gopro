@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 
@@ -71,13 +72,15 @@ func ProtocolPack(data []byte) []byte {
 // 解包
 func ProtocolUnPack(data []byte) []byte {
 	p := protocol.NewProtocol(PROTOCOL_HEAD)
-	b, _ := p.Unpack(data)
+	b, err := p.Unpack(data)
+	fmt.Println(string(err))
 	return b[0]
 }
 
 func main() {
+
 	//addr, _ := net.ResolveTCPAddr("tcp4", "122.225.98.80:9092")
-	addr, _ := net.ResolveTCPAddr("tcp4", "127.0.0.1:9092")
+	addr, _ := net.ResolveTCPAddr("tcp4", "122.225.98.80:9092")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
 		log.Fatalln("fuck")
@@ -96,6 +99,7 @@ func main() {
 			log.Println(err)
 		}
 
+		log.Println(buf[0:n])
 		log.Println(string(ProtocolUnPack(buf[0:n])))
 		// time.Sleep(time.Second * 30)
 

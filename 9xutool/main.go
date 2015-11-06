@@ -16,6 +16,7 @@ func main() {
 	app.Commands = []cli.Command{
 		model.NewUserTraceCli(),
 		model.NewShopTraceCli(),
+		model.NewURLTraceCli(),
 	}
 
 	app.Run(os.Args)

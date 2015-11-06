@@ -4,18 +4,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/bitly/go-nsq"
+	"github.com/ngaut/log"
+	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"runtime"
-	"time"
-	//	"time"
-
-	"github.com/ngaut/log"
-
-	"gopkg.in/ini.v1"
-
 	"sync/atomic"
-
-	"github.com/bitly/go-nsq"
+	"time"
 )
 
 var (

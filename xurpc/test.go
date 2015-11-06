@@ -7,17 +7,18 @@ import (
 )
 
 type clientStub struct {
-	Hello      func(string) string
-	Swap       func(int, int) (int, int)
-	Sum        func(...int) (int, error)
-	GetTaoData func(string) int
-	GetTag     func(string, string) []byte
+	Hello         func(string) string
+	Swap          func(int, int) (int, int)
+	Sum           func(...int) (int, error)
+	GetTaoData    func(string) int
+	GetTag        func(string, string) []byte
+	GetDomainData func(string) int
 }
 
-func main1() {
-	client := hprose.NewClient("http://127.0.0.1:12345/")
+func main() {
+	client := hprose.NewClient("http://192.168.1.199:12344/")
 	var ro clientStub
 	client.UseService(&ro)
 	fmt.Println(ro.GetTaoData("World"))
-	fmt.Println(string(ro.GetTag("42591253308", "")))
+	fmt.Println(ro.GetDomainData("187"))
 }
