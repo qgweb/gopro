@@ -97,7 +97,7 @@ func grabPage(uidsAry []string) *MapGoods {
 		ginfoAry  = NewMapGoods(uidsLen)
 		wg        = sync.WaitGroup{}
 		uuidsAry  = uidsAry
-		pageSize  = 20
+		pageSize  = 10
 		page      = 1
 		pageCount = int(math.Ceil(float64(uidsLen) / float64(pageSize)))
 	)
@@ -178,7 +178,7 @@ func dispath(data url.Values, px string) {
 		return
 	}
 
-	pushMsgToNsq(j)
+	go pushMsgToNsq(j)
 	dealCount = atomic.AddUint64(&dealCount, 1)
 }
 
