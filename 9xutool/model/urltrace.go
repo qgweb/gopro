@@ -7,7 +7,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/ngaut/log"
-	"github.com/qgweb/gopro/9xutool/common.go"
+	"github.com/qgweb/gopro/9xutool/common"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

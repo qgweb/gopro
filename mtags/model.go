@@ -109,6 +109,8 @@ func dispath(data *CombinationData) {
 		cf.Push(f)
 	}
 
+	cf.Run()
+
 	AddUidCids(map[string]string{
 		"ad": data.Ad, "cookie": data.Cookie,
 		"ua": data.Ua, "cids": strings.Join(cids, ","),
@@ -183,7 +185,7 @@ func AddUidCids(param map[string]string) {
 			bson.M{"$set": bson.M{c: param["cids"]}})
 
 		//合并到用户轨迹上
-		go userLocusCombine(UserLocus{
+		userLocusCombine(UserLocus{
 			AD:     param["ad"],
 			Hour:   param["clock"],
 			TagIds: strings.Split(param["cids"], ","),

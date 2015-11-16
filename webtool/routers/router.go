@@ -1,10 +1,10 @@
 package routers
 
 import (
-	"github.com/qgweb/gopro/webtool/controllers"
 	"github.com/astaxie/beego"
+	"github.com/qgweb/gopro/webtool/controllers"
 )
 
 func init() {
-    beego.Router("/", &controllers.MainController{})
+	beego.AutoRouter(&controllers.MainController{})
 }

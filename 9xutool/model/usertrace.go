@@ -1,15 +1,17 @@
 package model
 
 import (
+	"fmt"
 	"io/ioutil"
 	"math"
-	"runtime"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/codegangsta/cli"
+	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
-	"github.com/qgweb/gopro/9xutool/common.go"
+	"github.com/qgweb/gopro/9xutool/common"
 	"github.com/qgweb/gopro/lib/convert"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
@@ -18,7 +20,9 @@ import (
 
 type UserTrace struct {
 	mp      *common.MgoPool
+	rc      redis.Conn
 	iniFile *ini.File
+	prefix  string
 }
 
 type WaitGroup struct {
@@ -64,150 +68,59 @@ func NewUserTraceCli() cli.Command {
 			mconf.UserPwd = ur.iniFile.Section("mongo").Key("pwd").String()
 			ur.mp = common.NewMgoPool(mconf)
 
+			// redis配置
+			ruser := ur.iniFile.Section("redis").Key("host").String()
+			rport := ur.iniFile.Section("redis").Key("port").String()
+			rdb := ur.iniFile.Section("redis").Key("db").String()
+			ur.rc, err = redis.Dial("tcp4", fmt.Sprintf("%s:%s", ruser, rport))
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			ur.rc.Do("SELECT", rdb)
+
+			ur.prefix = bson.NewObjectId().Hex() + "_"
 			ur.Do(c)
 		},
-		//		Flags: []cli.Flag{
-		//			cli.StringFlag{"port, p", "3000", "Temporary port number to prevent conflict", ""},
-		//			cli.StringFlag{"config, c", "custom/conf/app.ini", "Custom configuration file path", ""},
-		//		},
 	}
 }
 
-func (this *UserTrace) Do(c *cli.Context) {
-	runtime.GOMAXPROCS(8)
+func (this *UserTrace) setInfo(ad string, tagid string) {
+	this.rc.Do("HSET", this.prefix+ad, tagid, 1)
+}
+
+func (this *UserTrace) getall(key string) map[string]string {
+	list, err := redis.StringMap(this.rc.Do("HGETALL", key))
+	if err != nil {
+		return nil
+	}
+	return list
+}
+
+func (this *UserTrace) emptyKeys() {
+	keys, err := redis.Strings(this.rc.Do("keys", this.prefix+"*"))
+	if err == nil {
+		for _, v := range keys {
+			this.rc.Do("DEL", v)
+		}
+	}
+}
+
+func (this *UserTrace) saveData() {
 	var (
-		date          = time.Now()
-		day           = date.Format("20060102")
-		hour          = convert.ToString(date.Hour() - 1)
-		b1day         = date.AddDate(0, 0, -1).Format("20060102")  //1天前
-		b2day         = date.AddDate(0, 0, -2).Format("20060102")  //2天前
-		b3day         = date.AddDate(0, 0, -3).Format("20060102")  //3天前
-		b14day        = date.AddDate(0, 0, -14).Format("20060102") //14天前
-		b15day        = date.AddDate(0, 0, -15).Format("20060102") //15天前
+		size          = 10000
+		page          = 1
+		pageTotal     = 0
+		pageCount     = 0
+		sess          = this.mp.Get()
 		db            = this.iniFile.Section("mongo").Key("db").String()
-		table         = "useraction"
 		table_put     = "useraction_put"
 		table_put_big = "useraction_put_big"
-		list          map[string][]map[string]interface{}
-		mux           sync.Mutex
 		taoCategory   map[string]string
 	)
 
-	//初始化淘宝分类
-	taoCategory = this.getBigCat()
+	defer sess.Close()
 
-	list = make(map[string][]map[string]interface{})
-
-	var appendFun = func(l []map[string]interface{}) {
-		for _, v := range l {
-			key := v["AD"].(string)
-			if tag, ok := list[key]; ok {
-				//去重
-				for _, tv := range v["tag"].([]interface{}) {
-					isee := false
-					tvm := tv.(map[string]interface{})
-					for _, tv1 := range tag {
-						if tvm["tagId"] == tv1["tagId"] {
-							isee = true
-							break
-						}
-					}
-					if !isee {
-						mux.Lock()
-						list[key] = append(list[key], tvm)
-						mux.Unlock()
-					}
-				}
-			} else {
-				tag := make([]map[string]interface{}, 0, len(v["tag"].([]interface{})))
-				for _, vv := range v["tag"].([]interface{}) {
-					tag = append(tag, vv.(map[string]interface{}))
-				}
-				mux.Lock()
-				list[key] = tag
-				mux.Unlock()
-			}
-		}
-	}
-
-	// 读取数据函数
-	readDataFun := func(query ...interface{}) {
-		var (
-			count     = 0
-			page      = 1
-			pageSize  = 100000
-			totalPage = 0
-			sess      = this.mp.Get()
-			querym    bson.M
-		)
-
-		if v, ok := query[0].(bson.M); ok {
-			querym = v
-		} else {
-			return
-		}
-
-		count, err := sess.DB(db).C(table).Find(querym).Count()
-		if err != nil {
-			log.Error(err)
-			return
-		}
-
-		totalPage = int(math.Ceil(float64(count) / float64(pageSize)))
-
-		for ; page <= totalPage; page++ {
-			var tmpList []map[string]interface{}
-			if err := sess.DB(db).C(table).Find(querym).
-				Select(bson.M{"_id": 0, "AD": 1, "tag": 1}).
-				Limit(pageSize).
-				Skip((page - 1) * pageSize).All(&tmpList); err != nil {
-				log.Error(err)
-				continue
-			}
-
-			appendFun(tmpList)
-			log.Warn(len(list))
-		}
-
-		sess.Close()
-	}
-
-	wg := &WaitGroup{}
-
-	// domainId 0 电商  1 医疗 4 金融
-	// 当天前一个小时前的数据
-	wg.Run(readDataFun, bson.M{"day": day, "hour": bson.M{
-		"$lte": hour, "$gte": "00"}, "domainId": "0",
-	})
-
-	// == 医疗金融
-	wg.Run(readDataFun, bson.M{"day": day, "hour": bson.M{
-		"$lte": hour, "$gte": "00"}, "domainId": bson.M{"$ne": "0"},
-	})
-
-	// 前2天数据
-	wg.Run(readDataFun, bson.M{"day": bson.M{
-		"$lte": b1day, "$gte": b2day}, "domainId": "0",
-	})
-
-	wg.Run(readDataFun, bson.M{"day": bson.M{
-		"$lte": b1day, "$gte": b14day}, "domainId": bson.M{"$ne": "0"},
-	})
-
-	// 第前3天的小时数据
-	wg.Run(readDataFun, bson.M{"day": b3day, "hour": bson.M{
-		"$gte": hour, "$lte": "23"}, "domainId": "0",
-	})
-
-	wg.Run(readDataFun, bson.M{"day": b15day, "hour": bson.M{
-		"$gte": hour, "$lte": "23"}, "domainId": bson.M{"$ne": "0"},
-	})
-
-	wg.Wait()
-
-	//更新投放表
-	log.Info(len(list))
-	sess := this.mp.Get()
 	sess.DB(db).C(table_put).DropCollection()
 	sess.DB(db).C(table_put_big).DropCollection()
 
@@ -216,64 +129,109 @@ func (this *UserTrace) Do(c *cli.Context) {
 	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
 	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
 	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
+	//初始化淘宝分类
+	taoCategory = this.getBigCat()
 
-	var (
-		size     = 10000
-		list_num = len(list)
-	)
-
-	list_put := make([]interface{}, 0, size)
-	list_put_big := make([]interface{}, 0, size)
-
-	for k, v := range list {
-		list_put = append(list_put, bson.M{
-			"AD":  k,
-			"tag": v,
-		})
-
-		bv := this.copy(v)
-		for k, vv := range bv {
-			if bv[k]["tagmongo"].(string) == "0" {
-				if cid, ok := taoCategory[vv["tagId"].(string)]; ok {
-					bv[k]["tagId"] = cid
-				}
-			}
-		}
-
-		list_put_big = append(list_put_big, bson.M{
-			"AD":  k,
-			"tag": bv,
-		})
-
-		if len(list_put) == size || len(list_put) == list_num {
-			sess.DB(db).C(table_put).Insert(list_put...)
-			sess.DB(db).C(table_put_big).Insert(list_put_big...)
-
-			log.Warn(len(list_put))
-			list_put = make([]interface{}, 0, size)
-			list_put_big = make([]interface{}, 0, size)
-			list_num = list_num - size
-		}
+	keys, err := redis.Strings(this.rc.Do("KEYS", this.prefix+"*"))
+	if err != nil {
+		return
 	}
 
-	wg.Wait()
+	pageCount = len(keys)
 
-	sess.Close()
-	log.Info("ok")
+	pageTotal = int(math.Ceil(float64(pageCount) / float64(size)))
+	for page = 1; page <= pageTotal; page++ {
+		bg := (page - 1) * size
+		eg := bg + size
+		if page == pageTotal {
+			eg = pageCount
+		}
+
+		var list []interface{} = make([]interface{}, 0, eg-bg)
+		var list_put []interface{} = make([]interface{}, 0, eg-bg)
+		for _, v := range keys[bg:eg] {
+			log.Debug(v)
+			tags := this.getall(v)
+			info := make(bson.M)
+			info_put := make(bson.M)
+			log.Warn(tags)
+			v = strings.Replace(v, this.prefix, "", -1)
+			info["AD"] = v
+			info["tag"] = make([]bson.M, 0, len(tags))
+			info_put["AD"] = v
+			info_put["tag"] = make([]bson.M, 0, len(tags))
+
+			for kk, _ := range tags {
+				tagInfo := make(bson.M)
+				tagInfoPut := make(bson.M)
+
+				tagInfo["tagId"] = kk
+				tagInfo["tagmongo"] = "0"
+				tagInfoPut["tagId"] = kk
+				tagInfoPut["tagmongo"] = "0"
+
+				if bson.IsObjectIdHex(kk) {
+					tagInfo["tagmongo"] = "1"
+					tagInfoPut["tagmongo"] = "1"
+				} else {
+					if bt, ok := taoCategory[kk]; ok {
+						tagInfoPut["tagId"] = bt
+					}
+				}
+
+				info["tag"] = append(info["tag"].([]bson.M), tagInfo)
+				info_put["tag"] = append(info_put["tag"].([]bson.M), tagInfoPut)
+			}
+
+			list = append(list, info)
+			list_put = append(list_put, info_put)
+		}
+
+		log.Warn(list)
+
+		log.Info(len(list))
+		//插入mongo
+		sess.DB(db).C(table_put).Insert(list...)
+		sess.DB(db).C(table_put_big).Insert(list_put...)
+	}
 }
 
-// 复制对象
-func (this *UserTrace) copy(src []map[string]interface{}) []map[string]interface{} {
-	var dis = make([]map[string]interface{}, 0, len(src))
-	for _, v := range src {
-		var node = make(map[string]interface{})
-		for kk, vv := range v {
-			node[kk] = vv
+func (this *UserTrace) ReadData(query bson.M) {
+	var (
+		db    = this.iniFile.Section("mongo").Key("db").String()
+		sess  = this.mp.Get()
+		table = "useraction"
+	)
+	log.Debug(query)
+	iter := sess.DB(db).C(table).Find(query).Iter()
+	var data map[string]interface{}
+	for {
+		if !iter.Next(&data) {
+			break
 		}
-		dis = append(dis, node)
-	}
 
-	return dis
+		for _, v := range data["tag"].([]interface{}) {
+			if tags, ok := v.(map[string]interface{}); ok {
+				this.setInfo(data["AD"].(string), tags["tagId"].(string))
+			}
+		}
+	}
+}
+
+func (this *UserTrace) Do(c *cli.Context) {
+	var (
+		now    = time.Now()
+		now1   = now.Add(-time.Second * time.Duration(now.Second())).Add(-time.Minute * time.Duration(now.Minute()))
+		bghour = convert.ToString(now1.Add(-time.Hour).Unix())
+		eghour = convert.ToString(now1.Add(-time.Duration(time.Hour*2)).Unix() + 86399)
+		bgdate = convert.ToString(now1.Add(-time.Hour).Unix())
+		egdate = convert.ToString(now1.Add(-time.Duration(time.Hour*73)).Unix() + 86399)
+	)
+
+	this.ReadData(bson.M{"domainId": "0", "timestamp": bson.M{"$gte": egdate, "$lte": bgdate}})
+	this.ReadData(bson.M{"domainId": bson.M{"$ne": "0"}, "timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	this.saveData()
+	this.emptyKeys()
 }
 
 // 获取大分类
