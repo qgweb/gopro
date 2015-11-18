@@ -5,6 +5,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/model"
+	"github.com/qgweb/gopro/9xutool/model/putin"
 )
 
 func main() {
@@ -17,6 +18,7 @@ func main() {
 		model.NewUserTraceCli(),
 		model.NewShopTraceCli(),
 		model.NewURLTraceCli(),
+		putin.NewZheJiangPutCli(),
 	}
 
 	app.Run(os.Args)

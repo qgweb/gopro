@@ -185,7 +185,7 @@ func AddUidCids(param map[string]string) {
 			bson.M{"$set": bson.M{c: param["cids"]}})
 
 		//合并到用户轨迹上
-		userLocusCombine(UserLocus{
+		go userLocusCombine(UserLocus{
 			AD:     param["ad"],
 			Hour:   param["clock"],
 			TagIds: strings.Split(param["cids"], ","),
@@ -272,6 +272,8 @@ func userLocusCombine(ul UserLocus) {
 
 	err := sess.DB(modb).C(motable).Find(bson.M{"AD": ul.AD, "UA": ul.UA,
 		"hour": ul.Hour, "day": day}).One(&info)
+	t := time.Now()
+	ts :=time.Date(t.Year(), t.Month(), t.Day(), convert.ToInt(ul.Hour), 0, 0, 0, time.Local).Unix()
 	if err == mgo.ErrNotFound {
 		//插入
 		sess.DB(modb).C(motable).Insert(bson.M{
@@ -281,13 +283,14 @@ func userLocusCombine(ul UserLocus) {
 			"hour":     ul.Hour,
 			"day":      time.Now().Format("20060102"),
 			"tag":      tags,
+			"timestamp": convert.ToString(ts),
 		})
 	}
 
 	if err == nil {
 		//更新
 		sess.DB(modb).C(motable).Upsert(bson.M{"AD": ul.AD, "UA": ul.UA, "hour": ul.Hour,
-			"day": day}, bson.M{"$push": bson.M{"tag": bson.M{"$each": tags}}})
+			"timestamp" : convert.ToString(ts),"day": day}, bson.M{"$push": bson.M{"tag": bson.M{"$each": tags}}})
 	}
 }
 

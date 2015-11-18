@@ -1,12 +1,21 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/qgweb/gopro/lib/convert"
 	"github.com/tealeg/xlsx"
 	"gopkg.in/mgo.v2"
-	"log"
 )
 
 func main() {
+	t := time.Now()
+	h := "23"
+	fmt.Println(time.Date(t.Year(), t.Month(), t.Day(), convert.ToInt(h), 0, 0, 0, time.Local).Unix())
+
+	return
 
 	sess, err := mgo.Dial("192.168.1.199:27017/data_source")
 	if err != nil {

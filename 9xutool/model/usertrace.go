@@ -150,11 +150,9 @@ func (this *UserTrace) saveData() {
 		var list []interface{} = make([]interface{}, 0, eg-bg)
 		var list_put []interface{} = make([]interface{}, 0, eg-bg)
 		for _, v := range keys[bg:eg] {
-			log.Debug(v)
 			tags := this.getall(v)
 			info := make(bson.M)
 			info_put := make(bson.M)
-			log.Warn(tags)
 			v = strings.Replace(v, this.prefix, "", -1)
 			info["AD"] = v
 			info["tag"] = make([]bson.M, 0, len(tags))
@@ -186,8 +184,6 @@ func (this *UserTrace) saveData() {
 			list = append(list, info)
 			list_put = append(list_put, info_put)
 		}
-
-		log.Warn(list)
 
 		log.Info(len(list))
 		//插入mongo
@@ -222,14 +218,15 @@ func (this *UserTrace) Do(c *cli.Context) {
 	var (
 		now    = time.Now()
 		now1   = now.Add(-time.Second * time.Duration(now.Second())).Add(-time.Minute * time.Duration(now.Minute()))
-		bghour = convert.ToString(now1.Add(-time.Hour).Unix())
-		eghour = convert.ToString(now1.Add(-time.Duration(time.Hour*2)).Unix() + 86399)
-		bgdate = convert.ToString(now1.Add(-time.Hour).Unix())
-		egdate = convert.ToString(now1.Add(-time.Duration(time.Hour*73)).Unix() + 86399)
+		eghour = convert.ToString(now1.Add(-time.Hour).Unix())
+		bghour = convert.ToString(now1.Add(-time.Duration(time.Hour * 2)).Unix())
+		egdate = convert.ToString(now1.Add(-time.Hour).Unix())
+		bgdate = convert.ToString(now1.Add(-time.Duration(time.Hour * 73)).Unix())
 	)
 
-	this.ReadData(bson.M{"domainId": "0", "timestamp": bson.M{"$gte": egdate, "$lte": bgdate}})
 	this.ReadData(bson.M{"domainId": bson.M{"$ne": "0"}, "timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	this.ReadData(bson.M{"domainId": "0", "timestamp": bson.M{"$gte": bgdate, "$lte": egdate}})
+
 	this.saveData()
 	this.emptyKeys()
 }
