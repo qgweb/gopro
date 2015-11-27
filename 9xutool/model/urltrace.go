@@ -1,8 +1,10 @@
 package model
 
 import (
+	"github.com/qgweb/gopro/lib/encrypt"
 	"io/ioutil"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/codegangsta/cli"
@@ -56,25 +58,29 @@ func NewURLTraceCli() cli.Command {
 
 func (this *URLTrace) Do(c *cli.Context) {
 	var (
-		date       = time.Now()
-		day        = date.Format("20060102")
-		b1day      = date.AddDate(0, 0, -1).Format("20060102") //1天前
-		hour       = date.Add(-time.Hour).Format("15")
-		month      = time.Now().Format("200601")
-		table      = "urltrack_" + month
-		table_put  = "urltrack_put"
-		sess       = this.mp.Get()
-		db         = this.iniFile.Section("mongo").Key("db").String()
-		curr_list  []map[string]interface{}
-		befer_list []map[string]interface{}
-		list       map[string][]map[string]interface{}
+		date      = time.Now()
+		day       = date.Format("20060102")
+		b1day     = date.AddDate(0, 0, -1).Format("20060102") //1天前
+		hour      = date.Add(-time.Hour).Format("15")
+		month     = time.Now().Format("200601")
+		table     = "urltrack_" + month
+		table_put = "urltrack_put"
+		sess      = this.mp.Get()
+		db        = this.iniFile.Section("mongo").Key("db").String()
+		list      map[string][]map[string]interface{}
 	)
 	defer sess.Close()
 
 	list = make(map[string][]map[string]interface{})
 	var appendFun = func(l []map[string]interface{}) {
 		for _, v := range l {
-			key := v["ad"].(string)
+			ad := v["ad"].(string)
+			ua := "ua"
+			if u, ok := v["ua"]; ok {
+				ua = u.(string)
+			}
+
+			key := ad + "_" + ua
 			if tag, ok := list[key]; ok {
 				//去重
 				for _, tv := range v["cids"].([]interface{}) {
@@ -127,7 +133,7 @@ func (this *URLTrace) Do(c *cli.Context) {
 		for ; page <= totalPage; page++ {
 			var tmpList []map[string]interface{}
 			if err := sess.DB(db).C(table).Find(querym).
-				Select(bson.M{"_id": 0, "ad": 1, "cids": 1}).
+				Select(bson.M{"_id": 0, "ad": 1, "ua": 1, "cids": 1}).
 				Limit(pageSize).
 				Skip((page - 1) * pageSize).All(&tmpList); err != nil {
 				log.Error(err)
@@ -142,12 +148,10 @@ func (this *URLTrace) Do(c *cli.Context) {
 	}
 
 	//读取数据
-	readDataFun(bson.M{"date": day, "hour": bson.M{"$lte": hour, "$gte": "00"}})
-	readDataFun(bson.M{"date": b1day, "hour": bson.M{"$lte": "23", "$gte": hour}})
-
-	//合并数据
-	appendFun(curr_list)
-	appendFun(befer_list)
+	_ = b1day
+	//_ = bson.M{"date": day, "hour": bson.M{"$lte": hour, "$gte": hour}}
+	readDataFun(bson.M{"date": day, "hour": bson.M{"$lte": hour, "$gte": hour}})
+	//readDataFun(bson.M{"date": b1day, "hour": bson.M{"$lte": "23", "$gte": hour}})
 
 	//更新投放表
 	log.Info(len(list))
@@ -156,6 +160,7 @@ func (this *URLTrace) Do(c *cli.Context) {
 	//加索引
 	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
 	sess.DB(db).C(table_put).EnsureIndexKey("cids.id")
+	sess.DB(db).C(table_put).EnsureIndexKey("adua")
 
 	var (
 		size     = 10000
@@ -164,8 +169,11 @@ func (this *URLTrace) Do(c *cli.Context) {
 
 	list_put := make([]interface{}, 0, size)
 	for k, v := range list {
+		adua := strings.Split(k, "_")
 		list_put = append(list_put, bson.M{
-			"ad":   k,
+			"ad":   adua[0],
+			"ua":   adua[1],
+			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
 			"cids": v,
 		})
 

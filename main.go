@@ -1,38 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"log"
 	"time"
-
-	"github.com/qgweb/gopro/lib/convert"
-	"github.com/tealeg/xlsx"
-	"gopkg.in/mgo.v2"
 )
 
 func main() {
-	t := time.Now()
-	h := "23"
-	fmt.Println(time.Date(t.Year(), t.Month(), t.Day(), convert.ToInt(h), 0, 0, 0, time.Local).Unix())
+	conn, _ := redis.Dial("tcp4", "127.0.0.1:6379")
+	defer conn.Close()
+	bt := time.Now()
 
-	return
-
-	sess, err := mgo.Dial("192.168.1.199:27017/data_source")
-	if err != nil {
-		log.Fatalln(err)
+	for i := 0; i < 100000; i++ {
+		conn.Do("SET", i, i)
 	}
 
-	f := xlsx.NewFile()
-	s, _ := f.AddSheet("sheet1")
-
-	it := sess.DB("data_source").C("domain_category").Find(nil).Iter()
-	var data map[string]interface{}
-	for it.Next(&data) {
-		r := s.AddRow()
-		r.AddCell().SetValue(data["name"].(string))
-		r.AddCell().SetValue(data["cid"].(string))
-		log.Println(data["name"], data["cid"])
-	}
-	it.Close()
-	f.Save("./cat.xls")
+	log.Println(time.Now().Sub(bt).Seconds())
 }

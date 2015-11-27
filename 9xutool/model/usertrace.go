@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/qgweb/gopro/lib/encrypt"
 	"io/ioutil"
 	"math"
 	"strings"
@@ -128,7 +129,9 @@ func (this *UserTrace) saveData() {
 	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
 	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
 	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put).EnsureIndexKey("adua")
 	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
 	//初始化淘宝分类
 	taoCategory = this.getBigCat()
 
@@ -154,9 +157,15 @@ func (this *UserTrace) saveData() {
 			info := make(bson.M)
 			info_put := make(bson.M)
 			v = strings.Replace(v, this.prefix, "", -1)
-			info["AD"] = v
+			adua := strings.Split(v, "_")
+
+			info["AD"] = adua[0]
+			info_put["AD"] = adua[0]
+			info["UA"] = adua[1]
+			info_put["UA"] = adua[1]
+			info["adua"] = encrypt.DefaultMd5.Encode(adua[0] + adua[1])
+			info_put["adua"] = encrypt.DefaultMd5.Encode(adua[0] + adua[1])
 			info["tag"] = make([]bson.M, 0, len(tags))
-			info_put["AD"] = v
 			info_put["tag"] = make([]bson.M, 0, len(tags))
 
 			for kk, _ := range tags {
@@ -208,7 +217,12 @@ func (this *UserTrace) ReadData(query bson.M) {
 
 		for _, v := range data["tag"].([]interface{}) {
 			if tags, ok := v.(map[string]interface{}); ok {
-				this.setInfo(data["AD"].(string), tags["tagId"].(string))
+				ua := "ua"
+				ad := data["AD"].(string)
+				if u, ok := data["UA"]; ok {
+					ua = u.(string)
+				}
+				this.setInfo(ad+"_"+ua, tags["tagId"].(string))
 			}
 		}
 	}

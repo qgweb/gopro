@@ -45,9 +45,9 @@ func (this *MgoPool) Get() *mgo.Session {
 	if this.db == nil {
 		var err error
 		this.db, err = mgo.Dial(url)
-		this.db.SetSocketTimeout(time.Minute * 5)
+		this.db.SetSocketTimeout(time.Minute * 30)
 		this.db.SetCursorTimeout(0)
-		this.db.SetSyncTimeout(time.Minute * 5)
+		this.db.SetSyncTimeout(time.Minute * 30)
 		if err != nil {
 			log.Fatal(err)
 			return nil

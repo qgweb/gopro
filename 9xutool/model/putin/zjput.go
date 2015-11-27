@@ -2,17 +2,20 @@ package putin
 
 import (
 	"fmt"
+	"github.com/qgweb/gopro/lib/encrypt"
+	"github.com/syndtr/goleveldb/leveldb"
+	"io/ioutil"
+	"os"
+	"runtime/debug"
+	"strings"
+	"time"
+
 	"github.com/codegangsta/cli"
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
-	"io/ioutil"
-	"os"
-	"runtime/debug"
-	"strings"
-	"time"
 )
 
 // 浙江投放数据生成
@@ -30,6 +33,8 @@ type ZJPut struct {
 	provinceAdverts map[string]int            // 浙江广告集合
 	advertADS       map[string]map[string]int //广告对应ad集合
 	tjprefix        string                    //统计prefix
+	ldb             *leveldb.DB               // leveldb引擎
+	levelDataPath   string                    //level数据库目录
 }
 
 // 获取monggo对象
@@ -55,15 +60,15 @@ func getRedisObj(section string, inifile *ini.File) redis.Conn {
 		return nil
 	}
 	if strings.TrimSpace(rauth) != "" {
-		rc.Send("AUTH", rauth)
+		rc.Do("AUTH", "qaz#qiguan#wsx") //电信密钥
 	}
 	rc.Send("SELECT", rdb)
 	return rc
 }
 
-func getConfig() *ini.File {
+func getConfig(name string) *ini.File {
 	// 获取配置文件
-	filePath := common.GetBasePath() + "/conf/zp.conf"
+	filePath := common.GetBasePath() + "/conf/" + name
 	f, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -90,24 +95,54 @@ func NewZheJiangPutCli() cli.Command {
 				}
 			}()
 			ur := &ZJPut{}
-			ur.iniFile = getConfig()
+			ur.iniFile = getConfig("zp.conf")
 			ur.mp = getMongoObj(ur.iniFile)
 			ur.rc_cache = getRedisObj("redis_cache", ur.iniFile)
 			ur.rc_put = getRedisObj("redis_put", ur.iniFile)
 			ur.rc_dx_put = getRedisObj("redis_dx_put", ur.iniFile)
 			ur.prefix = bson.NewObjectId().Hex() + "_"
 			ur.proprefix = ur.iniFile.Section("default").Key("province_prefix").String()
+			ur.levelDataPath = ur.iniFile.Section("default").Key("level_data_path").String()
 			ur.advertADS = make(map[string]map[string]int)
 			ur.tjprefix = "advert_tj_zj_" + time.Now().Format("2006010215") + "_"
 			ur.Do(c)
 			ur.rc_cache.Close()
 			ur.rc_put.Close()
 			ur.rc_dx_put.Close()
+			ur.ldb.Close()
 		},
 	}
 }
 
-// 获取省份的广告集合
+// 初始化leveldb
+func (this *ZJPut) initLevelDb() {
+	var err error
+	this.ldb, err = leveldb.OpenFile(this.levelDataPath, nil)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+}
+
+// 判断key是否存在
+func (this *ZJPut) existKey(key string) bool {
+	r, err := this.ldb.Has([]byte(key), nil)
+	if err != nil {
+		return false
+	}
+	return r
+}
+
+// 过滤黑名单中的广告
+func (this *ZJPut) filterAdvert(key string, list map[string]int) {
+	for aid, _ := range list {
+		key := encrypt.DefaultMd5.Encode(key + aid)
+		if this.existKey(key) {
+			delete(list, aid)
+		}
+	}
+}
+
 func (this *ZJPut) getProAdverts() map[string]int {
 	var advertMaps = make(map[string]int)
 	this.rc_put.Send("SELECT", "0")
@@ -115,11 +150,10 @@ func (this *ZJPut) getProAdverts() map[string]int {
 		for _, v := range infos {
 			advertMaps[v] = 1
 		}
-		return advertMaps
 	} else {
 		log.Fatal(err)
-		return nil
 	}
+	return advertMaps
 }
 
 // 获取投放中的标签广告
@@ -166,11 +200,28 @@ func (this *ZJPut) merageAdverts(tag string) map[string]int {
 	return info
 }
 
+func (this *ZJPut) merageAdverts2(tag string) map[string]int {
+	var keyPre5 = "TAGS_5_" + tag
+	var info = make(map[string]int)
+	if adverts, ok := this.tagMap5[keyPre5]; ok {
+		for k, v := range adverts {
+			if _, ok := this.provinceAdverts[k]; ok {
+				info[k] = v
+			}
+		}
+	}
+	return info
+}
+
 // 把广告信息写入投放系统
-func (this *ZJPut) PutAdvertToRedis(ad string, advert string) {
+func (this *ZJPut) PutAdvertToRedis(ad string, ua string, advert string) {
 	hashkey := "advert:" + advert
-	this.rc_put.Send("HSET", ad, hashkey, advert)
-	this.rc_put.Send("EXPIRE", ad, 3600)
+	key := ad
+	if strings.ToLower(ua) != "ua" {
+		key = encrypt.DefaultMd5.Encode(ad + "_" + ua)
+	}
+	this.rc_put.Send("HSET", key, hashkey, advert)
+	this.rc_put.Send("EXPIRE", key, 3600)
 }
 
 // 把AD放入电信redis系统
@@ -179,15 +230,16 @@ func (this *ZJPut) PutDxSystem(ad string) {
 }
 
 // 把ad放入对应的广告集合里去
-func (this *ZJPut) pushAdToAdvert(ad string, advertId string) {
+func (this *ZJPut) pushAdToAdvert(ad string, ua string, advertId string) {
 	if _, ok := this.advertADS[advertId]; !ok {
 		this.advertADS[advertId] = make(map[string]int)
 	}
-	this.advertADS[advertId][ad] = 1
+	key := ad + "_" + ua
+	this.advertADS[advertId][key] = 1
 }
 
 func (this *ZJPut) flushDb() {
-	this.rc_dx_put.Send("FLUSHDB")
+	this.rc_dx_put.Do("FLUSHDB")
 }
 
 // 医疗金融电商数据处理
@@ -200,7 +252,7 @@ func (this *ZJPut) Other() {
 
 	this.rc_put.Send("SELECT", "1")
 	iter := sess.DB(db).C(table).Find(bson.M{}).
-		Select(bson.M{"_id": 0, "AD": 1, "tag": 1}).Iter()
+		Select(bson.M{"_id": 0, "AD": 1, "UA": 1, "tag": 1}).Iter()
 	for {
 		var data map[string]interface{}
 		if !iter.Next(&data) {
@@ -210,16 +262,21 @@ func (this *ZJPut) Other() {
 		log.Info(num)
 		if tags, ok := data["tag"].([]interface{}); ok {
 			ad := data["AD"].(string)
+			ua := data["UA"].(string)
 			for _, v := range tags {
 				vm := v.(map[string]interface{})
 				tagId := vm["tagId"].(string)
-				for aid, _ := range this.merageAdverts(tagId) {
+				piadverts := this.merageAdverts(tagId)
+				this.filterAdvert(ad+ua, piadverts)
+				if len(piadverts) > 0 {
+					this.PutDxSystem(ad)
+				}
+				for aid, _ := range piadverts {
 					//log.Warn(ad, aid)
-					this.PutAdvertToRedis(ad, aid)
-					this.pushAdToAdvert(ad, aid)
+					this.PutAdvertToRedis(ad, ua, aid)
+					this.pushAdToAdvert(ad, ua, aid)
 				}
 			}
-			this.PutDxSystem(ad)
 		}
 	}
 	this.rc_put.Send("SELECT", "0")
@@ -230,33 +287,34 @@ func (this *ZJPut) Domain() {
 	var db = this.iniFile.Section("mongo").Key("db").String()
 	var table = "urltrack_put"
 	var sess = this.mp.Get()
-	var num = 0
 	defer sess.Close()
 
 	this.rc_put.Send("SELECT", "1")
 	iter := sess.DB(db).C(table).Find(bson.M{}).
-		Select(bson.M{"_id": 0, "ad": 1, "cids": 1}).Iter()
+		Select(bson.M{"_id": 0, "ad": 1, "ua": 1, "cids": 1}).Iter()
 	for {
 		var data map[string]interface{}
 		if !iter.Next(&data) {
 			break
 		}
-		num = num + 1
-		log.Info(num)
 		if tags, ok := data["cids"].([]interface{}); ok {
 			ad := data["ad"].(string)
+			ua := data["ua"].(string)
 			for _, v := range tags {
 				vm := v.(map[string]interface{})
 				tagId := vm["id"].(string)
-				if ads, ok := this.tagMap5["TAGS_5_"+tagId]; ok {
-					for aid, _ := range ads {
-						//log.Warn(ad, aid)
-						this.PutAdvertToRedis(ad, aid)
-						this.pushAdToAdvert(ad, aid)
-					}
+
+				piadverts := this.merageAdverts2(tagId)
+				this.filterAdvert(ad+ua, piadverts)
+				if len(piadverts) > 0 {
+					this.PutDxSystem(ad)
+				}
+				for aid, _ := range piadverts {
+					//log.Warn(ad, aid)
+					this.PutAdvertToRedis(ad, ua, aid)
+					this.pushAdToAdvert(ad, ua, aid)
 				}
 			}
-			this.PutDxSystem(ad)
 		}
 	}
 	this.rc_put.Send("SELECT", "0")
@@ -281,6 +339,7 @@ func (this *ZJPut) saveTjData() {
 }
 
 func (this *ZJPut) Do(c *cli.Context) {
+	this.initLevelDb()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
 	this.tagMap3 = this.getTagsAdverts("TAGS_3_*")
 	this.tagMap5 = this.getTagsAdverts("TAGS_5_*")

@@ -17,7 +17,7 @@ const (
 	USER_QUERY_URL       = "http://js.vnet.cn/ProvinceForSPSearchUserName/services/ProvinceForSPSearchUserName?wsdl"
 	USER_QUERY_PRODUCTID = "1100099900000000"
 	DEFAULT_SPEED        = 1024 * 30 * 1.0 // 单位kb
-	QOS_QUERY_URL        = "http://202.102.41.31:8083/services/DacsForSPInterface"
+	QOS_QUERY_URL        = "http://202.102.41.31:8080/services/DacsForSPInterface"
 )
 
 var (
@@ -206,9 +206,9 @@ func (this *BDInterfaceManager) CanStart(account string, addr string) Respond {
 	reqQos.AccNbr = fmt.Sprintf("%d", time.Now().Unix())
 	reqQos.Area = userArea
 	reqQos.Policycode = "101803030"
-	reqQos.Serverip = "122.225.98.80"
-	reqQos.Spcode = "haobai"
-	reqQos.Sppassword = "haobai123"
+	reqQos.Serverip = "202.102.41.115"
+	reqQos.Spcode = "qianzhao"
+	reqQos.Sppassword = "qianzhao"
 	reqQos.Times = "0"
 	reqQos.Type = "0"
 	reqQos.Spip = "180.98.1.2"
@@ -323,9 +323,9 @@ func (this *BDInterfaceManager) Stop(account string, area string, addr string) R
 	reqQos.AccNbr = fmt.Sprintf("%d", time.Now().Unix())
 	reqQos.Area = area
 	reqQos.Policycode = "101803030"
-	reqQos.Serverip = "122.225.98.80"
-	reqQos.Spcode = "haobai"
-	reqQos.Sppassword = "haobai123"
+	reqQos.Serverip = "202.102.41.115"
+	reqQos.Spcode = "qianzhao"
+	reqQos.Sppassword = "qianzhao"
 	reqQos.Type = "0"
 	reqQos.Spip = "180.98.1.2"
 	reqQos.UserInfos.Userip = addrAry[0]

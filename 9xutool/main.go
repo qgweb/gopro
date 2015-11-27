@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
-
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/model"
+	"github.com/qgweb/gopro/9xutool/model/blackad"
 	"github.com/qgweb/gopro/9xutool/model/putin"
+	"os"
 )
 
 func main() {
@@ -19,6 +19,8 @@ func main() {
 		model.NewShopTraceCli(),
 		model.NewURLTraceCli(),
 		putin.NewZheJiangPutCli(),
+		putin.NewJiangSuPutCli(),
+		blackad.NewBlackMenuCli(),
 	}
 
 	app.Run(os.Args)
