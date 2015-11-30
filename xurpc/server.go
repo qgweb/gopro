@@ -46,6 +46,7 @@ func main() {
 	service.AddMethods(Taotag{})
 	service.AddMethods(TaoShop{})
 	service.AddMethods(TaoCatData{})
+	service.AddMethods(UserCookieData{})
 
 	//服务开启
 	http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), service)
