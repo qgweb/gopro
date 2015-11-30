@@ -14,7 +14,7 @@ type UserCookieData struct {
 //获取用户标签
 func (this UserCookieData) GetUserTags(cid string) []byte {
 	user_cox_ua, err := getUserCoxUa(cid)
-	if err != nil && user_cox_ua != nil {
+	if err != nil || len(user_cox_ua) == 0 {
 		return jsonReturn(nil, err)
 	}
 	md5 := getMd5(user_cox_ua)
