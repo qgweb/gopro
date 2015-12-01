@@ -1,88 +1,113 @@
 {{define "usercenter"}}
-<!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
-    <head>
-        <title>
-            千兆浏览器-个人中心
-        </title>
-        <!--    <meta name="google" value="notranslate">-->
-        <!--    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>-->
-        <!--    <meta name="renderer" content="webkit">-->
-        <!--    <meta name="viewport" content="user-scalable=no, width=device-width, maximum-scale=1.0">-->
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" type="text/css" href="/css/layout.css" media="all"/>
-    </head>
-    <body class="bcf">
-        <div class="g-top">
-            <div class="divcen950 clearfix">
-                <span class="flol miaosu">
-                    <i class="flol">
-                    </i>千兆浏览器
-                </span>
-                <span class="person-center-tit flol">个人中心</span>
-                <a href="#" class="logout flor">
-                    _
-                </a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户中心</title>
+    <link rel="stylesheet" type="text/css" href="./css/layout.css">
+</head>
+<body>
+    <div id="header">
+        <ul>
+            <li>
+                <a href="#" title="" class="logo"></a>
+            </li>
+            <li>|</li>
+            <li>
+                <span>个人中心</span>
+            </li>
+            <li class="logout">
+                <a href="#" title="">退出</a>
+            </li>
+        </ul>
+    </div>
+    <div id="banner">
+        <div class="avatar_all">
+            <img src="{{if .Avatar }} {{.Avatar}} {{else}} ./img/avatar.jpg {{end}} " alt="" title="" class="avatar"/>
+            <div class="bg_avatar">
+                <a href="#" title="" class="modify_avatar">修改头像</a>
+            </div>
+            <div class="account">
+                <h6>{{.Name}}</h6>
+                <p>用户等级：<label>初级</label></p>
             </div>
         </div>
-        <div class="g-head">
-            <div class="divcen950 clearfix">
-                <a href="#" targer="" title="" class="flol">
-                    <img src="./img/default_avatar.jpg" alt="" title="" width="146" height="146"/>
-                </a>
-                <span class="flol ml35">
-                    <span class="username">{{.Username}}</span>
-                    <span class="user-rating">用户等级：初级</span>
-                </span>
-            </div>
+    </div>
+    <div id="personal_center">
+        <div class="pc_left">
+            <h4><i class="ico_person"></i>个人中心</h4>
         </div>
-        <div class="divcen950 person-content clearfix">
-            <div class="person-left flol">
-                <div class="person-left-tit">
-                    <i class="ico_person mr7 flol">
-                    </i>
-                    <span>个人中心</span>
-                </div>
-            </div>
-            <div class="bcf person-right flol">
-                <h4 class="person-right-tit">
-                    <i class="ico_person_gray mr4 flol">
-                    </i>个人资料
-                </h4>
-                <p class="content">
+        <div class="pc_right">
+            <h4><i class="ico_bperson"></i>个人资料</h4>
+            <div class="info">
+                <p>
                     <span>宽带账号名：</span>
-                    <label id="radresult">暂无</label>
+                    <label>-</label>
                 </p>
-                <p class="content">
-                    <span><span class="word-space">带宽</span>：</span>
-                    <label>暂无</label>
+                <p>
+                    <span>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span>
+                    <label>{{.Email}}</label>
                 </p>
-                <p class="content">
-                    <span>上&nbsp;传&nbsp;速&nbsp;率：</span>
-                    <label>暂无</label>
+                <p>
+                    <span>用&nbsp;&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;&nbsp;名：</span>
+                    <label>{{.Name}}</label>
+                    <a href="#" title="">修改用户名</a>
                 </p>
-                <p class="content">
-                    <span>下&nbsp;载&nbsp;速&nbsp;率：</span>
-                    <label>暂无</label>
+                <p>
+                    <span>手&nbsp;&nbsp;&nbsp;&nbsp;机&nbsp;&nbsp;&nbsp;&nbsp;号：</span>
+                    <label>{{.Phone}}</label>
+                    <a href="#" title="">修改手机</a>
                 </p>
-                <p class="line">
+                <p>
+                    <span>宽&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;带：</span>
+                    <label>-</label>
                 </p>
-                <h4 class="person-right-tit">
-                    <i class="ico_stopwatch mr4 flol">
-                    </i>提速记录
-                </h4>
-                <p class="content">
+                <p>
+                    <span>上&nbsp;传&nbsp;&nbsp;速&nbsp;率：</span>
+                    <label>-</label>
+                </p>
+                <p>
+                    <span>下&nbsp;载&nbsp;&nbsp;速&nbsp;率：</span>
+                    <label>-</label>
+                </p>
+            </div>
+            <p class="hline"></p>
+            <h4><i class="ico_speed"></i>提速记录</h4>
+            <div class="speed_record">
+                <p>
                     <span>暂无提速记录</span>
                 </p>
             </div>
         </div>
-        <script src="/js/jquery-1.10.2.min.js"></script>
-        <script>
-            $(function () {
-                var ri = external.GetRasID();
-                ri && $('#radresult').text(ri);
-            })
-        </script>
-    </body>
+    </div>
+    <!-- 修改头像 -->
+    <div class="change_avatar">
+        <div class="popup_bg"></div>
+        <div class="change_avatar_c">
+            <i class="ico_close"></i>
+            <div class="ca_cleft">
+                <input type="button" class="upload_avatar" value="本地照片"/>
+                <div class="upload_img">
+                    本地照片:选择一张本地图片编辑后上传为头像
+                </div>
+                <!-- <p class="head_direction">
+                    <a href="#" title="" class="turn_left"><i class="ico_left"></i>向左转</a>
+                    <a href="#" title="" class="turn_right">向右转<i class="ico_right"></i></a>
+                </p> -->
+                <p class="upload_btn">
+                    <input type="button" value="确定"/>
+                    <input type="button" value="取消"/>
+                    <label class="upload_success"><i class="ico_success"></i>上传成功</label>
+                    <label class="upload_failed"><i class="ico_failed"></i>上传失败</label>
+                </p>
+            </div>
+            <div class="ca_cright">
+                <p>仅支持JPG,PNG格式,文件小于150KB</p>
+                <img src="./img/qvatar_preview.jpg" alt="">
+            </div>
+        </div>
+    </div>
+
+</body>
 </html>
 {{end}}

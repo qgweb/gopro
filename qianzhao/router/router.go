@@ -17,6 +17,9 @@ func Router(e *echo.Echo) {
 	//// 用户中心
 	e.Get("/user", (&controller.User{}).MemberCenter)
 	e.Get("/user/edit", (&controller.User{}).Edit)
+	e.Post("/user/editname", (&controller.User{}).EditUsername)
+	e.Post("/user/editemail", (&controller.User{}).EditUseremail)
+	e.Post("/user/editpic", (&controller.User{}).EditUserpic)
 
 	//// 用户收藏夹
 	e.Post("/Api/v0.1/backup_favorite", (&controller.Favorite{}).BackupFavorite)
@@ -60,7 +63,7 @@ func Router(e *echo.Echo) {
 	e.Post("/feedback/post", (&controller.FeedBack{}).Post)
 	e.Get("/feedback/pic", (&controller.FeedBack{}).Pic)
 
-	/////用户模块
+	/////手机验证码
 	e.Get("/getcode", ((&controller.User{}).GetPhoneCode))
 }
 

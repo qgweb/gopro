@@ -49,9 +49,9 @@ func (this *User) Login(ctx *echo.Context) error {
 	}
 
 	if umodel.UserExist(userName, password) {
-		sid := encrypt.DefaultMd5.Encode(userName + function.GetTimeUnix())
-		umodel.Update(map[string]interface{}{"sid": sid}, map[string]interface{}{"username": userName})
 		uinfo := umodel.UserInfo(userName)
+		sid := encrypt.DefaultMd5.Encode(userName + function.GetTimeUnix())
+		umodel.Update(map[string]interface{}{"sid": sid}, map[string]interface{}{"id": uinfo.Id})
 		avatar := uinfo.Avatar
 		if avatar == "" {
 			avatar = "/upload/avatar.png"
@@ -142,6 +142,123 @@ func (this *User) Edit(ctx *echo.Context) error {
 	return ctx.String(http.StatusOK, "暂无")
 }
 
+// 修改用户昵称
+func (this *User) EditUsername(ctx *echo.Context) error {
+	res, _ := this.Base.IsLogin(ctx)
+	if !res {
+		return nil
+	}
+
+	var username = ctx.Form("username")
+	var umodel = model.User{}
+
+	if username == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户昵称不能为空",
+		})
+	}
+
+	if un := umodel.UserInfo(username); un.Name != "" && un.Name != username {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户昵称已存在",
+		})
+	} else if un.Name == username {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户昵称没有改变",
+		})
+	}
+
+	if umodel.Update(map[string]interface{}{"username": username},
+		map[string]interface{}{"id": this.Base.GetUserInfo(ctx).Id}) {
+		return ctx.JSON(200, map[string]string{
+			"code": "200",
+			"msg":  "修改成功",
+		})
+	} else {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "修改失败",
+		})
+	}
+}
+
+// 修改用户头像
+func (this *User) EditUserpic(ctx *echo.Context) error {
+	res, _ := this.Base.IsLogin(ctx)
+	if !res {
+		return nil
+	}
+
+	var pic = ctx.Form("pic")
+	var umodel = model.User{}
+
+	if pic == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户头像不能为空",
+		})
+	}
+
+	if umodel.Update(map[string]interface{}{"avatar": pic},
+		map[string]interface{}{"id": this.Base.GetUserInfo(ctx).Id}) {
+		return ctx.JSON(200, map[string]string{
+			"code": "200",
+			"msg":  "修改成功",
+		})
+	} else {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "修改失败",
+		})
+	}
+}
+
+// 修改用户email
+func (this *User) EditUseremail(ctx *echo.Context) error {
+	res, _ := this.Base.IsLogin(ctx)
+	if !res {
+		return nil
+	}
+
+	var email = ctx.Form("email")
+	var umodel = model.User{}
+
+	if email == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户邮箱不能为空",
+		})
+	}
+
+	if un := umodel.UserInfo(email); un.Name != "" && un.Name != email {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户邮箱已存在",
+		})
+	} else if un.Email == email {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户邮箱没有改变",
+		})
+	}
+
+	if umodel.Update(map[string]interface{}{"email": email},
+		map[string]interface{}{"id": this.Base.GetUserInfo(ctx).Id}) {
+		return ctx.JSON(200, map[string]string{
+			"code": "200",
+			"msg":  "修改成功",
+		})
+	} else {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "修改失败",
+		})
+	}
+}
+
 // 是否登录
 func (this *User) IsLogin(ctx *echo.Context) error {
 	sess, err := session.GetSession(ctx)
@@ -185,22 +302,27 @@ func (this *User) LoginOut(ctx *echo.Context) error {
 
 // 用户
 func (this *User) MemberCenter(ctx *echo.Context) error {
-	sess, err := session.GetSession(ctx)
-	if err != nil {
-		log.Error("获取session失败：", err)
-		return err
+	res, _ := this.Base.IsLogin(ctx)
+	if !res {
+		return nil
 	}
 
-	defer sess.SessionRelease(ctx.Response())
+	var um = model.User{}
+	Phone := this.Base.GetUserInfo(ctx).Phone
+	um = um.UserInfo(Phone)
 
-	if u, ok := sess.Get(global.SESSION_USER_INFO).(model.User); ok {
-		return ctx.Render(200, "usercenter", struct{ Username string }{u.Name})
-	} else {
-		return ctx.JSON(http.StatusOK, map[string]string{
-			"code": global.CONTROLLER_CODE_ERROR,
-			"msg":  global.CONTROLLER_USER_NEEDLOGIN,
-		})
+	return ctx.Render(200, "usercenter", um)
+}
+
+// 获取手机验证码
+func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
+	res, _ := this.Base.IsLogin(ctx)
+	if !res {
+		return nil
 	}
+	var phone = ctx.Form("phone")
+	Sms.SendMsg("", "")
+	return nil
 }
 
 // 获取手机验证码

@@ -33,3 +33,19 @@ func (this *Base) IsLogin(ctx *echo.Context) (bool, error) {
 		return true, nil
 	}
 }
+
+// 获取用户信息
+func (this *Base) GetUserInfo(ctx *echo.Context) (ui model.User) {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return
+	}
+
+	defer sess.SessionRelease(ctx.Response())
+
+	if u, ok := sess.Get(global.SESSION_USER_INFO).(model.User); ok {
+		return u
+	}
+	return
+}

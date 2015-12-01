@@ -36,8 +36,8 @@ func make_app_uid(bandwith string, bandwith_pwd string, timestamp string) string
 
 // 用户名是否存在
 func (this *User) UserNameExist(name string) bool {
-	myorm.BSQL().Select("count(*) as num").From(USER_TABLE_NAME).Where("username=?")
-	list, err := myorm.Query(name)
+	myorm.BSQL().Select("count(*) as num").From(USER_TABLE_NAME).Where("username=? or phone=? or email=?")
+	list, err := myorm.Query(name, name, name)
 	if err != nil {
 		log.Warn("[user UserNameExist]数据获取失败", err)
 		return false
@@ -81,8 +81,8 @@ func (this *User) UserExist(name string, pwd string) bool {
 
 // 用户信息
 func (this *User) UserInfo(name string) (u User) {
-	myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("username=?")
-	list, err := myorm.Query(name)
+	myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("username=? or phone=? or email=?")
+	list, err := myorm.Query(name, name, name)
 	if err != nil {
 		log.Warn("[user UserInfo]数据获取失败", err)
 		return
@@ -110,8 +110,9 @@ func (this *User) UserInfo(name string) (u User) {
 
 // 用户注册
 func (this *User) UserRegister(name string, password string) bool {
+	uname := "qz_" + function.GetTimeUnix()
 	myorm.BSQL().Insert(USER_TABLE_NAME).Values("phone", "password", "created", "username")
-	n, err := myorm.Insert(name, function.GetBcrypt([]byte(password)), function.GetTimeUnix(), "")
+	n, err := myorm.Insert(name, function.GetBcrypt([]byte(password)), function.GetTimeUnix(), uname)
 	if err != nil {
 		log.Warn("[user UserRegister] 插入失败，", err)
 		return false
