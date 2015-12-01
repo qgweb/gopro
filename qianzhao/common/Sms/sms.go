@@ -63,13 +63,12 @@ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"></signature>
 	sc := SmsContent{}
 	sc.Account = SMS_ACCOUNT
 	sc.Pwd = SMS_PWD
-	sc.Content = "test"
-	sc.Phone = "15158117079"
+	sc.Content = content
+	sc.Phone = phone
 	t, err := template.New("xx").Parse(body)
 	if err == nil {
 		log.Println(t.Execute(bf, sc))
 	}
-
 	return bf.String()
 }
 

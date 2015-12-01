@@ -47,16 +47,17 @@
                 <p>
                     <span>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span>
                     <label>{{.Email}}</label>
+                    <a href="#" title="" class="change_email">修改邮箱</a>
                 </p>
                 <p>
                     <span>用&nbsp;&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;&nbsp;名：</span>
                     <label>{{.Name}}</label>
-                    <a href="#" title="">修改用户名</a>
+                    <a href="#" title="" class="change_name">修改用户名</a>
                 </p>
                 <p>
                     <span>手&nbsp;&nbsp;&nbsp;&nbsp;机&nbsp;&nbsp;&nbsp;&nbsp;号：</span>
-                    <label>{{.Phone}}</label>
-                    <a href="#" title="">修改手机</a>
+                    <label class="phone_num">{{.Phone}}</label>
+                    <a href="#" title="" class="change_phone">修改手机</a>
                 </p>
                 <p>
                     <span>宽&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;带：</span>
@@ -81,12 +82,12 @@
         </div>
     </div>
     <!-- 修改头像 -->
-    <div class="change_avatar">
+    <div class="change_avatar" style="display:none">
         <div class="popup_bg"></div>
         <div class="change_avatar_c">
             <i class="ico_close"></i>
             <div class="ca_cleft">
-                <input type="button" class="upload_avatar" value="本地照片"/>
+                <input type="button" class="upload_avatar" value="本地照片" id="picBtn"/>
                 <div class="upload_img">
                     本地照片:选择一张本地图片编辑后上传为头像
                 </div>
@@ -95,19 +96,263 @@
                     <a href="#" title="" class="turn_right">向右转<i class="ico_right"></i></a>
                 </p> -->
                 <p class="upload_btn">
-                    <input type="button" value="确定"/>
-                    <input type="button" value="取消"/>
-                    <label class="upload_success"><i class="ico_success"></i>上传成功</label>
-                    <label class="upload_failed"><i class="ico_failed"></i>上传失败</label>
+                    <input type="button" value="确定" class="make_sure" />
+                    <input type="button" value="取消" class="upload_cancel"/>
+<!--                     <label class="upload_success"><i class="ico_success"></i>上传成功</label>
+                    <label class="upload_failed"><i class="ico_failed"></i>上传失败</label> -->
                 </p>
             </div>
             <div class="ca_cright">
                 <p>仅支持JPG,PNG格式,文件小于150KB</p>
-                <img src="./img/qvatar_preview.jpg" alt="">
+                <img  width="180" height="180" src="{{if .Avatar }} {{.Avatar}} {{else}} ./img/avatar.jpg {{end}} " alt="">
             </div>
         </div>
     </div>
-
+    <div class="change_phone_box" style="display:none">
+        <div class="popup_bg"></div>
+        <div class="change_avatar_c">
+            <p>
+                <span>手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机：</span>
+                <input type="text" class="new_phone" >
+                <input type="button" class="getCode" value="获取验证码">
+            </p>
+            <p>
+                <span>验&nbsp;&nbsp;&nbsp;&nbsp;证&nbsp;&nbsp;&nbsp;&nbsp;码：</span>
+                <input type="text" class="code_val">
+            </p>
+            <p class="upload_btn">
+                <input type="button" value="确定" class="phone_sure" />
+                <input type="button" value="取消" class="phone_cancel"/>
+            </p>
+        </div>
+    </div>
 </body>
+<script src="http://libs.baidu.com/jquery/1.10.0/jquery.min.js"></script>
+<script src="js/layer/layer.min.js"></script>
+<script>
+    function uploadImage(act, ufn, cbk, cbn, bnd, ismany) {
+        var myLoadFile = {};
+        myLoadFile.upFileAction = act;
+        myLoadFile.upFileName = ufn;
+        myLoadFile.cbk = cbk;
+        myLoadFile.callBackName = cbn
+        var btnId = typeof bnd == 'string' ? $('#' + bnd) : $(bnd);
+        function isIEAll() {
+            return !!window.ActiveXObject;
+        }
+        myLoadFile.appendFormDiv = function () {
+            $('.formContent').remove();
+            $('body').append('<div class="formContent" style="position: absolute;width: 1px;height: 1px;right: 0;top: 0;overflow: hidden"><form action="' + myLoadFile.upFileAction + '" method="post" enctype="multipart/form-data" target="myHideIframe" id="uploadForm"><input class="upload" type="file" ' + (ismany ? 'multiple="multiple"' : '') + ' name="' + myLoadFile.upFileName + '"/><input name="' + myLoadFile.cbk + '" value="' + myLoadFile.callBackName + '"/><input type="submit" value="提交"/></form><iframe name="myHideIframe"></iframe></div>')
+        }
+        $(function () {
+            if (isIEAll()) {
+                btnId.click(function () {
+                    $('iframe.upImgNoRefresh').remove();
+                    $('body').append('<iframe class="upImgNoRefresh" style="position: absolute;height: 1px;width: 1px;left: 0;top: 0"></iframe>');
+                    setTimeout(function () {
+                        var ifmBody = $($('.upImgNoRefresh:first')[0].contentWindow.document.body);
+                        ifmBody.html('<form action="' + myLoadFile.upFileAction + '" method="post" enctype="multipart/form-data" id="ifrmForm"><input name="' + myLoadFile.cbk + '" value="' + myLoadFile.callBackName + '"/><input onchange="document.getElementById(\'ifrmForm\').submit()" id="ifrmFile" type="file" ' + (ismany ? 'multiple="multiple"' : '') + ' name="' + myLoadFile.upFileName + '"/></form>');
+                        ifmBody.find('#ifrmFile')[0].click();
+                    }, 500)
+                })
+            } else {
+                myLoadFile.appendFormDiv();
+                btnId.click(function () {
+                    $('.formContent input.upload')[0].click();
+                })
+                $('.formContent').on('change', 'input.upload', function () {
+                    if ($('#uploadForm input:file').val()) {
+                        $('#uploadForm').submit();
+                    }
+                    var $t = $(this);
+                    setTimeout(function () {
+                        $t.after('<input class="upload" type="file" ' + (ismany ? 'multiple="multiple"' : '') + ' name="' + myLoadFile.upFileName + '" />').remove();
+                    }, 200)
+                })
+            }
+        })
+    }
+    $(function(){
+        $('body').on('click','a[href="#"]',function(){
+            return false;
+        })
+        $('.change_avatar .ico_close,.upload_cancel,.change_avatar .popup_bg').on('click',function(){
+            $('.change_avatar').hide();
+        })
+        $('.modify_avatar').on('click',function(){
+            $('.change_avatar').show();
+        })
+        
+        //修改用户名
+        $('.change_name').on('click',function(){
+            var $t=$(this);
+            var label=$t.parent().find('label');
+            var name=$('.new_name').val();
+            if($('.new_name').length){
+                if(name==label.html()){
+                    $('.new_name').remove();
+                    label.show();
+                }else if(!name){
+                    layer.msg('请填写用户名',2,5);
+                }else{
+                    $.ajax({
+                        url:'/user/editname',
+                        type:'post',
+                        data:{username:name},
+                        dataType:'json',
+                        success:function(d){
+                            if(d.code==200){
+                                layer.msg('修改成功',2,1);
+                                label.html(name);
+                                $('.new_name').remove();
+                                label.show();
+                            }else{
+                                layer.msg(d.msg,2,5);
+                            }
+                        }
+                    })
+                }
+            }else{
+                label.hide();
+                $t.before('<input type="text" class="new_name" value="'+label.html()+'">')
+            }
+        })
+        //修改邮箱
+        $('.change_email').on('click',function(){
+            var $t=$(this);
+            var label=$t.parent().find('label');
+            var email=/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+            var email_val=$('.new_email').val();
+            if($('.new_email').length){
+                if(email_val==label.html()){
+                    $('.new_email').remove();
+                    label.show();
+                }else if(!email_val || !email.test(email_val)){
+                    layer.msg('请填写正确的邮箱',2,5);
+                }else{
+                    $.ajax({
+                        url:'/user/editemail',
+                        type:'post',
+                        data:{email:email_val},
+                        dataType:'json',
+                        success:function(d){
+                            if(d.code==200){
+                                layer.msg('修改成功',2,1);
+                                label.html(email_val);
+                                $('.new_email').remove();
+                                label.show();
+                            }else{
+                                layer.msg(d.msg,2,5);
+                            }
+                        }
+                    })
+                }
+            }else{
+                label.hide();
+                $t.before('<input type="text" class="new_email" value="'+label.html()+'">')
+            }
+        })
+        //修改手机
+        $('.change_phone_box .ico_close,.phone_cancel,.change_phone_box .popup_bg').on('click',function(){
+            $('.change_phone_box').hide();
+        })
+        $('.change_phone').on('click',function(){
+            $('.change_phone_box').show();
+        })
+        function count(){
+            n=60;
+            var timer=setInterval(function(){
+                n--
+                if(n!=0){
+                    $('.getCode').prop('disabled',true).val('请在'+n+'秒后重新请求');
+                }else{
+                    $('.getCode').prop('disabled',false).val('获取验证码');
+                    clearInterval(timer);
+                }
+            },1000)
+        }
+        $('.getCode').on('click',function(){
+            var phone=$('.new_phone').val();
+            if(phone && /^\d{11}$/.test(phone)){
+                $.ajax({
+                    url:'/user/getcode',
+                    type:'post',
+                    data:{phone:phone},
+                    dataType:'json',
+                    success:function(d){
+                        layer.msg('发送成功',2,1);
+                        count();
+                    }
+                })
+            }else{
+                 layer.msg('请填写正确的手机号码',2,5);
+            }
+        })
+        $('.phone_sure').on('click',function(){
+            var phone=$('.new_phone').val();
+            var code=$('.code_val').val();
+            if(phone && /^\d{11}$/.test(phone) && code){
+                $.ajax({
+                    url:'/user/editphone',
+                    type:'post',
+                    data:{phone:phone,code:code},
+                    dataType:'json',
+                    success:function(d){
+                        if(d.code==200){
+                            layer.msg('修改成功',2,1);
+                            $('.change_phone_box').hide();
+                            $('.phone_num').html(phone);
+                        }else{
+                            layer.msg(d.msg,2,1);
+                        }
+                    }
+                })
+            }else{
+                var err=[]
+                if(!phone || !/^\d{11}$/.test(phone)){
+                    err.push('请填写正确的手机号码')
+                } 
+                if(!code){
+                    err.push('请填写验证码')
+                }
+                layer.msg(err.join('<br>'),2,5)
+            }
+        })
+    })
+    //上传头像
+    
+    // $('#picBtn').on('click',function(){
+    //     uploadImage('/user/uploadpic',"qgpic[]", 'callBack', 'callBackPics', 'upPicsMany');
+    // })
+    uploadImage('/user/uploadpic',"qpic", 'callback','callBackPics', 'picBtn');
+    window.callBackPics = function (_jsn) {
+        // showUploadFrm(_jsn.msg);
+        $('.show_img').remove();
+        $('.upload_img').append('<img src="'+_jsn.msg+'" class="show_img" width="300" height="300">');
+        $('.show_img').css({
+            position:'absolute',
+            left:'40px'
+        })
+    }
+    $('.make_sure').on('click',function(){
+        if($('.show_img').length){
+            var src=$('.show_img').attr('src');
+            $.ajax({
+                url:'/user/editpic',
+                type:'post',
+                data:{pic:src},
+                dataType:'json',
+                success:function(d){
+                    if(d.code==200){
+                        layer.msg('修改成功',2,1);
+                        $('.change_avatar').hide();
+                    }else{
+                        layer.msg(d.msg,2,1);
+                    }
+                }
+            })
+        }
+    })
+</script>
 </html>
 {{end}}

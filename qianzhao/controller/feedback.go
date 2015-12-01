@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/labstack/echo"
 	"github.com/ngaut/log"
@@ -69,7 +70,7 @@ func (this *FeedBack) Post(ctx *echo.Context) error {
 		return ctx.HTML(200, Alert("验证码错误"))
 	}
 
-	fbmodel.Qpic, err = UploadPic(ctx)
+	fbmodel.Qpic, err = UploadPic(ctx, "feedback")
 	if err != nil {
 		log.Error(err)
 	}
@@ -96,15 +97,19 @@ func (this *FeedBack) Pic(ctx *echo.Context) error {
 }
 
 //  upload pic
-func UploadPic(ctx *echo.Context) (string, error) {
+func UploadPic(ctx *echo.Context, path string) (string, error) {
 	pf, ph, err := ctx.Request().FormFile("qpic")
 	if err != nil {
 		log.Error(err)
-		return "", err
+		return "", errors.New("图片上传失败")
 	}
 
 	ext := filepath.Ext(ph.Filename)
-	fileName := fmt.Sprintf("%s/public/upload/feedback/%s%s", function.GetBasePath(), time.Now().Format("20060102130405"), ext)
+	if !(ext == ".png" || ext == ".jpg") {
+		return "", errors.New("图片格式不正确")
+	}
+	fileName := fmt.Sprintf("%s/public/upload/%s/%s%s", function.GetBasePath(), path,
+		time.Now().Format("20060102130405"), ext)
 	f, err := os.Create(fileName)
 	if err != nil {
 		log.Error(err)
@@ -112,7 +117,7 @@ func UploadPic(ctx *echo.Context) (string, error) {
 	}
 
 	io.Copy(f, pf)
-	return strings.Replace(fileName, function.GetBasePath(), "", -1), nil
+	return strings.Replace(fileName, function.GetBasePath()+"/public", "", -1), nil
 }
 
 func Alert(err string) string {

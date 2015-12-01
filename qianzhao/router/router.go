@@ -20,6 +20,9 @@ func Router(e *echo.Echo) {
 	e.Post("/user/editname", (&controller.User{}).EditUsername)
 	e.Post("/user/editemail", (&controller.User{}).EditUseremail)
 	e.Post("/user/editpic", (&controller.User{}).EditUserpic)
+	e.Post("/user/getcode", (&controller.User{}).GetUserPhoneCode)
+	e.Post("/user/editphone", (&controller.User{}).EditUserphone)
+	e.Post("/user/uploadpic", (&controller.User{}).UploadPic)
 
 	//// 用户收藏夹
 	e.Post("/Api/v0.1/backup_favorite", (&controller.Favorite{}).BackupFavorite)

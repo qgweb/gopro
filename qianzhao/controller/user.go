@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/qianzhao/common/Sms"
 
@@ -159,7 +160,8 @@ func (this *User) EditUsername(ctx *echo.Context) error {
 		})
 	}
 
-	if un := umodel.UserInfo(username); un.Name != "" && un.Name != username {
+	if un := umodel.UserInfo(username); un.Name != "" &&
+		un.Name != umodel.UserInfoById(this.Base.GetUserInfo(ctx).Id).Name {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
 			"msg":  "用户昵称已存在",
@@ -216,6 +218,31 @@ func (this *User) EditUserpic(ctx *echo.Context) error {
 	}
 }
 
+// 上传头像
+func (this *User) UploadPic(ctx *echo.Context) error {
+	res, _ := this.Base.IsLogin(ctx)
+	if !res {
+		return nil
+	}
+	var cb = ctx.Form("callback")
+	path, err := UploadPic(ctx, "photo")
+
+	if err != nil {
+		ebs, _ := json.Marshal(map[string]string{
+			"code": "300",
+			"msg":  err.Error(),
+		})
+		return ctx.HTML(200, "<script>parent.%s(%s)</script>", cb, ebs)
+	}
+
+	ebs, _ := json.Marshal(map[string]string{
+		"code": "200",
+		"msg":  path,
+	})
+	return ctx.HTML(200, "<script>parent.%s(%s)</script>", cb, ebs)
+
+}
+
 // 修改用户email
 func (this *User) EditUseremail(ctx *echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
@@ -233,7 +260,8 @@ func (this *User) EditUseremail(ctx *echo.Context) error {
 		})
 	}
 
-	if un := umodel.UserInfo(email); un.Name != "" && un.Name != email {
+	if un := umodel.UserInfo(email); un.Email != "" &&
+		un.Email != umodel.UserInfoById(this.Base.GetUserInfo(ctx).Id).Email {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
 			"msg":  "用户邮箱已存在",
@@ -246,6 +274,72 @@ func (this *User) EditUseremail(ctx *echo.Context) error {
 	}
 
 	if umodel.Update(map[string]interface{}{"email": email},
+		map[string]interface{}{"id": this.Base.GetUserInfo(ctx).Id}) {
+		return ctx.JSON(200, map[string]string{
+			"code": "200",
+			"msg":  "修改成功",
+		})
+	} else {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "修改失败",
+		})
+	}
+}
+
+// 修改用户手机
+func (this *User) EditUserphone(ctx *echo.Context) error {
+	res, _ := this.Base.IsLogin(ctx)
+	if !res {
+		return nil
+	}
+
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response())
+
+	var phone = ctx.Form("phone")
+	var code = ctx.Form("code")
+	var umodel = model.User{}
+
+	if phone == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户手机号码不能为空",
+		})
+	}
+
+	if code == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "验证码不能为空",
+		})
+	}
+
+	if code != sess.Get("USER_CODE").(string) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "验证码错误",
+		})
+	}
+
+	if un := umodel.UserInfo(phone); un.Phone != "" &&
+		un.Phone != umodel.UserInfoById(this.Base.GetUserInfo(ctx).Id).Phone {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户手机号码已存在",
+		})
+	} else if un.Email == phone {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "用户手机号码没有改变",
+		})
+	}
+
+	if umodel.Update(map[string]interface{}{"phone": phone},
 		map[string]interface{}{"id": this.Base.GetUserInfo(ctx).Id}) {
 		return ctx.JSON(200, map[string]string{
 			"code": "200",
@@ -308,8 +402,9 @@ func (this *User) MemberCenter(ctx *echo.Context) error {
 	}
 
 	var um = model.User{}
-	Phone := this.Base.GetUserInfo(ctx).Phone
-	um = um.UserInfo(Phone)
+	id := this.Base.GetUserInfo(ctx).Id
+	um = um.UserInfoById(id)
+	log.Error(um.Avatar)
 
 	return ctx.Render(200, "usercenter", um)
 }
@@ -320,15 +415,49 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 	if !res {
 		return nil
 	}
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response())
+
 	var phone = ctx.Form("phone")
-	Sms.SendMsg("", "")
-	return nil
+	var code = convert.ToString(function.GetRand(1000, 9999))
+	if phone == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码为空",
+		})
+	}
+
+	Sms.SendMsg(phone, "【千兆浏览器】"+code+
+		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
+	sess.Set("USER_CODE", code)
+
+	return ctx.JSON(200, map[string]string{
+		"code": "200",
+		"msg":  "",
+	})
 }
 
 // 获取手机验证码
 func (this *User) GetPhoneCode(ctx *echo.Context) error {
-	Sms.SendMsg("", "")
-	return nil
+	var phone = ctx.Query("phone")
+	var code = convert.ToString(function.GetRand(1000, 9999))
+	if phone == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码为空",
+		})
+	}
+
+	Sms.SendMsg(phone, "【千兆浏览器】"+code+
+		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
+	return ctx.JSON(200, map[string]string{
+		"code": "200",
+		"msg":  code,
+	})
 }
 
 // 速度测试
