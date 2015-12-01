@@ -62,7 +62,7 @@ func getRedisObj(section string, inifile *ini.File) redis.Conn {
 	if strings.TrimSpace(rauth) != "" {
 		rc.Do("AUTH", "qaz#qiguan#wsx") //电信密钥
 	}
-	rc.Send("SELECT", rdb)
+	rc.Do("SELECT", rdb)
 	return rc
 }
 
@@ -145,7 +145,7 @@ func (this *ZJPut) filterAdvert(key string, list map[string]int) {
 
 func (this *ZJPut) getProAdverts() map[string]int {
 	var advertMaps = make(map[string]int)
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
 	if infos, err := redis.Strings(this.rc_put.Do("SMEMBERS", this.proprefix)); err == nil {
 		for _, v := range infos {
 			advertMaps[v] = 1
@@ -159,7 +159,7 @@ func (this *ZJPut) getProAdverts() map[string]int {
 // 获取投放中的标签广告
 func (this *ZJPut) getTagsAdverts(key string) map[string]map[string]int {
 	var adverMaps = make(map[string]map[string]int)
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
 	if keys, err := redis.Strings(this.rc_put.Do("KEYS", key)); err == nil {
 		for _, v := range keys {
 			if _, ok := adverMaps[v]; !ok {
@@ -220,13 +220,13 @@ func (this *ZJPut) PutAdvertToRedis(ad string, ua string, advert string) {
 	if strings.ToLower(ua) != "ua" {
 		key = encrypt.DefaultMd5.Encode(ad + "_" + ua)
 	}
-	this.rc_put.Send("HSET", key, hashkey, advert)
-	this.rc_put.Send("EXPIRE", key, 3600)
+	this.rc_put.Do("HSET", key, hashkey, advert)
+	this.rc_put.Do("EXPIRE", key, 3600)
 }
 
 // 把AD放入电信redis系统
 func (this *ZJPut) PutDxSystem(ad string) {
-	this.rc_dx_put.Send("SET", ad, "34")
+	this.rc_dx_put.Do("SET", ad, "34")
 }
 
 // 把ad放入对应的广告集合里去
@@ -250,7 +250,7 @@ func (this *ZJPut) Other() {
 	var num = 0
 	defer sess.Close()
 
-	this.rc_put.Send("SELECT", "1")
+	this.rc_put.Do("SELECT", "1")
 	iter := sess.DB(db).C(table).Find(bson.M{}).
 		Select(bson.M{"_id": 0, "AD": 1, "UA": 1, "tag": 1}).Iter()
 	for {
@@ -259,7 +259,6 @@ func (this *ZJPut) Other() {
 			break
 		}
 		num = num + 1
-		log.Info(num)
 		if tags, ok := data["tag"].([]interface{}); ok {
 			ad := data["AD"].(string)
 			ua := data["UA"].(string)
@@ -279,7 +278,8 @@ func (this *ZJPut) Other() {
 			}
 		}
 	}
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
+	log.Info(num)
 }
 
 // 域名
@@ -287,9 +287,10 @@ func (this *ZJPut) Domain() {
 	var db = this.iniFile.Section("mongo").Key("db").String()
 	var table = "urltrack_put"
 	var sess = this.mp.Get()
+	var num = 0
 	defer sess.Close()
 
-	this.rc_put.Send("SELECT", "1")
+	this.rc_put.Do("SELECT", "1")
 	iter := sess.DB(db).C(table).Find(bson.M{}).
 		Select(bson.M{"_id": 0, "ad": 1, "ua": 1, "cids": 1}).Iter()
 	for {
@@ -297,6 +298,7 @@ func (this *ZJPut) Domain() {
 		if !iter.Next(&data) {
 			break
 		}
+		num = num + 1
 		if tags, ok := data["cids"].([]interface{}); ok {
 			ad := data["ad"].(string)
 			ua := data["ua"].(string)
@@ -317,13 +319,14 @@ func (this *ZJPut) Domain() {
 			}
 		}
 	}
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
+	log.Info(num)
 }
 
 // 报错统计的数据
 func (this *ZJPut) saveTjData() {
 	var path = this.iniFile.Section("default").Key("data_path").String()
-	this.rc_put.Send("SELECT", "3")
+	this.rc_put.Do("SELECT", "3")
 	for k, v := range this.advertADS {
 		rk := this.tjprefix + k
 		fname := path + "/" + rk + ".txt"

@@ -96,7 +96,7 @@ func (this *JSPut) filterAdvert(key string, list map[string]int) {
 // 获取省份的广告集合
 func (this *JSPut) getProAdverts() map[string]int {
 	var advertMaps = make(map[string]int)
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
 	if infos, err := redis.Strings(this.rc_put.Do("SMEMBERS", this.proprefix)); err == nil {
 		for _, v := range infos {
 			advertMaps[v] = 1
@@ -110,7 +110,7 @@ func (this *JSPut) getProAdverts() map[string]int {
 // 获取黑名单
 func (this *JSPut) getBlackAdverts() map[string]int {
 	var advertMaps = make(map[string]int)
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
 	if infos, err := redis.Strings(this.rc_put.Do("SMEMBERS", this.blackprefix)); err == nil {
 		for _, v := range infos {
 			advertMaps[v] = 1
@@ -134,7 +134,7 @@ func (this *JSPut) fliterAdvert(pads map[string]int) {
 // 获取投放中的标签广告
 func (this *JSPut) getTagsAdverts(key string) map[string]map[string]int {
 	var adverMaps = make(map[string]map[string]int)
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
 	if keys, err := redis.Strings(this.rc_put.Do("KEYS", key)); err == nil {
 		for _, v := range keys {
 			if _, ok := adverMaps[v]; !ok {
@@ -195,13 +195,13 @@ func (this *JSPut) PutAdvertToRedis(ad string, ua string, advert string) {
 	if strings.ToLower(ua) != "ua" {
 		key = encrypt.DefaultMd5.Encode(ad + "_" + ua)
 	}
-	this.rc_put.Send("HSET", key, hashkey, advert)
-	this.rc_put.Send("EXPIRE", key, 3600)
+	this.rc_put.Do("HSET", key, hashkey, advert)
+	this.rc_put.Do("EXPIRE", key, 3600)
 }
 
 // 把AD放入缓存redis系统
 func (this *JSPut) PutDxSystem(ad string) {
-	this.rc_cache.Send("SET", this.prefix+ad, "1")
+	this.rc_cache.Do("SET", this.prefix+ad, "1")
 }
 
 // 把ad放入对应的广告集合里去
@@ -227,9 +227,10 @@ func (this *JSPut) Other(query bson.M) {
 	var db = this.iniFile.Section("mongo").Key("db").String()
 	var table = "useraction_jiangsu"
 	var sess = this.mp.Get()
+	var num = 0
 	defer sess.Close()
 
-	this.rc_put.Send("SELECT", "1")
+	this.rc_put.Do("SELECT", "1")
 	iter := sess.DB(db).C(table).Find(query).
 		Select(bson.M{"_id": 0, "AD": 1, "UA": 1, "tag": 1}).Iter()
 	for {
@@ -237,6 +238,11 @@ func (this *JSPut) Other(query bson.M) {
 		if !iter.Next(&data) {
 			break
 		}
+		num = num + 1
+		if num%10000 == 0 {
+			log.Debug(num)
+		}
+
 		if tags, ok := data["tag"].([]interface{}); ok {
 			ad := data["AD"].(string)
 			ua := data["UA"].(string)
@@ -256,7 +262,8 @@ func (this *JSPut) Other(query bson.M) {
 			}
 		}
 	}
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
+	log.Info(num)
 }
 
 // 域名
@@ -267,7 +274,7 @@ func (this *JSPut) Domain(query bson.M) {
 	var num = 0
 	defer sess.Close()
 
-	this.rc_put.Send("SELECT", "1")
+	this.rc_put.Do("SELECT", "5")
 	iter := sess.DB(db).C(table).Find(query).
 		Select(bson.M{"_id": 0, "ad": 1, "ua": 1, "cids": 1}).Iter()
 	log.Info(query, table)
@@ -277,7 +284,10 @@ func (this *JSPut) Domain(query bson.M) {
 			break
 		}
 		num = num + 1
-		log.Info(num)
+		if num%10000 == 0 {
+			log.Debug(num)
+		}
+		bt := time.Now()
 		if tags, ok := data["cids"].([]interface{}); ok {
 			ad := data["ad"].(string)
 			ua := data["ua"].(string)
@@ -296,14 +306,16 @@ func (this *JSPut) Domain(query bson.M) {
 				}
 			}
 		}
+		log.Debug(time.Now().Sub(bt).Seconds())
 	}
-	this.rc_put.Send("SELECT", "0")
+	this.rc_put.Do("SELECT", "0")
+	log.Info(num)
 }
 
 // 报错统计的数据
 func (this *JSPut) saveTjData() {
 	var path = this.iniFile.Section("default").Key("data_path").String()
-	this.rc_put.Send("SELECT", "3")
+	this.rc_put.Do("SELECT", "3")
 	for k, v := range this.advertADS {
 		rk := this.tjprefix + k
 		fname := path + "/" + rk + ".txt"
@@ -336,6 +348,15 @@ func (this *JSPut) savePutData() {
 	}
 }
 
+func (this *JSPut) Test() {
+	this.rc_put.Do("SELECT", "5")
+	bt := time.Now()
+	for i := 0; i <= 100000; i++ {
+		this.rc_put.Do("SET", i, i)
+	}
+	log.Debug(time.Now().Sub(bt).Seconds())
+}
+
 func (this *JSPut) Do(c *cli.Context) {
 	var (
 		now    = time.Now()
@@ -349,9 +370,12 @@ func (this *JSPut) Do(c *cli.Context) {
 	this.tagMap5 = this.getTagsAdverts("TAGS_5_*")
 	this.provinceAdverts = this.getProAdverts()
 
-	this.Other(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
-	this.Domain(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
-	this.saveTjData()
-	this.savePutData()
-	this.emptyDb()
+	_ = eghour
+	_ = bghour
+	this.Test()
+	//this.Other(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	//this.Domain(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	//this.saveTjData()
+	//this.savePutData()
+	//this.emptyDb()
 }

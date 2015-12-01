@@ -59,6 +59,9 @@ func Router(e *echo.Echo) {
 	e.Get("/feedback", (&controller.FeedBack{}).Index)
 	e.Post("/feedback/post", (&controller.FeedBack{}).Post)
 	e.Get("/feedback/pic", (&controller.FeedBack{}).Pic)
+
+	/////用户模块
+	e.Get("/getcode", ((&controller.User{}).GetPhoneCode))
 }
 
 //// 秒速浏览器用户注册

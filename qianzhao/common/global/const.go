@@ -18,7 +18,7 @@ const (
 	CONTROLLER_USER_LOGIN_SUCCESS             = "用户登录成功"
 	CONTROLLER_USER_CHECK_ERROR               = "验证出错!"
 	CONTROLLER_USER_USERPWD_ERROR             = "用户名或密码错误!"
-	CONTROLLER_USER_USERNAME_EXIST_ERROR      = "该邮箱已被注册使用!"
+	CONTROLLER_USER_USERNAME_EXIST_ERROR      = "该手机已被注册使用!"
 	CONTROLLER_USER_REGISTER_REF_SUCCESS      = "注册或关联成功!"
 	CONTROLLER_USER_REGISTER_REF_ERROR        = "一些不知名的错误,注册或关联失败!"
 	CONTROLLER_USER_REGISTER_SUCCESS          = "注册成功!"

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/ngaut/log"
+	"github.com/qgweb/gopro/qianzhao/common/Sms"
 
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/grab"
@@ -89,8 +90,8 @@ func (this *User) Register(ctx *echo.Context) error {
 		})
 	}
 
-	// 验证用户名是否存在
-	if umodel.UserNameExist(username) {
+	// 验证手机号码是否存在
+	if umodel.PhoneExist(username) {
 		return ctx.JSON(http.StatusOK, map[string]string{
 			"code": global.CONTROLLER_CODE_ERROR,
 			"msg":  global.CONTROLLER_USER_USERNAME_EXIST_ERROR,
@@ -101,7 +102,7 @@ func (this *User) Register(ctx *echo.Context) error {
 	if app_uid != "" {
 		bpasswd := function.GetBcrypt([]byte(password))
 		res := umodel.Update(map[string]interface{}{
-			"username": username,
+			"phone":    username,
 			"password": bpasswd,
 		}, map[string]interface{}{
 			"app_uid": app_uid,
@@ -200,6 +201,12 @@ func (this *User) MemberCenter(ctx *echo.Context) error {
 			"msg":  global.CONTROLLER_USER_NEEDLOGIN,
 		})
 	}
+}
+
+// 获取手机验证码
+func (this *User) GetPhoneCode(ctx *echo.Context) error {
+	Sms.SendMsg("", "")
+	return nil
 }
 
 // 速度测试

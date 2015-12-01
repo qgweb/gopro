@@ -26,6 +26,8 @@ type User struct {
 	Created       int    `created`
 	RememberToken string `remember_token`
 	Sid           string `sid`
+	Email         string `email`
+	Phone         string `phone`
 }
 
 func make_app_uid(bandwith string, bandwith_pwd string, timestamp string) string {
@@ -42,6 +44,25 @@ func (this *User) UserNameExist(name string) bool {
 	}
 
 	if len(list) > 0 && list[0]["num"] == "1" {
+		return true
+	}
+
+	return false
+}
+
+// 判断邮箱是否存在
+func (this *User) PhoneExist(phone string) bool {
+	myorm.BSQL().Select("count(*) as num").From(USER_TABLE_NAME).Where("phone=?")
+	list, err := myorm.Query(phone)
+	if err != nil {
+		log.Warn("[user UserInfo]数据获取失败", err)
+		return false
+	}
+	if len(list) == 0 {
+		return false
+	}
+
+	if convert.ToInt(list[0]["num"]) > 0 {
 		return true
 	}
 
@@ -81,14 +102,16 @@ func (this *User) UserInfo(name string) (u User) {
 	u.Created = convert.ToInt(list[0]["created"])
 	u.RememberToken = list[0]["remember_token"]
 	u.Sid = list[0]["sid"]
+	u.Email = list[0]["email"]
+	u.Phone = list[0]["phone"]
 
 	return u
 }
 
 // 用户注册
 func (this *User) UserRegister(name string, password string) bool {
-	myorm.BSQL().Insert(USER_TABLE_NAME).Values("username", "password", "created")
-	n, err := myorm.Insert(name, function.GetBcrypt([]byte(password)), function.GetTimeUnix())
+	myorm.BSQL().Insert(USER_TABLE_NAME).Values("phone", "password", "created", "username")
+	n, err := myorm.Insert(name, function.GetBcrypt([]byte(password)), function.GetTimeUnix(), "")
 	if err != nil {
 		log.Warn("[user UserRegister] 插入失败，", err)
 		return false

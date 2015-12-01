@@ -15,7 +15,7 @@ type clientStub struct {
 	GetDomainData func(string) int
 }
 
-func main() {
+func main1() {
 	client := hprose.NewClient("http://192.168.1.199:12344/")
 	var ro clientStub
 	client.UseService(&ro)
