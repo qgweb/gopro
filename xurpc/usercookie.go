@@ -70,9 +70,10 @@ func getTags(md5 string) ([]string, error) {
 	if mgo.ErrNotFound != err && err != nil {
 		return nil, err
 	}
-
-	for _, v := range result["tag"].([]interface{}) {
-		tags = append(tags, v.(string))
+	if len(result) > 0 {
+		for _, v := range result["tag"].([]interface{}) {
+			tags = append(tags, v.(string))
+		}
 	}
 	return tags, nil
 }
