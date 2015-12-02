@@ -255,8 +255,9 @@ a{
 	margin-top:-270px;
 	margin-left:-325px;
 	width:570px;
-	height:400px;
+	height:445px;
 	padding:40px 40px 45px 40px;
+	font-family:"宋体";
 	border:5px solid #5d5d5d;
 	border:5px solid rgba(0,0,0,.5);
 	background-color:#fff;
@@ -266,26 +267,22 @@ a{
 	top:9px;
 	right:7px;
 }
+.change_avatar_c h4{
+	height:25px;
+	margin-bottom:15px;
+	font-size:18px;
+	color:#555;
+	font-family:"微软雅黑";
+}
 .ca_cleft{
 	float:left;
-	width:300px;
+	width:342px;
 	/*margin-right:80px*/
 }
-.upload_avatar{
-	width:86px;
-	height:28px;
-	margin-bottom:25px;
-	font-size:14px;
-	color:#555;
-	text-align:center;
-	line-height:28px;
-	border:1px solid #d6d6d6;
-	background:url(../img/bg_btn.jpg) repeat-x;
-}
 .upload_img{
-	width:300px;
-	height:300px;
-	line-height:300px;
+	width:340px;
+	height:340px;
+	line-height:21px;
 	font-size:12px;
 	text-align:center;
 	color:#555;
@@ -293,7 +290,20 @@ a{
 	background-color:#f4f4f4;
 	cursor:pointer;
 }
-.head_direction{
+.upload_avatar{
+	display:block;
+	width:86px;
+	height:28px;
+	margin:154px 0 11px 126px;
+	font-size:14px;
+	color:#555;
+	text-align:center;
+	line-height:28px;
+	cursor:pointer;
+	border:1px solid #d6d6d6;
+	background:url(../img/bg_btn.jpg) repeat-x;
+}
+/*.head_direction{
 	margin-top:10px;
 	height:15px;
 	margin-bottom:20px;
@@ -321,10 +331,10 @@ a{
 	position:absolute;
 	top:0;
 	right:0;
-}
+}*/
 .upload_btn{
 	height:32px;
-	margin-top:30px;
+	margin-top:35px;
 }
 .upload_btn input{
 	float:left;
@@ -336,6 +346,7 @@ a{
 	font-size:14px;
 	color:#555;
 	text-align:center;
+	cursor:pointer;
 	border:1px solid #d6d6d6;
 	background:url(../img/bg_btn.jpg) repeat-x;
 }
@@ -361,11 +372,29 @@ a{
 }
 .ca_cright{
 	float:right;
-	margin-top:54px;
-	font-family:"宋体";
 	font-size:12px;
 	color:#555;
 }
-.ca_cright p{
-	margin-bottom:14px;
+.ca_cright h6{
+	font-weight:400;
+}
+.old_avatar,.new_avatar{
+	position:relative;
+}
+.new_avatar{
+	margin-top:58px;
+}
+.old_avatar img,.new_avatar img{
+	width:140px;
+	height:140px;
+	overflow:hidden;
+}
+.bg_eavatar{
+	position:absolute;
+	top:0;
+	right:0;
+	z-index:1;
+	width:180px;
+	height:140px;
+	background:url(../img/bg_eavatar.png) right center no-repeat;
 }
