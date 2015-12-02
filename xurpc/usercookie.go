@@ -60,31 +60,19 @@ func getMd5(result map[string]interface{}) string {
 func getTags(md5 string) ([]string, error) {
 	var (
 		db     = IniFile.Section("mongo-data_source").Key("db").String()
-		table  = "useraction_put_big"
+		table  = "useraction_temp_tags"
 		sess   = getcattjSession()
 		result map[string]interface{}
-		tag    map[string]interface{}
 		tags   []string
 	)
-	err := sess.DB(db).C(table).Find(bson.M{"adua": "4c5791fed272703d7cc5548ffb3dde20"}).One(&result)
+	err := sess.DB(db).C(table).Find(bson.M{"adua": md5}).One(&result)
+
 	if mgo.ErrNotFound != err && err != nil {
 		return nil, err
 	}
 
 	for _, v := range result["tag"].([]interface{}) {
-		temp := v.(map[string]interface{})
-		if temp["tagmongo"].(string) == "1" { //如果是mongoid
-			table = "category"
-			err = sess.DB(db).C(table).FindId(bson.ObjectIdHex(temp["tagId"].(string))).One(&tag)
-		} else {
-			table = "taocat"
-			err = sess.DB(db).C(table).Find(bson.M{"cid": temp["tagId"].(string)}).One(&tag)
-		}
-		if mgo.ErrNotFound != err && err != nil {
-			return nil, err
-		} else {
-			tags = append(tags, tag["name"].(string))
-		}
+		tags = append(tags, v.(string))
 	}
 	return tags, nil
 }

@@ -69,11 +69,11 @@ func (this *TAGSTrace) Do(c *cli.Context) {
 	defer sess.Close()
 
 	//检查是否有数据,有就先清空
-	dataCount, err := sess.DB(db).C(table_put).FindId(nil).Count()
+	dataCount, err := sess.DB(db).C(table_put).Find(nil).Count()
 	if err != nil {
 		log.Error(err)
 	}
-	if dataCount == 0 {
+	if dataCount != 0 {
 		sess.DB(db).C(table_put).DropCollection()
 	}
 
