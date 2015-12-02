@@ -16,7 +16,7 @@ import (
 	mw "github.com/labstack/echo/middleware"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/qianzhao/common/config"
-	_ "github.com/qgweb/gopro/qianzhao/common/redis"
+	//_ "github.com/qgweb/gopro/qianzhao/common/redis"
 	_ "github.com/qgweb/gopro/qianzhao/common/session"
 	_ "github.com/qgweb/gopro/qianzhao/model"
 	"github.com/qgweb/gopro/qianzhao/router"

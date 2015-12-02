@@ -334,6 +334,9 @@
             left:'40px'
         })
     }
+    $('.upload_img').on('click',function(){
+        $('#picBtn').click();
+    })
     $('.make_sure').on('click',function(){
         if($('.show_img').length){
             var src=$('.show_img').attr('src');
@@ -346,6 +349,8 @@
                     if(d.code==200){
                         layer.msg('修改成功',2,1);
                         $('.change_avatar').hide();
+                        $('.avatar').attr('src',src);
+                        $('.show_img').remove();
                     }else{
                         layer.msg(d.msg,2,1);
                     }

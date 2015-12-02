@@ -2958,3 +2958,12 @@
 2015/12/01 18:33:17 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 46.541µs 0
 2015/12/01 18:33:17 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 37.507µs 0
 2015/12/01 18:33:18 logger.go:38: [info] GET /favicon.ico [32m200[0m 80.049µs 0
+2015/12/02 14:05:14 logger.go:38: [info] POST /stats/sidbar [32m200[0m 111.272695ms 0
+2015/12/02 14:05:37 logger.go:38: [info] POST /stats/sidbar [32m200[0m 89.158066ms 0
+2015/12/02 15:17:01 logger.go:38: [info] GET /download/ [33m404[0m 105.725µs 10
+2015/12/02 15:17:07 logger.go:38: [info] GET /download/1.txt [33m404[0m 65.975µs 10
+2015/12/02 15:17:08 logger.go:38: [info] GET /download/1.txt [33m404[0m 417.185µs 10
+2015/12/02 15:17:09 logger.go:38: [info] GET /favicon.ico [32m200[0m 27.949546ms 0
+2015/12/02 15:17:52 logger.go:38: [info] GET /css/layout.css [36m304[0m 46.397µs 0
+2015/12/02 15:18:05 logger.go:38: [info] GET /download/layout.css [33m404[0m 67.277µs 10
+2015/12/02 15:18:05 logger.go:38: [info] GET /favicon.ico [32m200[0m 68.625µs 0

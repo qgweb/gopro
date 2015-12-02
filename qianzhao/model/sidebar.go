@@ -22,7 +22,7 @@ type SideBar struct {
 func (this *SideBar) AddRecord(dl *SideBar) bool {
 	//查找是否存在
 	myorm.BSQL().Select("*").From(TABLE_NAME_SIDEBAR).Where("date=? and type=? and version=?")
-	list, err := myorm.Query(dl.Date, dl.Type)
+	list, err := myorm.Query(dl.Date, dl.Type, dl.Version)
 	if err != nil {
 		log.Error(err)
 		return false

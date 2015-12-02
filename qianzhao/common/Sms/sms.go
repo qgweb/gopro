@@ -75,9 +75,8 @@ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"></signature>
 // 发送短信
 func SendMsg(phone string, content string) {
 	body := createBody(phone, content)
-	log.Println(body)
 	h := httplib.Post(SMS_SEND_URL)
 	h.Header("SOAPAction", SMS_SEND_URL)
 	h.Body(body)
-	log.Println(h.String())
+	h.String()
 }
