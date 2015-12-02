@@ -4,9 +4,13 @@ import (
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/grab"
+	"gopkg.in/mgo.v2"
 	"io/ioutil"
+	"runtime"
 	"runtime/debug"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/codegangsta/cli"
@@ -17,8 +21,13 @@ import (
 )
 
 type TAGSTrace struct {
-	mp      *common.MgoPool
-	iniFile *ini.File
+	mp                  *common.MgoPool
+	iniFile             *ini.File
+	usertracelist       map[string]map[string]int
+	rw                  sync.RWMutex
+	totaldeal           int64
+	category_tao_list   map[string]string
+	category_other_list map[string]string
 }
 
 func NewTAGSTraceCli() cli.Command {
@@ -43,6 +52,9 @@ func NewTAGSTraceCli() cli.Command {
 
 			ur := &TAGSTrace{}
 			ur.iniFile, _ = ini.Load(f)
+			ur.usertracelist = make(map[string]map[string]int)
+			ur.category_other_list = make(map[string]string)
+			ur.category_tao_list = make(map[string]string)
 
 			// mgo 配置文件
 			mconf := &common.MgoConfig{}
@@ -53,101 +65,155 @@ func NewTAGSTraceCli() cli.Command {
 			mconf.UserPwd = ur.iniFile.Section("mongo").Key("pwd").String()
 			ur.mp = common.NewMgoPool(mconf)
 
+			ur.initData()
 			ur.Do(c)
 		},
 	}
 }
 
-func (this *TAGSTrace) Do(c *cli.Context) {
+func (this *TAGSTrace) initData() {
+	db := this.iniFile.Section("mongo").Key("db").String()
+	sess := this.mp.Get()
+	defer sess.Close()
+
+	var list []map[string]interface{}
+	err := sess.DB(db).C("taocat").Find(bson.M{"type": "0"}).All(&list)
+	if err != nil {
+		log.Error(err)
+	}
+
+	if len(list) > 0 {
+		for _, v := range list {
+			this.category_tao_list[v["cid"].(string)] = v["name"].(string)
+		}
+	}
+
+	var list1 []map[string]interface{}
+	err = sess.DB(db).C("category").Find(nil).All(&list1)
+	if err != nil {
+		log.Error(err)
+	}
+
+	if len(list1) > 0 {
+		for _, v := range list1 {
+			this.category_other_list[v["_id"].(bson.ObjectId).Hex()] = v["name"].(string)
+		}
+	}
+
+	log.Error(this.category_tao_list)
+	log.Error(this.category_other_list)
+}
+
+func (this *TAGSTrace) AppendData(info map[string]interface{}) {
+	UA := "ua" //可能会没有UA
+	if u, ok := info["UA"]; ok {
+		UA = u.(string)
+	}
+	key := info["AD"].(string) + "_" + UA
+	for _, tag := range info["tag"].([]interface{}) {
+		tagm := tag.(map[string]interface{})
+		this.rw.RLock()
+		if _, ok := this.usertracelist[key]; ok { //如果已经有这个用户相关的tag
+			if _, ok := this.usertracelist[key][tagm["tagId"].(string)]; ok { //去重,判断是否已存在
+				this.rw.RUnlock()
+				continue
+			} else {
+				this.rw.RUnlock()
+				this.rw.Lock()
+				this.usertracelist[key][tagm["tagId"].(string)] = convert.ToInt(info["timestamp"].(string))
+				this.rw.Unlock()
+			}
+		} else {
+			this.rw.RUnlock()
+			this.rw.Lock()
+			this.usertracelist[key] = map[string]int{tagm["tagId"].(string): convert.ToInt(info["timestamp"].(string))}
+			this.rw.Unlock()
+		}
+	}
+}
+
+func (this *TAGSTrace) ReadData(qi ...interface{}) {
 	var (
-		timeLimit = getDayTime()
-		table     = "useraction"
-		table_put = "useraction_temp_tags"
-		sess      = this.mp.Get()
-		db        = this.iniFile.Section("mongo").Key("db").String()
+		db    = this.iniFile.Section("mongo").Key("db").String()
+		sess  = this.mp.Get()
+		table = "useraction"
+		query = qi[0].(bson.M)
 	)
 	defer sess.Close()
 
+	iter := sess.DB(db).C(table).Find(query).Iter()
+	for {
+		var info map[string]interface{}
+		if !iter.Next(&info) {
+			break
+		}
+		this.totaldeal = atomic.AddInt64(&this.totaldeal, 1)
+		if this.totaldeal%10000 == 0 {
+			log.Info(this.totaldeal)
+		}
+
+		this.AppendData(info)
+	}
+}
+
+func (this *TAGSTrace) Do(c *cli.Context) {
+	var (
+		db        = this.iniFile.Section("mongo").Key("db").String()
+		sess      = this.mp.Get()
+		table_put = "useraction_temp_tags"
+
+		wg = WaitGroup{}
+	)
+	defer sess.Close()
+	runtime.GOMAXPROCS(5)
+
 	//检查是否有数据,有就先清空
-	dataCount, err := sess.DB(db).C(table_put).Find(nil).Count()
-	if err != nil {
-		log.Error(err)
-	}
-	if dataCount != 0 {
-		sess.DB(db).C(table_put).DropCollection()
-	}
+	sess.DB(db).C(table_put).DropCollection()
+	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put).EnsureIndexKey("adua")
 
 	//查询数据先
-	var uaad []map[string]interface{}
-	err = sess.DB(db).C(table).Find(bson.M{"timestamp": bson.M{"$gte": timeLimit}}).All(&uaad)
-	if err != nil {
-		log.Error(err)
-	}
+	wg.Run(this.ReadData, bson.M{"timestamp": bson.M{"$gte": this.getDayTime(-10), "$lt": this.getDayTime(-8)}})
+	wg.Run(this.ReadData, bson.M{"timestamp": bson.M{"$gte": this.getDayTime(-8), "$lt": this.getDayTime(-6)}})
+	wg.Run(this.ReadData, bson.M{"timestamp": bson.M{"$gte": this.getDayTime(-6), "$lt": this.getDayTime(-4)}})
+	wg.Run(this.ReadData, bson.M{"timestamp": bson.M{"$gte": this.getDayTime(-4), "$lt": this.getDayTime(-2)}})
+	wg.Run(this.ReadData, bson.M{"timestamp": bson.M{"$gte": this.getDayTime(-2)}})
+	wg.Wait()
 
-	var list map[string]map[string]int
-	list = make(map[string]map[string]int)
-	for _, v := range uaad {
-		UA := "ua" //可能会没有UA
-		if u, ok := v["UA"]; ok {
-			UA = u.(string)
-		}
-		key := v["AD"].(string) + "_" + UA
-		for _, tag := range v["tag"].([]interface{}) {
-			tagm := tag.(map[string]interface{})
-			if _, ok := list[key]; ok { //如果已经有这个用户相关的tag
-				if _, ok := list[key][tagm["tagId"].(string)]; ok { //去重,判断是否已存在
-					continue
-				} else {
-					list[key][tagm["tagId"].(string)] = convert.ToInt(v["timestamp"].(string))
-				}
-			} else {
-				list[key] = map[string]int{tagm["tagId"].(string): convert.ToInt(v["timestamp"].(string))}
-			}
-		}
-	}
-
+	log.Warn(len(this.usertracelist))
 	var (
-		size     = 3
-		list_num = len(list)
+		size     = 10000
+		list_num = len(this.usertracelist)
+		list_put = make([]interface{}, 0, size)
 	)
 
-	list_put := make([]interface{}, 0, size)
-
-	for key, value := range list {
+	for key, value := range this.usertracelist {
 		tags_data := make([]string, 0, 5)
-		tmp := make(grab.MapSorter, 0, 5)
 		adua := strings.Split(key, "_")
 		s := grab.NewMapSorter(value)
+		edrange := len(s)
 		s.Sort() //排序
 
-		if count := len(s); count < 6 { //取前五个
-			tmp = s[:count]
-		} else {
-			tmp = s[:5]
+		if edrange >= 6 { //取前五个
+			edrange = 5
 		}
 		//查询出标签的中文名
-		var result map[string]interface{}
-		for _, r := range tmp {
+		for _, r := range s[0:edrange] {
 			if bson.IsObjectIdHex(r.Key) {
-				table = "category"
-				err := sess.DB(db).C(table).FindId(bson.ObjectIdHex(r.Key)).One(&result)
-				if err != nil {
-					log.Error(err)
+				if v, ok := this.category_other_list[r.Key]; ok {
+					tags_data = append(tags_data, v)
 				}
 			} else {
-				table = "taocat"
-				err := sess.DB(db).C(table).Find(bson.M{"cid": r.Key}).One(&result)
-				if err != nil {
-					log.Error(err)
+				if v, ok := this.category_tao_list[r.Key]; ok {
+					tags_data = append(tags_data, v)
 				}
 			}
-			tags_data = append(tags_data, result["name"].(string))
 		}
 
 		list_put = append(list_put, bson.M{
 			"ad":   adua[0],
 			"ua":   adua[1],
-			"adua": encrypt.DefaultMd5.Encode(key),
+			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
 			"tag":  tags_data,
 		})
 
@@ -164,8 +230,8 @@ func (this *TAGSTrace) Do(c *cli.Context) {
 /**
  * 获取十天前零点时间戳
  */
-func getDayTime() string {
-	d := time.Now().AddDate(0, 0, -10).Format("20060102")
+func (this *TAGSTrace) getDayTime(day int) string {
+	d := time.Now().AddDate(0, 0, day).Format("20060102")
 	a, _ := time.ParseInLocation("20060102", d, time.Local)
 	return convert.ToString(a.Unix())
 }
