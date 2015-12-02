@@ -108,6 +108,7 @@ func (this *Statistics) SideBar(ctx *echo.Context) error {
 	sbmodel.Favorite = convert.ToInt(favorite)
 	sbmodel.Yixin = convert.ToInt(yixin)
 	sbmodel.Email = convert.ToInt(email)
+	sbmodel.Version = v
 
 	sbmodel.AddRecord(sbmodel)
 	return nil

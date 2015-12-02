@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"io/ioutil"
 	"math"
@@ -58,10 +59,10 @@ func NewURLTraceCli() cli.Command {
 
 func (this *URLTrace) Do(c *cli.Context) {
 	var (
-		date      = time.Now()
-		day       = date.Format("20060102")
-		b1day     = date.AddDate(0, 0, -1).Format("20060102") //1天前
-		hour      = date.Add(-time.Hour).Format("15")
+		now       = time.Now()
+		now1      = now.Add(-time.Second * time.Duration(now.Second())).Add(-time.Minute * time.Duration(now.Minute()))
+		eghour    = convert.ToString(now1.Add(-time.Hour).Unix())
+		bghour    = convert.ToString(now1.Add(-time.Duration(time.Hour * 2)).Unix())
 		month     = time.Now().Format("200601")
 		table     = "urltrack_" + month
 		table_put = "urltrack_put"
@@ -148,9 +149,8 @@ func (this *URLTrace) Do(c *cli.Context) {
 	}
 
 	//读取数据
-	_ = b1day
 	//_ = bson.M{"date": day, "hour": bson.M{"$lte": hour, "$gte": hour}}
-	readDataFun(bson.M{"date": day, "hour": bson.M{"$lte": hour, "$gte": hour}})
+	readDataFun(bson.M{"timestamp": bson.M{"$lte": eghour, "$gte": bghour}})
 	//readDataFun(bson.M{"date": b1day, "hour": bson.M{"$lte": "23", "$gte": hour}})
 
 	//更新投放表

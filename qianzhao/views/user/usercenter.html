@@ -86,10 +86,11 @@
         <div class="popup_bg"></div>
         <div class="change_avatar_c">
             <i class="ico_close"></i>
-            <div class="ca_cleft">
-                <input type="button" class="upload_avatar" value="本地照片" id="picBtn"/>
+            <h4>修改头像</h4>
+            <div class="ca_cleft" style="position:relative">
                 <div class="upload_img">
-                    本地照片:选择一张本地图片编辑后上传为头像
+                    <input type="button" class="upload_avatar" value="本地照片" id='picBtn'/>
+                    选择一张本地图片编辑后上传为头像<br/>仅支持JPG,PNG格式,文件小于150KB
                 </div>
                 <!-- <p class="head_direction">
                     <a href="#" title="" class="turn_left"><i class="ico_left"></i>向左转</a>
@@ -103,8 +104,18 @@
                 </p>
             </div>
             <div class="ca_cright">
-                <p>仅支持JPG,PNG格式,文件小于150KB</p>
-                <img  width="180" height="180" src="{{if .Avatar }} {{.Avatar}} {{else}} ./img/avatar.jpg {{end}} " alt="">
+                <div class="old_avatar">
+                    <img src="{{if .Avatar }} {{.Avatar}} {{else}} ./img/avatar.jpg {{end}}" alt="">
+                    <div class="bg_eavatar">
+                        <h6>原头像</h6>
+                    </div>
+                </div>
+                <div class="new_avatar" style="display: none">
+                    <img src="./img/avatar.jpg" alt="">
+                    <div class="bg_eavatar">
+                        <h6>新头像</h6>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -328,12 +339,17 @@
     window.callBackPics = function (_jsn) {
         // showUploadFrm(_jsn.msg);
         $('.show_img').remove();
-        $('.upload_img').append('<img src="'+_jsn.msg+'" class="show_img" width="300" height="300">');
+        $('.upload_img').append('<img src="'+_jsn.msg+'" class="show_img" width="340" height="340">');
         $('.show_img').css({
             position:'absolute',
-            left:'40px'
+            left:'1px',
+            top:'1px'
         })
+        $('.new_avatar').show().find('img').attr('src',_jsn.msg);
     }
+    $('body').on('click','.show_img',function(){
+        $('#picBtn').click();
+    })
     $('.make_sure').on('click',function(){
         if($('.show_img').length){
             var src=$('.show_img').attr('src');
@@ -346,6 +362,8 @@
                     if(d.code==200){
                         layer.msg('修改成功',2,1);
                         $('.change_avatar').hide();
+                        $('.avatar').attr('src',src);
+                        $('.show_img').remove();
                     }else{
                         layer.msg(d.msg,2,1);
                     }
