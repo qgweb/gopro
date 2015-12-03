@@ -3,6 +3,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -32,9 +33,11 @@ func getUserCoxUa(id string) (map[string]interface{}, error) {
 	var (
 		db     = IniFile.Section("mongo-cookie").Key("db").String()
 		table  = "dt_user"
-		sess   = getcattjSession()
+		sess   = getcookieSession()
 		result map[string]interface{}
 	)
+	defer sess.Close()
+
 	if !bson.IsObjectIdHex(id) {
 		return nil, errors.New("请输入mongoId")
 	}
@@ -65,6 +68,7 @@ func getTags(md5 string) ([]string, error) {
 		result map[string]interface{}
 		tags   []string
 	)
+	defer sess.Close()
 	err := sess.DB(db).C(table).Find(bson.M{"adua": md5}).One(&result)
 
 	if mgo.ErrNotFound != err && err != nil {
@@ -76,4 +80,26 @@ func getTags(md5 string) ([]string, error) {
 		}
 	}
 	return tags, nil
+}
+
+//获取session
+func getcookieSession() *mgo.Session {
+	var (
+		mouser = IniFile.Section("mongo-cookie").Key("user").String()
+		mopwd  = IniFile.Section("mongo-cookie").Key("pwd").String()
+		mohost = IniFile.Section("mongo-cookie").Key("host").String()
+		moport = IniFile.Section("mongo-cookie").Key("port").String()
+		modb   = IniFile.Section("mongo-cookie").Key("db").String()
+		url    = fmt.Sprintf("%s:%s/%s", mohost, moport, modb)
+	)
+	if mouser != "" && modb != "" {
+		url = fmt.Sprintf("%s:%s@%s", mouser, mopwd, url)
+	}
+
+	mdbsession, err := mgo.Dial(url)
+	if err != nil {
+		panic(err)
+	}
+	return mdbsession
+
 }

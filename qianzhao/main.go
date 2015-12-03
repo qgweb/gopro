@@ -11,7 +11,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/astaxie/beego/grace"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
 	"github.com/ngaut/log"
@@ -85,7 +84,7 @@ func main() {
 	router.Router(e)
 
 	e.SetRenderer(t)
-	grace.ListenAndServe(fmt.Sprintf("%s:%s", host, port), e)
+	e.Run(fmt.Sprintf("%s:%s", host, port))
 }
 
 // 设置错误处理

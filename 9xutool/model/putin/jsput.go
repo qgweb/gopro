@@ -1,15 +1,16 @@
 package putin
 
 import (
+	"bufio"
 	"github.com/codegangsta/cli"
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/encrypt"
-	"github.com/syndtr/goleveldb/leveldb"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
+	"io"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -31,8 +32,8 @@ type JSPut struct {
 	provinceAdverts map[string]int            // 浙江广告集合
 	advertADS       map[string]map[string]int //广告对应ad集合
 	tjprefix        string                    //统计prefix
-	ldb             *leveldb.DB               // leveldb引擎
 	levelDataPath   string                    //level数据库目录
+	blackMenus      map[string]int            // 黑名单
 }
 
 func NewJiangSuPutCli() cli.Command {
@@ -66,21 +67,31 @@ func NewJiangSuPutCli() cli.Command {
 
 // 初始化leveldb
 func (this *JSPut) initLevelDb() {
-	var err error
-	this.ldb, err = leveldb.OpenFile(this.levelDataPath, nil)
+	this.blackMenus = make(map[string]int)
+	f, err := os.Open(this.levelDataPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 		return
+	}
+	defer f.Close()
+
+	br := bufio.NewReader(f)
+	for {
+		l, err := br.ReadString('\n')
+		if err == io.EOF {
+			break
+		}
+
+		this.blackMenus[l] = 1
 	}
 }
 
 // 判断key是否存在
 func (this *JSPut) existKey(key string) bool {
-	r, err := this.ldb.Has([]byte(key), nil)
-	if err != nil {
-		return false
+	if _, ok := this.blackMenus[key]; ok {
+		return true
 	}
-	return r
+	return false
 }
 
 // 过滤黑名单中的广告
@@ -287,7 +298,6 @@ func (this *JSPut) Domain(query bson.M) {
 		if num%10000 == 0 {
 			log.Debug(num)
 		}
-		bt := time.Now()
 		if tags, ok := data["cids"].([]interface{}); ok {
 			ad := data["ad"].(string)
 			ua := data["ua"].(string)
@@ -306,7 +316,6 @@ func (this *JSPut) Domain(query bson.M) {
 				}
 			}
 		}
-		log.Debug(time.Now().Sub(bt).Seconds())
 	}
 	this.rc_put.Do("SELECT", "0")
 	log.Info(num)
@@ -364,18 +373,15 @@ func (this *JSPut) Do(c *cli.Context) {
 		eghour = convert.ToString(now1.Add(-time.Hour).Unix())
 		bghour = convert.ToString(now1.Add(-time.Duration(time.Hour * 23)).Unix())
 	)
-	this.initLevelDb()
+	//this.initLevelDb()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
 	this.tagMap3 = this.getTagsAdverts("TAGS_3_*")
 	this.tagMap5 = this.getTagsAdverts("TAGS_5_*")
 	this.provinceAdverts = this.getProAdverts()
 
-	_ = eghour
-	_ = bghour
-	this.Test()
-	//this.Other(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
-	//this.Domain(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
-	//this.saveTjData()
-	//this.savePutData()
-	//this.emptyDb()
+	this.Other(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	this.Domain(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	this.saveTjData()
+	this.savePutData()
+	this.emptyDb()
 }

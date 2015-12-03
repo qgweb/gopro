@@ -21,7 +21,7 @@ import (
 const (
 	SMS_ACCOUNT  = "025C86588423"
 	SMS_PWD      = "86588423"
-	SMS_SEND_URL = "http://202.102.41.99:8090/wsewebsm/services/SendMessageService"
+	SMS_SEND_URL = "http://192.168.210.69:8090/wsewebsm/services/SendMessageService"
 )
 
 func createBody(phone string, content string) string {

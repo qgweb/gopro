@@ -1,9 +1,10 @@
 package putin
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/qgweb/gopro/lib/encrypt"
-	"github.com/syndtr/goleveldb/leveldb"
+	"io"
 	"io/ioutil"
 	"os"
 	"runtime/debug"
@@ -33,8 +34,8 @@ type ZJPut struct {
 	provinceAdverts map[string]int            // 浙江广告集合
 	advertADS       map[string]map[string]int //广告对应ad集合
 	tjprefix        string                    //统计prefix
-	ldb             *leveldb.DB               // leveldb引擎
 	levelDataPath   string                    //level数据库目录
+	blackMenus      map[string]int            // 黑名单
 }
 
 // 获取monggo对象
@@ -109,28 +110,37 @@ func NewZheJiangPutCli() cli.Command {
 			ur.rc_cache.Close()
 			ur.rc_put.Close()
 			ur.rc_dx_put.Close()
-			ur.ldb.Close()
 		},
 	}
 }
 
 // 初始化leveldb
 func (this *ZJPut) initLevelDb() {
-	var err error
-	this.ldb, err = leveldb.OpenFile(this.levelDataPath, nil)
+	this.blackMenus = make(map[string]int)
+	f, err := os.Open(this.levelDataPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 		return
+	}
+	defer f.Close()
+
+	br := bufio.NewReader(f)
+	for {
+		l, err := br.ReadString('\n')
+		if err == io.EOF {
+			break
+		}
+
+		this.blackMenus[l] = 1
 	}
 }
 
 // 判断key是否存在
 func (this *ZJPut) existKey(key string) bool {
-	r, err := this.ldb.Has([]byte(key), nil)
-	if err != nil {
-		return false
+	if _, ok := this.blackMenus[key]; ok {
+		return true
 	}
-	return r
+	return false
 }
 
 // 过滤黑名单中的广告
@@ -299,13 +309,15 @@ func (this *ZJPut) Domain() {
 			break
 		}
 		num = num + 1
+		if num%10000 == 0 {
+			log.Info(num)
+		}
 		if tags, ok := data["cids"].([]interface{}); ok {
 			ad := data["ad"].(string)
 			ua := data["ua"].(string)
 			for _, v := range tags {
 				vm := v.(map[string]interface{})
 				tagId := vm["id"].(string)
-
 				piadverts := this.merageAdverts2(tagId)
 				this.filterAdvert(ad+ua, piadverts)
 				if len(piadverts) > 0 {
@@ -342,7 +354,7 @@ func (this *ZJPut) saveTjData() {
 }
 
 func (this *ZJPut) Do(c *cli.Context) {
-	this.initLevelDb()
+	//this.initLevelDb()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
 	this.tagMap3 = this.getTagsAdverts("TAGS_3_*")
 	this.tagMap5 = this.getTagsAdverts("TAGS_5_*")

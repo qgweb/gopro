@@ -11,8 +11,10 @@ import (
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
+	"os"
 	"runtime/debug"
 	"strings"
+	"time"
 )
 
 // 广告黑名单生成
@@ -25,6 +27,8 @@ type BlackMenu struct {
 	provinceAdverts map[string]int // 浙江广告集合
 	proprefix       string         // 浙江省对应的广告前缀
 	data_path       string         // leveldb目录
+	blackFilePath   string         // 黑名单存放目录
+	blackFileName   string         // 黑名单文件
 	ldb             *leveldb.DB
 }
 
@@ -92,6 +96,8 @@ func NewBlackMenuCli() cli.Command {
 			ur.blackprefix = ur.iniFile.Section("default").Key("black_prefix").String()
 			ur.proprefix = ur.iniFile.Section("default").Key("province_prefix").String()
 			ur.data_path = ur.iniFile.Section("default").Key("data_path").String()
+			ur.blackFilePath = ur.iniFile.Section("default").Key("balck_file_path").String()
+			ur.blackFileName = ur.iniFile.Section("default").Key("black_file_put_name").String()
 			ur.Do(c)
 			ur.rc_put.Close()
 			ur.ldb.Close()
@@ -115,8 +121,35 @@ func (this *BlackMenu) initLevelDb() {
 	iter.Release()
 }
 
-func (this *BlackMenu) setDataToDb(key string) {
-	this.ldb.Put([]byte(key), []byte("1"), nil)
+func (this *BlackMenu) setDataToDb(key string, value string) {
+	this.ldb.Put([]byte(key), []byte(value), nil)
+}
+
+//把黑名单保存到文件中
+func (this *BlackMenu) getBalckMenuData() {
+	fileName := this.blackFilePath + time.Now().Format("2006010215") + ".txt"
+	f, err := os.Create(fileName)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer f.Close()
+
+	fn, err := os.Create(this.blackFileName)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer fn.Close()
+
+	iter := this.ldb.NewIterator(nil, nil)
+	for iter.Next() {
+		key := iter.Key()
+		value := iter.Value()
+		f.WriteString(string(value) + "\n")
+		fn.WriteString(string(key) + "\n")
+	}
+	iter.Release()
 }
 
 func (this *BlackMenu) getProAdverts() map[string]int {
@@ -165,7 +198,7 @@ func (this *BlackMenu) setFilterAdvert() {
 		ad := info["ad"].(string)
 		aid := info["aid"].(string)
 		key := encrypt.DefaultMd5.Encode(ad + ua + aid)
-		this.setDataToDb(key)
+		this.setDataToDb(key, aid+"_"+ad+"_"+ua)
 	}
 
 	iter.Close()
@@ -175,4 +208,5 @@ func (this *BlackMenu) Do(c *cli.Context) {
 	this.initLevelDb()
 	this.provinceAdverts = this.getProAdverts()
 	this.setFilterAdvert()
+	this.getBalckMenuData()
 }

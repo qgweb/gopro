@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html lang="zh_CN">
+
+<head>
+    <title>新标签页</title>
+    <meta name="google" value="notranslate">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="user-scalable=no, width=device-width, maximum-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="./css/layout.css" media="all"/>
+    <link href="/tab/img/221su.ico" rel="Shortcut Icon"/>
+    <script src="./js/laytpl.js"></script>
+    <script src="./js/jquery-1.10.2.min.js"></script>
+     <!--[if lte IE 6]>
+    <script src="./js/iepng.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="contents_all">
+<div class="top_search">
+    <form action="http://www.baidu.com/baidu" target="_blank">
+        <table bgcolor="#f5f5f5" class="search_all">
+            <tr>
+                <td>
+                    <input name=tn type=hidden value=baidu>
+                    <a href="http://www.baidu.com/" class="baidu_search_logo">
+                    </a>
+                    <div class="search_input">
+                      <input type=text name=word size="30" class="ipt_search">
+                    <input type="submit" value="搜索一下" class="btn_search">
+                  </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="contents_c">
+    <div class="page showPage" inx="0">
+        <div class="contents">
+            <div class="often_visit" id="labelsTable" style="">
+                <div class="" style="width:100%;" id="labelsTableNew"></div>
+            </div>
+            <script type="text/html" id="labelsList">
+                {{# for(var i = 0,len = d.length;i < len ; i++){ }}
+                <a href="{{ d[i].url }}" title="{{ d[i].site }}" class="page_list">
+                <span class="page_p disb">
+                    <span class="edit_bar"></span>
+                    <span class="title" dir="ltr">
+                        <span>{{ d[i].site }}</span>
+                    </span>
+                    <img src="{{ d[i].pic }}" alt="{{ d[i].site }}" title="{{ d[i].site }}"/>
+                </span>
+                </a>
+                {{# } }}
+            </script>
+            <script>
+                (function (_jsn) {
+                    var tplMod = document.getElementById('labelsList').innerHTML;
+                    document.getElementById('labelsTableNew').innerHTML = laytpl(tplMod).render(_jsn);
+                })([
+                            {"url": "http://www.baidu.com/", "site": "百度一下，你就知道", "pic": "./image/baidu.png"},
+                            {"url": "http://www.taobao.com/", "site": "淘宝网 - 淘！我喜欢", "pic": "./image/taobao.png"},
+                            {"url": "http://www.jd.com/", "site": "京东网上商城", "pic": "./image/jd.png"},
+                            {"url": "http://www.youku.com/", "site": "优酷-中国领先视频网站,提供视频播放,视频发布,视频搜索 - 优酷视频", "pic": "./image/youku.png"},
+                            {"url": "http://weibo.com/", "site": "欢迎来到微博 微博-随时随地发现新鲜事", "pic": "./image/sinaweibo.png"},
+                            {"url": "http://www.163.com/", "site": "网易", "pic": "./image/wangyi.png"},
+                            {"url": "http://www.sina.com.cn/", "site": "新浪首页", "pic": "./image/sina.png"},
+                            {"url": "http://www.12306.cn/mormhweb/", "site": "铁路客户服务中心", "pic": "./image/12306.png"}
+                        ])
+            </script>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="divcen316 clearfix">
+        <div class="footer-left"></div>
+        <ul id="dot-list">
+            <li class="dot selected clickToPage" pInx="0" title="最常访问">
+                <input disabled="" value="最常访问">
+            </li>
+        </ul>
+        <div class="footer-right"></div>
+    </div>
+</div>
+</div>
+<script src="./js/newTab.js" async="async"></script>
+</body>
+</html>
