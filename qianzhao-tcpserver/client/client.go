@@ -75,7 +75,7 @@ func ProtocolUnPack(data []byte) []byte {
 }
 
 func main() {
-	addr, _ := net.ResolveTCPAddr("tcp4", "122.225.98.80:9091")
+	addr, _ := net.ResolveTCPAddr("tcp4", "202.102.41.115:9091")
 	//addr, _ := net.ResolveTCPAddr("tcp4", "127.0.0.1:9091")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
@@ -84,7 +84,7 @@ func main() {
 
 	r := &Request{}
 	r.Action = "link"
-	r.Content = "02586588720"
+	r.Content = "18151102317"
 	d, _ := MRequest(r)
 	conn.Write(ProtocolPack(d))
 	buf := make([]byte, 2048)

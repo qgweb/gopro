@@ -1,6 +1,8 @@
 package function
 
 import (
+	"github.com/nfnt/resize"
+	"image/jpeg"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -60,4 +62,25 @@ func GetRand(b int, e int) int {
 //  ip
 func GetIP(ctx *echo.Context) string {
 	return strings.Split(ctx.Request().RemoteAddr, ":")[0]
+}
+
+// 原图生成缩略图
+func ThumbPic(pic string, width int, height int) error {
+	f, err := os.Open(pic)
+	if err != nil {
+		return err
+	}
+	img, err := jpeg.Decode(f)
+	if err != nil {
+		return err
+	}
+	f.Close()
+	m := resize.Resize(uint(width), uint(height), img, resize.Lanczos3)
+	f1, err := os.Create(pic)
+	if err != nil {
+		return err
+	}
+	defer f1.Close()
+	jpeg.Encode(f1, m, nil)
+	return nil
 }

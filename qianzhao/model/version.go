@@ -1,6 +1,12 @@
 package model
 
-import "github.com/ngaut/log"
+import (
+	"github.com/qgweb/gopro/lib/convert"
+	"math"
+	"strings"
+
+	"github.com/ngaut/log"
+)
 
 const (
 	VERSION_TABLE_NAME = "221su_version"
@@ -34,10 +40,22 @@ func (this *Version) Update(version string, btype string) VersionExt {
 	}
 
 	if len(list) > 0 && list[0]["version"] != version {
-		vs.Update_page = list[0]["update_page"]
-		vs.Url = list[0]["url"]
-		vs.IsUpdate = true
+		if this.getVersionNum(list[0]["version"]) > this.getVersionNum(version) {
+			vs.Update_page = list[0]["update_page"]
+			vs.Url = list[0]["url"]
+			vs.IsUpdate = true
+		}
 	}
 
 	return vs
+}
+
+func (this *Version) getVersionNum(v string) int {
+	vs := strings.Split(v, ".")
+	num := 0
+	lvs := len(vs)
+	for i := 0; i < lvs; i++ {
+		num = num + convert.ToInt(math.Pow(20, float64(lvs-i)))*convert.ToInt(vs[i])
+	}
+	return num
 }

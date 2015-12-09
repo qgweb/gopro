@@ -1,36 +1,37 @@
 package main
 
 import (
-	"github.com/qgweb/gopro/lib/convert"
-	"github.com/seefan/gossdb"
+	"github.com/nfnt/resize"
+	"image/jpeg"
 	"log"
-	"time"
+	"os"
 )
 
 func main() {
-	pool, err := gossdb.NewPool(&gossdb.Config{
-		Host:             "127.0.0.1",
-		Port:             8888,
-		MinPoolSize:      5,
-		MaxPoolSize:      50,
-		AcquireIncrement: 5,
-	})
+	// open "test.jpg"
+	file, err := os.Open("1.jpg")
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 
-	c, err := pool.NewClient()
+	// decode jpeg into image.Image
+	img, err := jpeg.Decode(file)
 	if err != nil {
-		log.Println(err.Error())
-		return
+		log.Fatal(err)
 	}
-	defer c.Close()
-	bt := time.Now()
-	for i := 0; i < 10000; i++ {
-		c.Set(convert.ToString(i), i)
+	file.Close()
+
+	// resize to width 1000 using Lanczos resampling
+	// and preserve aspect ratio
+	//m := resize.Resize(150, 150, img, resize.Lanczos3)
+	m := resize.Thumbnail(150, 150, img, resize.Lanczos3)
+
+	out, err := os.Create("3.jpg")
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer out.Close()
 
-	log.Println(time.Now().Sub(bt).Seconds())
-
+	// write new image to file
+	jpeg.Encode(out, m, nil)
 }

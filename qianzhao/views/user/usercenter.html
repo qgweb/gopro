@@ -17,7 +17,7 @@
                 <span>个人中心</span>
             </li>
             <li class="logout">
-                <a href="/Api/v0.1/user/logout" title="">退出</a>
+               <!--  <a href="/Api/v0.1/user/logout" title="">退出</a> -->
             </li>
         </ul>
     </div>
@@ -119,7 +119,7 @@
             </div>
         </div>
     </div>
-    <div class="change_phone_box" style="display:none">
+    <!-- <div class="change_phone_box" style="display:none">
         <div class="popup_bg"></div>
         <div class="change_avatar_c">
             <p>
@@ -136,7 +136,26 @@
                 <input type="button" value="取消" class="phone_cancel"/>
             </p>
         </div>
+    </div> -->
+
+    <div class="change_phone_c" style="display:none">
+        <i class="ico_close"></i>
+        <h4>修改手机</h4>
+        <p>
+            <span>手&nbsp;&nbsp;机：</span>
+            <input type="text" class="new_phone">
+        </p>
+        <p>
+            <span>验证码：</span>
+            <input type="text" class="code_val">
+            <input type="button" class="getCode" value="获取验证码">
+        </p>
+        <p class="popup_btn">
+            <input type="button" value="确定" class="phone_sure">
+            <input type="button" value="取消" class="phone_cancel">
+        </p>
     </div>
+
 </body>
 <script src="http://libs.baidu.com/jquery/1.10.0/jquery.min.js"></script>
 <script src="js/layer/layer.min.js"></script>
@@ -264,18 +283,18 @@
             }
         })
         //修改手机
-        $('.change_phone_box .ico_close,.phone_cancel,.change_phone_box .popup_bg').on('click',function(){
-            $('.change_phone_box').hide();
+        $('.change_phone_c .ico_close,.phone_cancel').on('click',function(){
+            $('.change_phone_c').hide();
         })
         $('.change_phone').on('click',function(){
-            $('.change_phone_box').show();
+            $('.change_phone_c').show();
         })
         function count(){
             n=60;
             var timer=setInterval(function(){
                 n--
                 if(n!=0){
-                    $('.getCode').prop('disabled',true).val('请在'+n+'秒后重新请求');
+                    $('.getCode').prop('disabled',true).val(''+n+'秒');
                 }else{
                     $('.getCode').prop('disabled',false).val('获取验证码');
                     clearInterval(timer);
@@ -291,8 +310,13 @@
                     data:{phone:phone},
                     dataType:'json',
                     success:function(d){
-                        layer.msg('发送成功',2,1);
-                        count();
+                        if (d.code == "200") {
+                            layer.msg('发送成功',2,1);
+                            count();    
+                        } else {
+                            layer.msg(d.msg,2,5);
+                        }
+                        
                     }
                 })
             }else{
@@ -311,7 +335,7 @@
                     success:function(d){
                         if(d.code==200){
                             layer.msg('修改成功',2,1);
-                            $('.change_phone_box').hide();
+                            $('.change_phone_c').hide();
                             $('.phone_num').html(phone);
                         }else{
                             layer.msg(d.msg,2,1);

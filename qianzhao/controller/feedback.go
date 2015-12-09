@@ -5,12 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/labstack/echo"
+	"github.com/nfnt/resize"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/qianzhao/common/captcha"
 	"github.com/qgweb/gopro/qianzhao/common/function"
 	"github.com/qgweb/gopro/qianzhao/common/session"
 	"github.com/qgweb/gopro/qianzhao/model"
+	"image/jpeg"
 	"io"
 	"os"
 	"path/filepath"
@@ -70,7 +72,7 @@ func (this *FeedBack) Post(ctx *echo.Context) error {
 		return ctx.HTML(200, Alert("验证码错误"))
 	}
 
-	fbmodel.Qpic, err = UploadPic(ctx, "feedback")
+	fbmodel.Qpic, err = UploadPic(ctx, "feedback", false)
 	if err != nil {
 		log.Error(err)
 	}
@@ -97,7 +99,7 @@ func (this *FeedBack) Pic(ctx *echo.Context) error {
 }
 
 //  upload pic
-func UploadPic(ctx *echo.Context, path string) (string, error) {
+func UploadPic(ctx *echo.Context, path string, isthum bool) (string, error) {
 	pf, ph, err := ctx.Request().FormFile("qpic")
 	if err != nil {
 		log.Error(err)
@@ -115,8 +117,18 @@ func UploadPic(ctx *echo.Context, path string) (string, error) {
 		log.Error(err)
 		return "", nil
 	}
+	defer f.Close()
 
-	io.Copy(f, pf)
+	if isthum {
+		img, err := jpeg.Decode(pf)
+		if err == nil {
+			m := resize.Resize(150, 150, img, resize.Lanczos3)
+			jpeg.Encode(f, m, nil)
+		}
+	} else {
+		io.Copy(f, pf)
+	}
+
 	return strings.Replace(fileName, function.GetBasePath()+"/public", "", -1), nil
 }
 

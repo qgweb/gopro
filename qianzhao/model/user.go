@@ -50,10 +50,29 @@ func (this *User) UserNameExist(name string) bool {
 	return false
 }
 
-// 判断邮箱是否存在
+// 判断手机是否存在
 func (this *User) PhoneExist(phone string) bool {
 	myorm.BSQL().Select("count(*) as num").From(USER_TABLE_NAME).Where("phone=?")
 	list, err := myorm.Query(phone)
+	if err != nil {
+		log.Warn("[user UserInfo]数据获取失败", err)
+		return false
+	}
+	if len(list) == 0 {
+		return false
+	}
+
+	if convert.ToInt(list[0]["num"]) > 0 {
+		return true
+	}
+
+	return false
+}
+
+// 判断邮箱是否存在
+func (this *User) EmailExist(email string) bool {
+	myorm.BSQL().Select("count(*) as num").From(USER_TABLE_NAME).Where("email=?")
+	list, err := myorm.Query(email)
 	if err != nil {
 		log.Warn("[user UserInfo]数据获取失败", err)
 		return false
@@ -138,10 +157,10 @@ func (this *User) UserInfoById(id string) (u User) {
 }
 
 // 用户注册
-func (this *User) UserRegister(name string, password string) bool {
+func (this *User) UserRegister(phone string, email string, password string) bool {
 	uname := "qz_" + function.GetTimeUnix()
-	myorm.BSQL().Insert(USER_TABLE_NAME).Values("phone", "password", "created", "username")
-	n, err := myorm.Insert(name, function.GetBcrypt([]byte(password)), function.GetTimeUnix(), uname)
+	myorm.BSQL().Insert(USER_TABLE_NAME).Values("phone", "email", "password", "created", "username")
+	n, err := myorm.Insert(phone, email, function.GetBcrypt([]byte(password)), function.GetTimeUnix(), uname)
 	if err != nil {
 		log.Warn("[user UserRegister] 插入失败，", err)
 		return false

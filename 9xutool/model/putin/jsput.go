@@ -118,30 +118,6 @@ func (this *JSPut) getProAdverts() map[string]int {
 	return advertMaps
 }
 
-// 获取黑名单
-func (this *JSPut) getBlackAdverts() map[string]int {
-	var advertMaps = make(map[string]int)
-	this.rc_put.Do("SELECT", "0")
-	if infos, err := redis.Strings(this.rc_put.Do("SMEMBERS", this.blackprefix)); err == nil {
-		for _, v := range infos {
-			advertMaps[v] = 1
-		}
-	} else {
-		log.Fatal(err)
-	}
-	return advertMaps
-}
-
-// 过滤广告
-func (this *JSPut) fliterAdvert(pads map[string]int) {
-	black_ads := this.getBlackAdverts()
-	for k, _ := range black_ads {
-		if _, ok := pads[k]; ok {
-			delete(pads, k)
-		}
-	}
-}
-
 // 获取投放中的标签广告
 func (this *JSPut) getTagsAdverts(key string) map[string]map[string]int {
 	var adverMaps = make(map[string]map[string]int)
@@ -285,7 +261,7 @@ func (this *JSPut) Domain(query bson.M) {
 	var num = 0
 	defer sess.Close()
 
-	this.rc_put.Do("SELECT", "5")
+	this.rc_put.Do("SELECT", "1")
 	iter := sess.DB(db).C(table).Find(query).
 		Select(bson.M{"_id": 0, "ad": 1, "ua": 1, "cids": 1}).Iter()
 	log.Info(query, table)
@@ -371,7 +347,7 @@ func (this *JSPut) Do(c *cli.Context) {
 		now    = time.Now()
 		now1   = now.Add(-time.Second * time.Duration(now.Second())).Add(-time.Minute * time.Duration(now.Minute()))
 		eghour = convert.ToString(now1.Add(-time.Hour).Unix())
-		bghour = convert.ToString(now1.Add(-time.Duration(time.Hour * 23)).Unix())
+		bghour = convert.ToString(now1.Add(-time.Duration(time.Hour * 2)).Unix())
 	)
 	//this.initLevelDb()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")

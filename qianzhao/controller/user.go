@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/qianzhao/common/Sms"
+	"net/url"
 
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/grab"
@@ -37,9 +38,9 @@ func (this *User) Login(ctx *echo.Context) error {
 	// return ctx.String(200, "fff")
 
 	var (
-		userName = ctx.Form("username")
-		password = ctx.Form("password")
-		umodel   = model.User{}
+		userName, _ = url.QueryUnescape(ctx.Form("username"))
+		password, _ = url.QueryUnescape(ctx.Form("password"))
+		umodel      = model.User{}
 	)
 
 	if !umodel.UserNameExist(userName) {
@@ -77,25 +78,48 @@ func (this *User) Login(ctx *echo.Context) error {
 // 注册
 func (this *User) Register(ctx *echo.Context) error {
 	var (
-		username = ctx.Form("username")
-		password = ctx.Form("password")
-		pwd      = ctx.Form("pwd")
-		app_uid  = ctx.Form("app_uid")
-		umodel   = model.User{}
+		phone, _    = url.QueryUnescape(ctx.Form("phone"))
+		password, _ = url.QueryUnescape(ctx.Form("password"))
+		email, _    = url.QueryUnescape(ctx.Form("email"))
+		pwd, _      = url.QueryUnescape(ctx.Form("pwd"))
+		app_uid, _  = url.QueryUnescape(ctx.Form("app_uid"))
+		umodel      = model.User{}
 	)
+
+	if phone == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "手机号码不能为空",
+		})
+	}
+
+	if email == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "邮箱不能为空",
+		})
+	}
 
 	if pwd != password {
 		return ctx.JSON(http.StatusOK, map[string]string{
 			"code": global.CONTROLLER_CODE_ERROR,
-			"msg":  global.CONTROLLER_USER_USERPWD_ERROR,
+			"msg":  "两次密码不一致",
 		})
 	}
 
 	// 验证手机号码是否存在
-	if umodel.PhoneExist(username) {
+	if umodel.PhoneExist(phone) {
 		return ctx.JSON(http.StatusOK, map[string]string{
 			"code": global.CONTROLLER_CODE_ERROR,
 			"msg":  global.CONTROLLER_USER_USERNAME_EXIST_ERROR,
+		})
+	}
+
+	// 验证邮箱是否存在
+	if umodel.EmailExist(email) {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  global.CONTROLLER_USER_EMAIL_EXIST_ERROR,
 		})
 	}
 
@@ -103,7 +127,7 @@ func (this *User) Register(ctx *echo.Context) error {
 	if app_uid != "" {
 		bpasswd := function.GetBcrypt([]byte(password))
 		res := umodel.Update(map[string]interface{}{
-			"phone":    username,
+			"phone":    phone,
 			"password": bpasswd,
 		}, map[string]interface{}{
 			"app_uid": app_uid,
@@ -121,7 +145,7 @@ func (this *User) Register(ctx *echo.Context) error {
 			})
 		}
 	} else {
-		res := umodel.UserRegister(username, password)
+		res := umodel.UserRegister(phone, email, password)
 		if res {
 			return ctx.JSON(http.StatusOK, map[string]string{
 				"code": global.CONTROLLER_CODE_SUCCESS,
@@ -204,6 +228,8 @@ func (this *User) EditUserpic(ctx *echo.Context) error {
 		})
 	}
 
+	log.Error(function.ThumbPic(function.GetBasePath()+"/public/"+pic, 150, 150))
+
 	if umodel.Update(map[string]interface{}{"avatar": pic},
 		map[string]interface{}{"id": this.Base.GetUserInfo(ctx).Id}) {
 		return ctx.JSON(200, map[string]string{
@@ -225,7 +251,7 @@ func (this *User) UploadPic(ctx *echo.Context) error {
 		return nil
 	}
 	var cb = ctx.Form("callback")
-	path, err := UploadPic(ctx, "photo")
+	path, err := UploadPic(ctx, "photo", false)
 
 	if err != nil {
 		ebs, _ := json.Marshal(map[string]string{
@@ -424,10 +450,18 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 
 	var phone = ctx.Form("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
+	var userModel = model.User{}
 	if phone == "" {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
 			"msg":  "手机号码为空",
+		})
+	}
+
+	if userModel.PhoneExist(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码已被注册",
 		})
 	}
 
@@ -445,10 +479,18 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 func (this *User) GetPhoneCode(ctx *echo.Context) error {
 	var phone = ctx.Query("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
+	var userModel = model.User{}
 	if phone == "" {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
 			"msg":  "手机号码为空",
+		})
+	}
+
+	if userModel.PhoneExist(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码已被注册",
 		})
 	}
 

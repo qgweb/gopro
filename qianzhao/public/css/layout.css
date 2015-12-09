@@ -247,37 +247,47 @@ a{
     -webkit-opacity:0.3;
     opacity:0.3;
 }
-.change_avatar_c{
+.change_avatar_c,.change_phone_c{
 	position:fixed;
 	top:50%;
 	left:50%;
 	z-index:9999;
-	margin-top:-270px;
-	margin-left:-325px;
-	width:570px;
-	height:445px;
-	padding:40px 40px 45px 40px;
+	padding:40px;
 	font-family:"宋体";
 	border:5px solid #5d5d5d;
 	border:5px solid rgba(0,0,0,.5);
 	background-color:#fff;
 }
-.change_avatar_c .ico_close{
+.change_avatar_c{
+	margin-top:-270px;
+	margin-left:-325px;
+	width:570px;
+	/*height:445px;*/
+}
+.change_phone_c{
+	margin-top:-145px;
+	margin-left:-186px;
+	width:282px;
+}
+.change_avatar_c .ico_close,.change_phone_c .ico_close{
 	position:absolute;
 	top:9px;
 	right:7px;
+	cursor:pointer;
 }
-.change_avatar_c h4{
+.change_avatar_c h4,.change_phone_c h4{
 	height:25px;
 	margin-bottom:15px;
 	font-size:18px;
 	color:#555;
 	font-family:"微软雅黑";
 }
+.change_phone_c h4{
+	text-align:center;
+}
 .ca_cleft{
 	float:left;
 	width:342px;
-	/*margin-right:80px*/
 }
 .upload_img{
 	width:340px;
@@ -294,7 +304,7 @@ a{
 	display:block;
 	width:86px;
 	height:28px;
-	margin:154px 0 11px 126px;
+	margin:154px auto 11px auto;
 	font-size:14px;
 	color:#555;
 	text-align:center;
@@ -303,40 +313,11 @@ a{
 	border:1px solid #d6d6d6;
 	background:url(../img/bg_btn.jpg) repeat-x;
 }
-/*.head_direction{
-	margin-top:10px;
-	height:15px;
-	margin-bottom:20px;
-	line-height:15px;
-}
-.head_direction a{
-	position:relative;
-	font-size:12px;
-	color:#56adf9;
-}
-.turn_left{
-	float:left;
-	padding-left:20px;
-}
-.turn_left i{
-	position:absolute;
-	top:0;
-	left:0;
-}
-.turn_right{
-	float:right;
-	padding-right:20px;
-}
-.turn_right i{
-	position:absolute;
-	top:0;
-	right:0;
-}*/
-.upload_btn{
+.popup_btn{
 	height:32px;
 	margin-top:35px;
 }
-.upload_btn input{
+.popup_btn input{
 	float:left;
 	width:58px;
 	height:28px;
@@ -376,6 +357,7 @@ a{
 	color:#555;
 }
 .ca_cright h6{
+	font-size:12px;
 	font-weight:400;
 }
 .old_avatar,.new_avatar{
@@ -397,4 +379,42 @@ a{
 	width:180px;
 	height:140px;
 	background:url(../img/bg_eavatar.png) right center no-repeat;
+}
+input.new_phone,input.code_val{
+	padding:8px 5px;
+	border:1px solid #d6d6d6;
+	outline:none;
+}
+input.new_phone{
+	width:180px;
+	margin-top:15px;
+	margin-bottom:12px;
+}
+input.code_val{
+	width:100px;
+}
+input.getCode{
+	width:72px;
+	height:34px;
+	margin-right:14px;
+	line-height:34px;
+	font-size:12px;
+	color:#555;
+	text-align:center;
+	cursor:pointer;
+	border:1px solid #d6d6d6;
+}
+input.getCode:hover{
+	color:#333;
+	border-color:#bbb;
+}
+.change_phone_box .popup_btn{
+	margin-top:30px;
+	margin-left:62px;
+}
+.change_phone_box .popup_btn input{
+	margin-right:30px;
+}
+.change_phone_box p span{
+	font-size:14px;
 }

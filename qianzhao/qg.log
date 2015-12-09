@@ -3444,3 +3444,285 @@
 2015/12/03 11:56:23 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 19.419µs 0
 2015/12/03 11:56:29 logger.go:38: [info] POST /user/uploadpic [32m200[0m 45.146771ms 95
 2015/12/03 11:56:29 logger.go:38: [info] GET /upload/photo/2015120312115629.jpg [32m200[0m 3.058463ms 77136
+2015/12/04 11:45:16 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 176.218µs 42
+2015/12/04 11:45:45 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 173.015µs 42
+2015/12/04 11:45:51 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 135.213µs 48
+2015/12/04 11:46:03 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 156.586µs 49
+2015/12/04 11:46:50 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 145.108µs 49
+2015/12/04 11:47:18 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 157.893077ms 37
+2015/12/04 11:49:21 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 155.626µs 45
+2015/12/04 11:49:26 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 4.140541ms 52
+2015/12/04 11:49:31 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 3.026586ms 52
+2015/12/04 11:51:43 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 1.413607ms 52
+2015/12/07 14:33:54 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 49.455927ms 71
+2015/12/07 14:36:29 user.go:44: [error] 3%40qq.com 
+2015/12/07 14:36:29 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 4.349346ms 71
+2015/12/07 14:37:09 user.go:44: [error] 123%40qq.com 
+2015/12/07 14:37:09 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 5.095973ms 71
+2015/12/07 14:37:39 user.go:45: [error] 123@qq.com <nil> 
+2015/12/07 14:37:39 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 4.821951ms 71
+2015/12/07 14:37:57 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:37:57 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.56472ms 71
+2015/12/07 14:38:00 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:38:00 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.485196ms 71
+2015/12/07 14:38:02 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:38:02 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.677576ms 71
+2015/12/07 14:38:03 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:38:03 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.475398ms 71
+2015/12/07 14:38:14 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:38:14 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.719404ms 71
+2015/12/07 14:38:15 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:38:15 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 2.153894ms 71
+2015/12/07 14:38:16 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:38:16 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.3663ms 71
+2015/12/07 14:38:17 user.go:45: [error] 3@qq.com <nil> 
+2015/12/07 14:38:17 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 2.201459ms 71
+2015/12/07 14:38:32 user.go:45: [error] 2212@qq.com <nil> 
+2015/12/07 14:38:32 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.919365ms 71
+2015/12/07 14:39:21 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 4.720294ms 71
+2015/12/07 14:39:24 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.57879ms 71
+2015/12/07 14:39:25 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.548213ms 71
+2015/12/07 14:39:36 user.go:45: [error] 2212@qq.com 
+2015/12/07 14:39:36 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 4.676465ms 71
+2015/12/07 14:39:39 user.go:45: [error] 2212@qq.com 
+2015/12/07 14:39:39 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.649016ms 71
+2015/12/07 14:39:39 user.go:45: [error] 2212@qq.com 
+2015/12/07 14:39:39 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.602062ms 71
+2015/12/07 14:40:33 user.go:40: [error] SELECT count(*) as num FROM 221su_users WHERE username=? or phone=? or email=? 
+2015/12/07 14:40:33 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 4.617706ms 71
+2015/12/07 14:41:14 user.go:40: [error] SELECT count(*) as num FROM 221su_users WHERE username=? or phone=? or email=? 
+2015/12/07 14:41:14 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 125.573444ms 113
+2015/12/07 16:22:30 logger.go:38: [info] GET / [32m200[0m 71.803763ms 88
+2015/12/07 18:26:44 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 128.094583ms 113
+2015/12/07 18:26:53 user.go:431: [error]  
+2015/12/07 18:26:53 logger.go:38: [info] GET /user [32m200[0m 3.755378ms 14814
+2015/12/07 18:26:53 logger.go:38: [info] GET /css/layout.css [36m304[0m 57.211µs 0
+2015/12/07 18:26:53 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 66.893µs 0
+2015/12/07 18:26:53 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 37.634µs 0
+2015/12/07 18:26:53 logger.go:38: [info] GET /img/bg_banner.jpg [36m304[0m 39.704µs 0
+2015/12/07 18:26:53 logger.go:38: [info] GET /img/logo.jpg [36m304[0m 17.917µs 0
+2015/12/07 18:26:53 logger.go:38: [info] GET /img/ico_small.jpg [36m304[0m 34.919µs 0
+2015/12/07 18:26:53 logger.go:38: [info] GET /img/bg_avatar.png [36m304[0m 26.477µs 0
+2015/12/07 18:26:54 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 47.411µs 0
+2015/12/07 18:26:54 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 39.145µs 0
+2015/12/07 18:26:55 logger.go:38: [info] GET /img/bg_eavatar.png [36m304[0m 41.791µs 0
+2015/12/07 18:26:55 logger.go:38: [info] GET /img/bg_btn.jpg [36m304[0m 17.134µs 0
+2015/12/07 18:27:00 logger.go:38: [info] POST /user/uploadpic [32m200[0m 20.870461ms 94
+2015/12/07 18:27:00 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [32m200[0m 3.020263ms 98100
+2015/12/07 18:27:05 logger.go:38: [info] POST /user/editpic [32m200[0m 1.365316ms 36
+2015/12/07 18:27:15 logger.go:38: [info] POST /user/uploadpic [32m200[0m 2.549643ms 94
+2015/12/07 18:27:15 logger.go:38: [info] GET /upload/photo/201512071262715.jpg [32m200[0m 398.303µs 383601
+2015/12/08 09:37:42 logger.go:38: [info] POST /user/getcode [32m200[0m 451.898µs 37
+2015/12/08 09:38:17 logger.go:38: [info] POST /getcode [33m404[0m 154.694µs 10
+2015/12/08 09:38:21 logger.go:38: [info] POST /getcode [33m404[0m 171.184µs 10
+2015/12/08 09:38:38 logger.go:38: [info] POST /getcode [33m404[0m 64.421µs 10
+2015/12/08 09:39:24 logger.go:38: [info] GET /getcode [32m200[0m 56.384096ms 48
+2015/12/08 09:39:53 logger.go:38: [info] GET /getcode [32m200[0m 3.822847ms 28
+2015/12/08 09:41:50 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 131.461418ms 128
+2015/12/08 09:41:56 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:41:56 logger.go:38: [info] GET /user [32m200[0m 3.100492ms 15447
+2015/12/08 09:41:57 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 51.501µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 40.645µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /css/layout.css [32m200[0m 81.040857ms 7133
+2015/12/08 09:41:57 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 34.453µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /img/bg_banner.jpg [36m304[0m 19.082µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /img/bg_avatar.png [36m304[0m 58.372µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /img/ico_small.jpg [36m304[0m 35.94µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /img/logo.jpg [36m304[0m 50.497µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /img/bg_btn.jpg [36m304[0m 21.932µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 49.898µs 0
+2015/12/08 09:41:57 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 40.69µs 0
+2015/12/08 09:44:24 logger.go:38: [info] GET /user [32m200[0m 682.002µs 37
+2015/12/08 09:44:24 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.313769ms 0
+2015/12/08 09:44:27 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 121.262118ms 128
+2015/12/08 09:44:28 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:44:28 logger.go:38: [info] GET /user [32m200[0m 3.886594ms 14662
+2015/12/08 09:44:28 logger.go:38: [info] GET /css/layout.css [36m304[0m 45.258µs 0
+2015/12/08 09:44:28 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 42.603µs 0
+2015/12/08 09:44:28 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 71.469µs 0
+2015/12/08 09:44:28 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 37.5µs 0
+2015/12/08 09:44:28 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 43.338µs 0
+2015/12/08 09:44:28 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 37.895µs 0
+2015/12/08 09:44:28 logger.go:38: [info] GET /favicon.ico [32m200[0m 68.796µs 0
+2015/12/08 09:44:49 logger.go:38: [info] POST /user/getcode [32m200[0m 1.721444ms 48
+2015/12/08 09:44:54 logger.go:38: [info] GET /css/layout.css [36m304[0m 37.377µs 0
+2015/12/08 09:46:08 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 123.278783ms 128
+2015/12/08 09:46:10 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:46:10 logger.go:38: [info] GET /user [32m200[0m 4.606ms 14853
+2015/12/08 09:46:10 logger.go:38: [info] GET /css/layout.css [36m304[0m 47.973µs 0
+2015/12/08 09:46:10 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 65.482µs 0
+2015/12/08 09:46:10 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 52.042µs 0
+2015/12/08 09:46:10 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 44.081µs 0
+2015/12/08 09:46:10 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 51.736µs 0
+2015/12/08 09:46:10 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 23.11µs 0
+2015/12/08 09:46:40 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 125.928133ms 128
+2015/12/08 09:46:42 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:46:42 logger.go:38: [info] GET /user [32m200[0m 3.088624ms 14855
+2015/12/08 09:46:42 logger.go:38: [info] GET /css/layout.css [36m304[0m 50.479µs 0
+2015/12/08 09:46:42 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 90.959µs 0
+2015/12/08 09:46:42 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 68.864µs 0
+2015/12/08 09:46:42 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 42.815µs 0
+2015/12/08 09:46:42 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 52.072µs 0
+2015/12/08 09:46:42 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 53.894µs 0
+2015/12/08 09:46:50 logger.go:38: [info] POST /user/getcode [32m200[0m 1.748141ms 48
+2015/12/08 09:47:51 logger.go:38: [info] GET /css/layout.css [36m304[0m 41.312µs 0
+2015/12/08 09:48:36 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 125.061872ms 128
+2015/12/08 09:48:38 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:48:38 logger.go:38: [info] GET /user [32m200[0m 3.07892ms 14829
+2015/12/08 09:48:38 logger.go:38: [info] GET /css/layout.css [36m304[0m 54.013µs 0
+2015/12/08 09:48:38 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 73.311µs 0
+2015/12/08 09:48:38 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 52.228µs 0
+2015/12/08 09:48:38 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 49.8µs 0
+2015/12/08 09:48:38 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 55.126µs 0
+2015/12/08 09:48:38 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 46.759µs 0
+2015/12/08 09:49:10 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 125.709774ms 128
+2015/12/08 09:49:12 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:49:12 logger.go:38: [info] GET /user [32m200[0m 3.167701ms 14827
+2015/12/08 09:49:12 logger.go:38: [info] GET /css/layout.css [36m304[0m 44.399µs 0
+2015/12/08 09:49:12 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 57.997µs 0
+2015/12/08 09:49:12 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 37.076µs 0
+2015/12/08 09:49:12 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 39.24µs 0
+2015/12/08 09:49:12 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 45.572µs 0
+2015/12/08 09:49:12 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 42.862µs 0
+2015/12/08 09:50:17 logger.go:38: [info] POST /user/getcode [32m200[0m 1.749434ms 48
+2015/12/08 09:51:21 logger.go:38: [info] POST /user/getcode [32m200[0m 59.927143826s 24
+2015/12/08 09:51:22 logger.go:38: [info] POST /user/getcode [32m200[0m 59.92535274s 24
+2015/12/08 09:51:51 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:51:51 logger.go:38: [info] GET /user [32m200[0m 2.151424ms 14827
+2015/12/08 09:51:52 logger.go:38: [info] GET /css/layout.css [36m304[0m 49.692µs 0
+2015/12/08 09:51:52 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 39.439µs 0
+2015/12/08 09:51:52 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 71.017µs 0
+2015/12/08 09:51:52 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 41.876µs 0
+2015/12/08 09:51:52 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 46.161µs 0
+2015/12/08 09:51:52 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 17.814µs 0
+2015/12/08 09:51:52 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.377372ms 0
+2015/12/08 09:52:23 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 125.69148ms 128
+2015/12/08 09:52:24 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 09:52:24 logger.go:38: [info] GET /user [32m200[0m 3.555655ms 14806
+2015/12/08 09:52:24 logger.go:38: [info] GET /css/layout.css [36m304[0m 48.716µs 0
+2015/12/08 09:52:24 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 67.409µs 0
+2015/12/08 09:52:24 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 48.311µs 0
+2015/12/08 09:52:24 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 30.904µs 0
+2015/12/08 09:52:24 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 38.211µs 0
+2015/12/08 09:52:24 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 34.501µs 0
+2015/12/08 09:52:25 logger.go:38: [info] GET /favicon.ico [32m200[0m 8.787308ms 0
+2015/12/08 09:52:39 logger.go:38: [info] POST /user/getcode [32m200[0m 1.555643ms 48
+2015/12/08 10:29:33 logger.go:38: [info] GET /img/bg_eavatar.png [36m304[0m 91.742µs 0
+2015/12/08 10:40:50 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 131.970325ms 128
+2015/12/08 10:40:51 user.go:431: [error] /upload/photo/201512071262700.jpg 
+2015/12/08 10:40:51 logger.go:38: [info] GET /user [32m200[0m 3.919331ms 14806
+2015/12/08 10:40:52 logger.go:38: [info] GET /css/layout.css [36m304[0m 52.249µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /upload/photo/201512071262700.jpg [36m304[0m 80.339µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 56.355µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 36.114µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /img/logo.jpg [36m304[0m 49.552µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /img/bg_banner.jpg [36m304[0m 46.624µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /img/bg_avatar.png [36m304[0m 39.97µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /img/ico_small.jpg [36m304[0m 66.719µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 41.748µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 41.313µs 0
+2015/12/08 10:40:52 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.421877ms 0
+2015/12/08 10:41:26 logger.go:38: [info] POST /user/uploadpic [32m200[0m 164.604207ms 95
+2015/12/08 10:41:26 logger.go:38: [info] GET /upload/photo/2015120812104126.jpg [32m200[0m 96.484µs 1210
+2015/12/08 10:41:35 logger.go:38: [info] POST /user/editpic [32m200[0m 1.49228ms 36
+2015/12/08 10:41:47 logger.go:38: [info] GET /upload/photo/2015120812104126.jpg [36m304[0m 39.469µs 0
+2015/12/08 10:42:22 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 129.4161ms 129
+2015/12/08 10:42:29 logger.go:38: [info] POST /user/uploadpic [32m200[0m 246.437062ms 95
+2015/12/08 10:42:29 logger.go:38: [info] GET /upload/photo/2015120812104229.jpg [32m200[0m 4.876796ms 1258
+2015/12/08 10:42:49 logger.go:38: [info] POST /user/editpic [32m200[0m 1.565302ms 36
+2015/12/08 10:42:54 logger.go:38: [info] GET /user [32m200[0m 88.363µs 37
+2015/12/08 10:42:54 logger.go:38: [info] GET /favicon.ico [32m200[0m 85.822µs 0
+2015/12/08 10:43:04 logger.go:38: [info] GET /upload/photo/2015120812104229.jpg [36m304[0m 45.956µs 0
+2015/12/08 10:52:07 logger.go:38: [info] GET /user [32m200[0m 683.856µs 37
+2015/12/08 10:52:07 logger.go:38: [info] GET /favicon.ico [32m200[0m 2.985156ms 0
+2015/12/08 10:52:09 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 127.317501ms 129
+2015/12/08 10:52:10 user.go:433: [error] /upload/photo/2015120812104229.jpg 
+2015/12/08 10:52:10 logger.go:38: [info] GET /user [32m200[0m 6.710724ms 14808
+2015/12/08 10:52:10 logger.go:38: [info] GET /css/layout.css [36m304[0m 45.895µs 0
+2015/12/08 10:52:10 logger.go:38: [info] GET /upload/photo/2015120812104229.jpg [36m304[0m 65.505µs 0
+2015/12/08 10:52:10 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 41.108µs 0
+2015/12/08 10:52:10 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 27.075µs 0
+2015/12/08 10:52:10 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 42.998µs 0
+2015/12/08 10:52:10 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 23.819µs 0
+2015/12/08 10:52:11 logger.go:38: [info] GET /favicon.ico [32m200[0m 83.519µs 0
+2015/12/08 10:52:15 logger.go:38: [info] POST /user/uploadpic [32m200[0m 1.543026ms 95
+2015/12/08 10:52:15 logger.go:38: [info] GET /upload/photo/2015120812105215.jpg [32m200[0m 243.289µs 98100
+2015/12/08 10:52:18 logger.go:38: [info] POST /user/editpic [32m200[0m 1.470034ms 36
+2015/12/08 10:52:24 logger.go:38: [info] GET /upload/photo/2015120812105215.jpg [36m304[0m 40.303µs 0
+2015/12/08 10:52:56 logger.go:38: [info] POST /user/uploadpic [32m200[0m 482.728µs 37
+2015/12/08 10:53:04 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 123.250961ms 129
+2015/12/08 10:53:16 logger.go:38: [info] POST /user/uploadpic [32m200[0m 903.884µs 95
+2015/12/08 10:53:16 logger.go:38: [info] GET /upload/photo/2015120812105316.jpg [32m200[0m 2.942047ms 98100
+2015/12/08 10:53:18 user.go:231: [error] open /upload/photo/2015120812105316.jpg: no such file or directory 
+2015/12/08 10:53:18 logger.go:38: [info] POST /user/editpic [32m200[0m 1.628816ms 36
+2015/12/08 10:53:25 logger.go:38: [info] GET /upload/photo/2015120812105316.jpg [36m304[0m 49.548µs 0
+2015/12/08 10:54:28 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 127.429962ms 129
+2015/12/08 10:54:32 logger.go:38: [info] POST /user/uploadpic [32m200[0m 2.725181ms 95
+2015/12/08 10:54:32 logger.go:38: [info] GET /upload/photo/2015120812105432.jpg [32m200[0m 3.148891ms 98100
+2015/12/08 10:54:34 user.go:231: [error] <nil> 
+2015/12/08 10:54:34 logger.go:38: [info] POST /user/editpic [32m200[0m 103.113811ms 36
+2015/12/08 10:54:52 logger.go:38: [info] GET /upload/photo/2015120812105432.jpg [32m200[0m 87.086µs 1543
+2015/12/08 10:54:54 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:54:54 logger.go:38: [info] GET /user [32m200[0m 2.961242ms 14808
+2015/12/08 10:54:55 logger.go:38: [info] GET /css/layout.css [36m304[0m 38.065µs 0
+2015/12/08 10:54:55 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 50.662µs 0
+2015/12/08 10:54:55 logger.go:38: [info] GET /upload/photo/2015120812105432.jpg [32m200[0m 59.682µs 1543
+2015/12/08 10:54:55 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 39.247µs 0
+2015/12/08 10:54:55 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 43.12µs 0
+2015/12/08 10:54:55 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 41.873µs 0
+2015/12/08 10:55:07 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:55:07 logger.go:38: [info] GET /user [32m200[0m 2.248955ms 14808
+2015/12/08 10:55:07 logger.go:38: [info] GET /css/layout.css [36m304[0m 39.881µs 0
+2015/12/08 10:55:07 logger.go:38: [info] GET /upload/photo/2015120812105432.jpg [36m304[0m 48.627µs 0
+2015/12/08 10:55:07 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 38.675µs 0
+2015/12/08 10:55:07 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 42.164µs 0
+2015/12/08 10:55:08 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 47.566µs 0
+2015/12/08 10:55:08 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 52.601µs 0
+2015/12/08 10:55:08 logger.go:38: [info] GET /favicon.ico [32m200[0m 65.209µs 0
+2015/12/08 10:56:58 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:56:58 logger.go:38: [info] GET /user [32m200[0m 2.116402ms 14808
+2015/12/08 10:56:58 logger.go:38: [info] GET /upload/photo/2015120812105432.jpg [36m304[0m 34.513µs 0
+2015/12/08 10:57:02 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:57:02 logger.go:38: [info] GET /user [32m200[0m 3.945289ms 14808
+2015/12/08 10:57:03 logger.go:38: [info] GET /upload/photo/2015120812105432.jpg [36m304[0m 72.425µs 0
+2015/12/08 10:57:06 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:57:06 logger.go:38: [info] GET /user [32m200[0m 2.545145ms 14808
+2015/12/08 10:57:09 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:57:09 logger.go:38: [info] GET /user [32m200[0m 3.360503ms 14808
+2015/12/08 10:57:19 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:57:19 logger.go:38: [info] GET /user [32m200[0m 2.199701ms 14808
+2015/12/08 10:57:19 logger.go:38: [info] GET /upload/photo/2015120812105432.jpg [36m304[0m 43.178µs 0
+2015/12/08 10:57:24 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:57:24 logger.go:38: [info] GET /user [32m200[0m 2.876673ms 14808
+2015/12/08 10:57:26 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:57:26 logger.go:38: [info] GET /user [32m200[0m 2.924577ms 14808
+2015/12/08 10:57:34 user.go:433: [error] /upload/photo/2015120812105432.jpg 
+2015/12/08 10:57:34 logger.go:38: [info] GET /user [32m200[0m 2.428693ms 14808
+2015/12/08 12:02:29 logger.go:38: [info] GET /version/update [32m200[0m 16.151252ms 96
+2015/12/08 12:02:48 logger.go:38: [info] GET /version/update [32m200[0m 1.629559ms 96
+2015/12/08 12:02:57 logger.go:38: [info] GET /version/update [32m200[0m 1.674974ms 96
+2015/12/08 12:02:58 logger.go:38: [info] GET /version/update [32m200[0m 1.682198ms 96
+2015/12/08 12:03:20 version.go:60: [error] 3368425 
+2015/12/08 12:03:20 version.go:60: [error] 168431 
+2015/12/08 12:03:20 logger.go:38: [info] GET /version/update [32m200[0m 4.98175ms 96
+2015/12/08 12:03:47 version.go:60: [error] 168429 
+2015/12/08 12:03:47 version.go:60: [error] 168431 
+2015/12/08 12:03:47 logger.go:38: [info] GET /version/update [32m200[0m 2.277948ms 86
+2015/12/08 12:18:44 version.go:60: [error] 168429 
+2015/12/08 12:18:44 version.go:60: [error] 168422 
+2015/12/08 12:18:44 logger.go:38: [info] GET /version/update [32m200[0m 29.289191ms 148
+2015/12/08 12:19:20 version.go:60: [error] 168429 
+2015/12/08 12:19:20 version.go:60: [error] 168422 
+2015/12/08 12:19:20 logger.go:38: [info] GET /version/update [32m200[0m 1.850318ms 148
+2015/12/08 12:19:58 version.go:60: [error] 160160 
+2015/12/08 12:19:58 version.go:60: [error] 160400 
+2015/12/08 12:19:58 logger.go:38: [info] GET /version/update [32m200[0m 4.323762ms 86
+2015/12/08 12:20:10 version.go:60: [error] 160160 
+2015/12/08 12:20:10 version.go:60: [error] 168000 
+2015/12/08 12:20:10 logger.go:38: [info] GET /version/update [32m200[0m 3.410152ms 86
+2015/12/08 12:20:16 version.go:60: [error] 160160 
+2015/12/08 12:20:16 version.go:60: [error] 160040 
+2015/12/08 12:20:16 logger.go:38: [info] GET /version/update [32m200[0m 2.032001ms 148
+2015/12/08 12:20:21 version.go:60: [error] 160160 
+2015/12/08 12:20:21 version.go:60: [error] 161760 
+2015/12/08 12:20:21 logger.go:38: [info] GET /version/update [32m200[0m 1.909542ms 86
