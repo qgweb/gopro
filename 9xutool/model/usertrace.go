@@ -21,6 +21,8 @@ import (
 
 type UserTrace struct {
 	mp      *common.MgoPool
+	mcp     *common.MgoPool
+	mtcp    *common.MgoPool
 	rc      redis.Conn
 	iniFile *ini.File
 	prefix  string
@@ -68,6 +70,22 @@ func NewUserTraceCli() cli.Command {
 			mconf.UserName = ur.iniFile.Section("mongo").Key("user").String()
 			mconf.UserPwd = ur.iniFile.Section("mongo").Key("pwd").String()
 			ur.mp = common.NewMgoPool(mconf)
+
+			mconf1 := &common.MgoConfig{}
+			mconf1.DBName = ur.iniFile.Section("mongo-cookie").Key("db").String()
+			mconf1.Host = ur.iniFile.Section("mongo-cookie").Key("host").String()
+			mconf1.Port = ur.iniFile.Section("mongo-cookie").Key("port").String()
+			mconf1.UserName = ur.iniFile.Section("mongo-cookie").Key("user").String()
+			mconf1.UserPwd = ur.iniFile.Section("mongo-cookie").Key("pwd").String()
+			ur.mcp = common.NewMgoPool(mconf1)
+
+			mconf2 := &common.MgoConfig{}
+			mconf2.DBName = ur.iniFile.Section("mongo-tj-cookie").Key("db").String()
+			mconf2.Host = ur.iniFile.Section("mongo-tj-cookie").Key("host").String()
+			mconf2.Port = ur.iniFile.Section("mongo-tj-cookie").Key("port").String()
+			mconf2.UserName = ur.iniFile.Section("mongo-tj-cookie").Key("user").String()
+			mconf2.UserPwd = ur.iniFile.Section("mongo-tj-cookie").Key("pwd").String()
+			ur.mtcp = common.NewMgoPool(mconf2)
 
 			// redis配置
 			ruser := ur.iniFile.Section("redis").Key("host").String()
@@ -228,23 +246,6 @@ func (this *UserTrace) ReadData(query bson.M) {
 	}
 }
 
-func (this *UserTrace) Do(c *cli.Context) {
-	var (
-		now    = time.Now()
-		now1   = now.Add(-time.Second * time.Duration(now.Second())).Add(-time.Minute * time.Duration(now.Minute()))
-		eghour = convert.ToString(now1.Add(-time.Hour).Unix())
-		bghour = convert.ToString(now1.Add(-time.Duration(time.Hour * 2)).Unix())
-		egdate = convert.ToString(now1.Add(-time.Hour).Unix())
-		bgdate = convert.ToString(now1.Add(-time.Duration(time.Hour * 73)).Unix())
-	)
-
-	this.ReadData(bson.M{"domainId": bson.M{"$ne": "0"}, "timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
-	this.ReadData(bson.M{"domainId": "0", "timestamp": bson.M{"$gte": bgdate, "$lte": egdate}})
-
-	this.saveData()
-	this.emptyKeys()
-}
-
 // 获取大分类
 func (this *UserTrace) getBigCat() map[string]string {
 	var (
@@ -265,4 +266,74 @@ func (this *UserTrace) getBigCat() map[string]string {
 		return list
 	}
 	return nil
+}
+
+// cookie白名单数据
+// 格莱美:55e5661525d0a2091a567a70
+func (this *UserTrace) WhiteCookie() {
+	var (
+		sess     = this.mcp.Get()
+		sess_tj  = this.mtcp.Get()
+		btime    = time.Now().Add(-time.Hour * 24).Format("2006-01-02")
+		bdate, _ = time.ParseInLocation("2006-01-02", btime, time.Local)
+		tag      = "55e5661525d0a2091a567a70"
+		num      = 0
+	)
+
+	defer sess.Close()
+	defer sess_tj.Close()
+
+	iter := sess.DB("xu_tj").C("cookie").Find(bson.M{
+		"date": bdate.Unix(),
+		// "referer": bson.RegEx{Pattern: `glm`},
+	}).Select(bson.M{"ck": 1, "_id": 0}).Iter()
+
+	for {
+		var info map[string]interface{}
+		var adua map[string]interface{}
+		var err error
+
+		if !iter.Next(&info) {
+			break
+		}
+		ck := info["ck"].(string)
+		if !bson.IsObjectIdHex(ck) {
+			continue
+		}
+
+		err = sess_tj.DB("user_cookie").C("dt_user").
+			Find(bson.M{"_id": bson.ObjectIdHex(ck)}).
+			Select(bson.M{"cox": 1, "ua": 1}).One(&adua)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+		ad := adua["cox"].(string)
+		ua := encrypt.DefaultBase64.Encode(adua["ua"].(string))
+
+		if ad == "" {
+			continue
+		}
+		this.setInfo(ad+"_"+ua, tag)
+		num = num + 1
+		log.Info(num)
+	}
+}
+
+func (this *UserTrace) Do(c *cli.Context) {
+	var (
+		now    = time.Now()
+		now1   = now.Add(-time.Second * time.Duration(now.Second())).Add(-time.Minute * time.Duration(now.Minute()))
+		eghour = convert.ToString(now1.Add(-time.Hour).Unix())
+		bghour = convert.ToString(now1.Add(-time.Duration(time.Hour * 2)).Unix())
+		egdate = convert.ToString(now1.Add(-time.Hour).Unix())
+		bgdate = convert.ToString(now1.Add(-time.Duration(time.Hour * 73)).Unix())
+	)
+
+	this.ReadData(bson.M{"domainId": bson.M{"$ne": "0"}, "timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	this.ReadData(bson.M{"domainId": "0", "timestamp": bson.M{"$gte": bgdate, "$lte": egdate}})
+	this.WhiteCookie()
+
+	this.saveData()
+	this.emptyKeys()
 }
