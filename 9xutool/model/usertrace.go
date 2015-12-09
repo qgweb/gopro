@@ -272,20 +272,20 @@ func (this *UserTrace) getBigCat() map[string]string {
 // 格莱美:55e5661525d0a2091a567a70
 func (this *UserTrace) WhiteCookie() {
 	var (
-		sess     = this.mcp.Get()
-		sess_tj  = this.mtcp.Get()
-		btime    = time.Now().Add(-time.Hour * 24).Format("2006-01-02")
-		bdate, _ = time.ParseInLocation("2006-01-02", btime, time.Local)
-		tag      = "55e5661525d0a2091a567a70"
-		num      = 0
+		sess    = this.mcp.Get()
+		sess_tj = this.mtcp.Get()
+		//btime    = time.Now().Add(-time.Hour * 24).Format("2006-01-02")
+		//bdate, _ = time.ParseInLocation("2006-01-02", btime, time.Local)
+		tag = "55e5661525d0a2091a567a70"
+		num = 0
 	)
 
 	defer sess.Close()
 	defer sess_tj.Close()
 
 	iter := sess.DB("xu_tj").C("cookie").Find(bson.M{
-		"date": bdate.Unix(),
-		// "referer": bson.RegEx{Pattern: `glm`},
+	//"date": bdate.Unix(),
+	// "referer": bson.RegEx{Pattern: `glm`},
 	}).Select(bson.M{"ck": 1, "_id": 0}).Iter()
 
 	for {
@@ -330,9 +330,9 @@ func (this *UserTrace) Do(c *cli.Context) {
 		bgdate = convert.ToString(now1.Add(-time.Duration(time.Hour * 73)).Unix())
 	)
 
+	this.WhiteCookie()
 	this.ReadData(bson.M{"domainId": bson.M{"$ne": "0"}, "timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
 	this.ReadData(bson.M{"domainId": "0", "timestamp": bson.M{"$gte": bgdate, "$lte": egdate}})
-	this.WhiteCookie()
 
 	this.saveData()
 	this.emptyKeys()
