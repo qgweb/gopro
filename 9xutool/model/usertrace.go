@@ -2,12 +2,13 @@ package model
 
 import (
 	"fmt"
-	"github.com/qgweb/gopro/lib/encrypt"
 	"io/ioutil"
 	"math"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/qgweb/gopro/lib/encrypt"
 
 	"github.com/codegangsta/cli"
 	"github.com/garyburd/redigo/redis"
@@ -274,6 +275,7 @@ func (this *UserTrace) WhiteCookie() {
 	var (
 		sess    = this.mcp.Get()
 		sess_tj = this.mtcp.Get()
+
 		//btime    = time.Now().Add(-time.Hour * 24).Format("2006-01-02")
 		//bdate, _ = time.ParseInLocation("2006-01-02", btime, time.Local)
 		tag = "55e5661525d0a2091a567a70"
@@ -283,10 +285,7 @@ func (this *UserTrace) WhiteCookie() {
 	defer sess.Close()
 	defer sess_tj.Close()
 
-	iter := sess.DB("xu_tj").C("cookie").Find(bson.M{
-	//"date": bdate.Unix(),
-	// "referer": bson.RegEx{Pattern: `glm`},
-	}).Select(bson.M{"ck": 1, "_id": 0}).Iter()
+	iter := sess_tj.DB("xu_tj").C("cookie").Find(nil).Select(bson.M{"ck": 1, "_id": 0}).Iter()
 
 	for {
 		var info map[string]interface{}
@@ -294,6 +293,7 @@ func (this *UserTrace) WhiteCookie() {
 		var err error
 
 		if !iter.Next(&info) {
+			log.Error(111)
 			break
 		}
 		ck := info["ck"].(string)
@@ -301,7 +301,7 @@ func (this *UserTrace) WhiteCookie() {
 			continue
 		}
 
-		err = sess_tj.DB("user_cookie").C("dt_user").
+		err = sess.DB("user_cookie").C("dt_user").
 			Find(bson.M{"_id": bson.ObjectIdHex(ck)}).
 			Select(bson.M{"cox": 1, "ua": 1}).One(&adua)
 		if err != nil {

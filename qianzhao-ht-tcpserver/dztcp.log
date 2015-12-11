@@ -1,0 +1,316 @@
+2015/12/11 13:56:27 model.go:243: [error] [] 
+2015/12/11 13:57:12 model.go:241: [error] <?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://service.com" xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding" xmlns:tns="http://service.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc11="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+  <wsdl:types>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.com">
+<xsd:element name="applicationCard">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element maxOccurs="1" minOccurs="1" name="in0" nillable="true" type="xsd:string"/>
+<xsd:element maxOccurs="1" minOccurs="1" name="in1" nillable="true" type="xsd:string"/>
+<xsd:element maxOccurs="1" minOccurs="1" name="in2" nillable="true" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="applicationCardResponse">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element maxOccurs="1" minOccurs="1" name="out" nillable="true" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="applicationCardResponse">
+    <wsdl:part name="parameters" element="tns:applicationCardResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="applicationCardRequest">
+    <wsdl:part name="parameters" element="tns:applicationCard">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ApplicationCardPortType">
+    <wsdl:operation name="applicationCard">
+      <wsdl:input name="applicationCardRequest" message="tns:applicationCardRequest">
+    </wsdl:input>
+      <wsdl:output name="applicationCardResponse" message="tns:applicationCardResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ApplicationCardHttpBinding" type="tns:ApplicationCardPortType">
+    <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="applicationCard">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="applicationCardRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="applicationCardResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ApplicationCard">
+    <wsdl:port name="ApplicationCardHttpPort" binding="tns:ApplicationCardHttpBinding">
+      <wsdlsoap:address location="http://221.228.17.114:58886/iherbhelper/services/ApplicationCard"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
+ 
+2015/12/11 13:57:12 model.go:243: [error] [] 
+2015/12/11 13:58:33 model.go:241: [error] <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:applicationCardResponse xmlns:ns1="http://service.com"><ns1:out>LyAc2zdBlQaWb5NpUEv6nA==</ns1:out></ns1:applicationCardResponse></soap:Body></soap:Envelope> 
+2015/12/11 13:58:33 model.go:243: [error] [<ns1:out>LyAc2zdBlQaWb5NpUEv6nA==</ns1:out> LyAc2zdBlQaWb5NpUEv6nA==] 
+2015/12/11 13:59:42 model.go:241: [error] <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:applicationCardResponse xmlns:ns1="http://service.com"><ns1:out>LyAc2zdBlQaWb5NpUEv6nA==</ns1:out></ns1:applicationCardResponse></soap:Body></soap:Envelope> 
+2015/12/11 13:59:42 model.go:244: [info] LyAc2zdBlQaWb5NpUEv6nA== 
+2015/12/11 14:00:52 model.go:241: [error] <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:applicationCardResponse xmlns:ns1="http://service.com"><ns1:out>LyAc2zdBlQaWb5NpUEv6nA==</ns1:out></ns1:applicationCardResponse></soap:Body></soap:Envelope> 
+2015/12/11 14:00:52 model.go:244: [info] {"Flag":"-10"} 
+2015/12/11 14:01:46 model.go:242: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>Qkx2NCs4Q21WL2pKQ1M5V0xxRThKZWo1U09YS0pmVXQ0NFB6M1pGLzYxS3VoZ0ZqSDk5c3U4TkROMXpIWFhqaw==</ser:in1>
+            <ser:in2>D1D2325822C2263CABD0027D9B115D7E</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:01:46 model.go:245: [info] {"Flag":"-10"} 
+2015/12/11 14:01:55 model.go:242: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>Qkx2NCs4Q21WL2pKQ1M5V0xxRThKZWo1U09YS0pmVXQ0NFB6M1pGLzYxS3VoZ0ZqSDk5c3U4TkROMXpIWFhqaw==</ser:in1>
+            <ser:in2>D1D2325822C2263CABD0027D9B115D7E</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:01:55 model.go:245: [info] {"Flag":"-10"} 
+2015/12/11 14:02:43 model.go:236: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>Qkx2NCs4Q21WL2pKQ1M5V0xxRThKZWo1U09YS0pmVXQ0NFB6M1pGLzYxS3VoZ0ZqSDk5c3U4TkROMXpIWFhqaw==</ser:in1>
+            <ser:in2>D1D2325822C2263CABD0027D9B115D7E</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:02:44 model.go:245: [info] {"Flag":"-10"} 
+2015/12/11 14:04:49 model.go:236: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>dm4ybG9NeWZlVlhjMHFudnM5UVdjejBPa3Q4dTZqaWRXbUp4UklnTVJ3c1NIWmlXbTA5ek03SjBKK1NNekFQbw==</ser:in1>
+            <ser:in2>5943285D04D803227CF77D0CAAC4FE00</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:05:04 model.go:245: [info] {"Flag":"-10"} 
+2015/12/11 14:06:31 model.go:221: [info] '{"Mobile":"15158117079","Serviceid":"0001"}' 
+2015/12/11 14:06:32 model.go:237: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>dm4ybG9NeWZlVlhjMHFudnM5UVdjejBPa3Q4dTZqaWRXbUp4UklnTVJ3c1NIWmlXbTA5ek03SjBKK1NNekFQbw==</ser:in1>
+            <ser:in2>5943285D04D803227CF77D0CAAC4FE00</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:06:32 model.go:246: [info] {"Flag":"-10"} 
+2015/12/11 14:07:13 model.go:221: [info] '{"Mobile":"15158117079","Serviceid":"0001"}' 
+2015/12/11 14:07:13 model.go:222: [info] vn2loMyfeVXc0qnvs9QWcz0Okt8u6jidWmJxRIgMRwsSHZiWm09zM7J0J+SMzAPo 
+2015/12/11 14:07:14 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>dm4ybG9NeWZlVlhjMHFudnM5UVdjejBPa3Q4dTZqaWRXbUp4UklnTVJ3c1NIWmlXbTA5ek03SjBKK1NNekFQbw==</ser:in1>
+            <ser:in2>5943285D04D803227CF77D0CAAC4FE00</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:07:14 model.go:247: [info] {"Flag":"-10"} 
+2015/12/11 14:07:45 model.go:221: [info] '{"Mobile":"15158117079","Serviceid":"0001"}' 
+2015/12/11 14:07:45 model.go:222: [info] vn2loMyfeVXc0qnvs9QWcz0Okt8u6jidWmJxRIgMRwsSHZiWm09zM7J0J+SMzAPo 
+2015/12/11 14:07:46 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>dm4ybG9NeWZlVlhjMHFudnM5UVdjejBPa3Q4dTZqaWRXbUp4UklnTVJ3c1NIWmlXbTA5ek03SjBKK1NNekFQbw==</ser:in1>
+            <ser:in2>5943285D04D803227CF77D0CAAC4FE00</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:07:46 model.go:247: [info] {"Flag":"-10"} 
+2015/12/11 14:09:50 model.go:236: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>vn2loMyfeVXc0qnvs9QWcz0Okt8u6jidWmJxRIgMRwsSHZiWm09zM7J0J&#43;SMzAPo</ser:in1>
+            <ser:in2>412BCB90AFD5714F985BD0A9722FA182</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:09:50 model.go:245: [info] {"Flag":"-10"} 
+2015/12/11 14:10:13 model.go:221: [info] '{"Mobile":"15158117079","Serviceid":"0001"}' 
+2015/12/11 14:10:13 model.go:222: [info] vn2loMyfeVXc0qnvs9QWcz0Okt8u6jidWmJxRIgMRwsSHZiWm09zM7J0J+SMzAPo 
+2015/12/11 14:10:14 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>vn2loMyfeVXc0qnvs9QWcz0Okt8u6jidWmJxRIgMRwsSHZiWm09zM7J0J&#43;SMzAPo</ser:in1>
+            <ser:in2>412BCB90AFD5714F985BD0A9722FA182</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:10:14 model.go:247: [info] {"Flag":"-10"} 
+2015/12/11 14:10:52 model.go:221: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 14:10:52 model.go:222: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 14:10:53 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4&#43;8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:10:57 model.go:221: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 14:10:58 model.go:222: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 14:10:58 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4&#43;8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:11:22 model.go:221: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 14:11:22 model.go:222: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 14:11:23 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4&#43;8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:12:23 model.go:221: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 14:12:23 model.go:222: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 14:12:24 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4&#43;8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:22:45 model.go:221: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 14:22:45 model.go:222: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 14:22:46 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:22:46 model.go:247: [info] {"Flag":"-2"} 
+2015/12/11 14:23:04 model.go:221: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 14:23:04 model.go:222: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 14:23:05 model.go:238: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 14:23:05 model.go:247: [info] {"Flag":"-2"} 
+2015/12/11 15:01:48 model.go:231: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 15:01:49 model.go:232: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 15:01:50 model.go:248: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 15:01:50 event.go:26: [info] {    } 
+2015/12/11 15:04:18 model.go:231: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 15:04:18 model.go:232: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 15:04:19 model.go:248: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 15:04:19 event.go:26: [info] {    } 
+2015/12/11 15:04:58 model.go:231: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 15:04:59 model.go:232: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 15:04:59 model.go:248: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 15:04:59 model.go:256: [info] <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:applicationCardResponse xmlns:ns1="http://service.com"><ns1:out>MA5I8gcCKyVzZ+CJdJnsklJDdf2X6oVyoSxBvuVKA7cdQ+BkxCGWQPEiB0qNo+iAgkwceu6kIx2gBHTVSW6gipTQRgj9Ck1fWGhTH55z5Vj5KL6g9quokror6EsjZYLT/SrQ4fkC7r4E8F8qUJOgDw==</ns1:out></ns1:applicationCardResponse></soap:Body></soap:Envelope> 
+2015/12/11 15:04:59 event.go:26: [info] {    } 
+2015/12/11 15:08:36 model.go:231: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 15:08:37 model.go:232: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 15:08:37 model.go:248: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 15:08:37 model.go:258: [info] <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:applicationCardResponse xmlns:ns1="http://service.com"><ns1:out>MA5I8gcCKyVzZ+CJdJnsklJDdf2X6oVyoSxBvuVKA7cdQ+BkxCGWQPEiB0qNo+iAgkwceu6kIx2gBHTVSW6gipTQRgj9Ck1fWGhTH55z5Vj5KL6g9quokror6EsjZYLT/SrQ4fkC7r4E8F8qUJOgDw==</ns1:out></ns1:applicationCardResponse></soap:Body></soap:Envelope> 
+2015/12/11 15:08:38 model.go:260: [info] {"Flag":"0","CardID":"56000005038843","CardPass":"zta3t7M0","Serviceid":"0001","Transactionid":"1449817500610"} 
+2015/12/11 15:08:38 event.go:26: [info] {0 56000005038843 zta3t7M0 0001 } 
+2015/12/11 15:10:05 event.go:26: [info] {0 56000005044761 4AcFidVO 0001 1449814302113} 
+2015/12/11 15:10:51 event.go:26: [info] {0 56000005044761 4AcFidVO 0001 1449814302113} 
+2015/12/11 15:40:16 model.go:231: [info] {"Mobile":"15158117079","Serviceid":"0001"} 
+2015/12/11 15:40:16 model.go:232: [info] BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk 
+2015/12/11 15:40:17 model.go:248: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/11 15:40:17 model.go:258: [info] {"Flag":"0","CardID":"56000005039489","CardPass":"WhVgF3cR","Serviceid":"0001","Transactionid":"1449819617343"} 
+2015/12/11 15:40:17 event.go:26: [info] {0 56000005039489 WhVgF3cR 0001 1449819617343} 
