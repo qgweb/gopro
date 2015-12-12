@@ -1,7 +1,9 @@
 package model
 
 import (
+	"errors"
 	"fmt"
+	"github.com/qgweb/gopro/lib/orm"
 	"io/ioutil"
 	"runtime/debug"
 	"time"
@@ -15,9 +17,10 @@ import (
 
 type (
 	UserCdTrace struct {
-		mp *common.MgoPool
-		//		mysqlp  *common.MysqlPool	//待完成
+		mp      *common.MgoPool
+		mysql   *orm.QGORM
 		iniFile *ini.File
+		// adFile	//经纬度和ad信息相关
 	}
 
 	TaoCat struct { //数据模型
@@ -39,7 +42,7 @@ var (
 func NewUserCdCli() cli.Command {
 	return cli.Command{
 		Name:  "get_tags_by_coordinate",
-		Usage: "根据经纬度和ad汇总标签",
+		Usage: "根据经纬度和ad汇总标签昨日总数",
 		Action: func(c *cli.Context) {
 			defer func() {
 				if msg := recover(); msg != nil {
@@ -69,9 +72,18 @@ func NewUserCdCli() cli.Command {
 			mconf.UserPwd = ur.iniFile.Section("mongo").Key("pwd").String()
 			ur.mp = common.NewMgoPool(mconf)
 
+			//mysql 配置文件
+			myconf := &common.MysqlConfig{}
+			myconf.DBName = ur.iniFile.Section("mysql").Key("db").String()
+			myconf.Host = ur.iniFile.Section("mysql").Key("host").String()
+			myconf.Port = ur.iniFile.Section("mysql").Key("port").String()
+			myconf.UserName = ur.iniFile.Section("mysql").Key("user").String()
+			myconf.UserPwd = ur.iniFile.Section("mysql").Key("pwd").String()
+			ur.mysql = common.NewMysqlPool(myconf)
+
 			ur.initData()
-			//			ur.Do(c)
-			ur.getTagsInfo(c)
+			ur.Do(c)
+			// ur.getTagsInfo(c)
 			fmt.Println(tags_num)
 		},
 	}
@@ -106,24 +118,40 @@ func (this *UserCdTrace) initData() {
 			taocat_list[category.Cid] = category
 		}
 	}
-
 }
 
 func (this *UserCdTrace) Do(c *cli.Context) {
+	//整体逻辑
+	//从经纬度文件中提取出ad
+	//for执行getTagsInfo方法，处理标签
+	//最后把tags_num入库，入库的时候再做映射取标签中文名
+}
+
+func (this *UserCdTrace) getMysqlConnect() {
+	this.mysql = orm.NewORM()
+	err := this.mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s",
+		user, pwd, host, port, db, charset))
+
+	if err != nil {
+		log.Fatal("连接数据库失败：", err)
+	}
+
+	myorm.SetMaxIdleConns(50)
+	myorm.SetMaxOpenConns(100)
 }
 
 //根据ad获取标签
-func (this *UserCdTrace) getTagsInfo(c *cli.Context) {
+func (this *UserCdTrace) getTagsInfo(ad string) {
 	var (
 		db       = this.iniFile.Section("mongo").Key("db").String()
 		sess     = this.mp.Get()
 		tagsInfo []map[string]interface{}
-		//		dayTime  = getDay(0)
+		dayTime  = getDay(0)
 	)
 	defer sess.Close()
 
-	//	err := sess.DB(db).C("useraction").Find(bson.M{"AD": ad, "day": dayTime}).All(&tagsInfo)
-	err := sess.DB(db).C("useraction").Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).All(&tagsInfo)
+	err := sess.DB(db).C("useraction").Find(bson.M{"AD": ad, "day": dayTime}).All(&tagsInfo)
+	// err := sess.DB(db).C("useraction").Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).All(&tagsInfo)
 	if err != nil {
 		log.Error(err)
 	}
@@ -137,7 +165,10 @@ func (this *UserCdTrace) getTagsInfo(c *cli.Context) {
 				cid := tagm["tagId"].(string)
 				cg := taocat_list[cid] //从总标签的map判断是否是3级标签
 				if cg.Level != 3 {
-					cid = cg.getLv3Id()
+					cid, err = cg.getLv3Id()
+					if err != nil {
+						continue
+					}
 				}
 				tags_num[cid] = tags_num[cid] + 1
 			}
@@ -146,16 +177,19 @@ func (this *UserCdTrace) getTagsInfo(c *cli.Context) {
 }
 
 //获取相应的三级标签id
-func (this *TaoCat) getLv3Id() string {
+func (this *TaoCat) getLv3Id() (string, error) {
 	if this.Level == 3 {
-		return this.Cid
+		return this.Cid, nil
 	}
 	n := this.Level - 3
+	if n < 0 { //如果是
+		return "", errors.New("标签等级过高")
+	}
 	tmp := *this
 	for i := 0; i < n; i++ {
 		tmp = *(taocat_list[tmp.Pid]) //获取父级
 	}
-	return tmp.Cid
+	return tmp.Cid, nil
 }
 
 //获取时间字符串
