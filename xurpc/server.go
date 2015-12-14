@@ -3,18 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/hprose/hprose-go/hprose"
+	"github.com/wangbin/jiebago/analyse"
+	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"gopkg.in/ini.v1"
-
-	"github.com/hprose/hprose-go/hprose"
 )
 
 var (
 	conf    = flag.String("conf", "db.ini", "配置文件")
 	IniFile *ini.File
+	seg     analyse.TagExtracter //结巴分词
 )
 
 func init() {
@@ -28,6 +28,18 @@ func init() {
 	IniFile, err = ini.Load(source)
 	if err != nil {
 		log.Fatalln(err)
+	}
+	loadDic()
+}
+
+func loadDic() {
+	err := seg.LoadDictionary("./dictionary/dict.txt")
+	if err != nil {
+		log.Fatal("打开字典文件错误")
+	}
+	err = seg.LoadIdf("./dictionary/idf.txt")
+	if err != nil {
+		log.Fatal("打开逆向字典文件错误")
 	}
 }
 
