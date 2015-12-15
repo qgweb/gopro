@@ -15,3 +15,5 @@ tags/.vendor/
 tool/.vendor/
 transpond/.vendor/
 webp/.vendor/
+
+xurpc/xurpc
