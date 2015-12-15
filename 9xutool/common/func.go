@@ -23,3 +23,13 @@ func GetDayTimestamp(day int) string {
 	a, _ := time.ParseInLocation("20060102", d, time.Local)
 	return convert.ToString(a.Unix())
 }
+
+//获取时间字符串
+func GetDay(day int) (tf string) {
+	t := time.Now()
+	if day != 0 {
+		t = t.AddDate(0, 0, day)
+	}
+	tf = t.Format("20060102")
+	return
+}

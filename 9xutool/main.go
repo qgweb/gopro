@@ -20,6 +20,7 @@ func main() {
 		model.NewURLTraceCli(),
 		model.NewTAGSTraceCli(),
 		model.NewUserCdCli(),
+		model.NewTagsCdCli(),
 		putin.NewZheJiangPutCli(),
 		putin.NewJiangSuPutCli(),
 		blackad.NewBlackMenuCli(),

@@ -8,7 +8,6 @@ import (
 	"github.com/qgweb/gopro/lib/orm"
 	"io/ioutil"
 	"runtime/debug"
-	"time"
 
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/common"
@@ -36,9 +35,15 @@ var (
 	tags_num    map[string]int     //标签计数
 )
 
+const ( //表名
+	TAOCAT_TABLE     string = "taocat"
+	JWD_TABLE        string = "jingweidu"
+	USERACTION_TABLE string = "useraction"
+)
+
 func NewUserCdCli() cli.Command {
 	return cli.Command{
-		Name:  "get_tags_by_coordinate",
+		Name:  "tags_num_by_coordinate",
 		Usage: "根据经纬度和ad汇总标签昨日总数",
 		Action: func(c *cli.Context) {
 			defer func() {
@@ -83,7 +88,7 @@ func (this *UserCdTrace) initData() {
 	defer sess.Close()
 
 	var list []map[string]interface{}
-	err := sess.DB(db).C("taocat").Find(bson.M{"type": "0"}).All(&list)
+	err := sess.DB(db).C(TAOCAT_TABLE).Find(bson.M{"type": "0"}).All(&list)
 	if err != nil {
 		log.Error(err)
 	}
@@ -110,11 +115,10 @@ func (this *UserCdTrace) initData() {
 //最后把tags_num入库，入库的时候再做映射取标签中文名
 func (this *UserCdTrace) Do(c *cli.Context) {
 	var (
-		db    = this.iniFile.Section("mongo").Key("db").String()
-		table = "jingweidu" //临时名字
-		sess  = this.mp.Get()
+		db   = this.iniFile.Section("mongo").Key("db").String()
+		sess = this.mp.Get()
 	)
-	iter := sess.DB(db).C(table).Find(nil).Iter() //昨天的数据
+	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter() //昨天的数据
 	i := 1
 	for {
 		log.Info("已处理", convert.ToString(i), "条记录")
@@ -170,12 +174,12 @@ func (this *UserCdTrace) getTagsInfo(ad string) {
 		db       = this.iniFile.Section("mongo").Key("db").String()
 		sess     = this.mp.Get()
 		tagsInfo []map[string]interface{}
-		dayTime  = getDay(-1) //0为今日
+		dayTime  = common.GetDay(-1) //0为今日
 	)
 	defer sess.Close()
 
 	_ = ad
-	err := sess.DB(db).C("useraction").Find(bson.M{"AD": ad, "day": dayTime}).All(&tagsInfo)
+	err := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": ad, "day": dayTime}).All(&tagsInfo)
 	// err := sess.DB(db).C("useraction").Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).All(&tagsInfo)
 	if err != nil {
 		log.Error(err)
@@ -216,14 +220,4 @@ func (this *TaoCat) getLv3Id() (string, error) {
 		tmp = *taocat_list[tmp.Pid] //获取父级
 	}
 	return tmp.Cid, nil
-}
-
-//获取时间字符串
-func getDay(day int) (tf string) {
-	t := time.Now()
-	if day != 0 {
-		t = t.AddDate(0, 0, day)
-	}
-	tf = t.Format("20060102")
-	return
 }
