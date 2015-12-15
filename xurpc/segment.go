@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ngaut/log"
+// "github.com/ngaut/log"
 )
 
 type SearchWord struct{}
