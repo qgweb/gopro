@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ngaut/log"
+	//"github.com/ngaut/log"
 
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/common/function"
@@ -19,60 +19,56 @@ type Event struct{}
 // 开启加速
 func (this *Event) Start(conn *net.TCPConn, req *Request) {
 	var (
-		bd = &BDInterfaceManager{}
-		ip = strings.Split(conn.RemoteAddr().String(), ":")[0]
+		bd     = &BDInterfaceManager{}
+		reqAry = strings.Split(req.Content, "|")
+		ip     = strings.Split(conn.RemoteAddr().String(), ":")[0]
+		resp   Respond
 	)
 
-	log.Info(bd.FreeCardApplyFor("15158117079"))
-	return
-	account := bd.CanStart(ip)
-	if account == "" {
-		rep := Respond{}
-		rep.Code = "500"
-		rep.Msg = "抱歉，您的运行环境不符合加速条件"
-		data, _ := MRespond(&rep)
+	if reqAry[0] == "0" { //免费卡
+		mc := MCard{}
+		mc.Mobile = reqAry[1]
+		resp = bd.Start(mc, 0)
+	}
+
+	if reqAry[0] == "1" { //申请卡
+		if len(reqAry) < 4 {
+			data, _ := MRespond(&Respond{Code: "500", Msg: "参数错误"})
+			conn.Write(ProtocolPack(data))
+			return
+		}
+		mc := MCard{}
+		mc.Mobile = reqAry[1]
+		mc.CardNO = reqAry[2]
+		mc.CardPass = reqAry[3]
+		mc.Serviceid = "0001"
+		resp = bd.Start(mc, 1)
+	}
+
+	if resp.Code != "200" {
+		data, _ := MRespond(&resp)
 		conn.Write(ProtocolPack(data))
 		return
 	}
 
-	// 判断是否还有时间
-	accountTime := bd.HaveTime(account)
-	log.Warn(accountTime)
-	if accountTime <= 0 {
-		rep := Respond{}
-		rep.Code = "500"
-		rep.Msg = "抱歉，您的加速体验时间已结束"
-		data, _ := MRespond(&rep)
-		conn.Write(ProtocolPack(data))
-		return
-	}
-
-	rep := bd.Start(account, ip)
-
-	if rep.Code != "200" {
-		data, _ := MRespond(&rep)
-		conn.Write(ProtocolPack(data))
-		return
-	}
-
-	connManager.Add(account, conn)
+	//获取id
+	repAry := strings.Split(resp.Msg, "|")
+	connManager.Add(repAry[0], conn)
 	user := &Account{}
-	user.Name = account
+	user.Name = repAry[0]
 	user.BTime = time.Now().Unix()
 	user.RemoteAddr = ip
-	user.ChannelId = rep.Msg
-	user.CTime = int64(accountTime)
+	user.CTime = convert.ToInt64(repAry[4])
 	accountManager.Add(user)
 
 	// 返回数据
-	data, _ := MRespond(&Respond{Code: "200", Msg: account + "|" + convert.ToString(accountTime)})
+	data, _ := MRespond(&resp)
 	conn.Write(ProtocolPack(data))
 }
 
 // 停止加速
 func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 	var (
-		bd      = &BDInterfaceManager{}
 		account = req.Content
 	)
 
@@ -81,20 +77,13 @@ func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 		return
 	}
 
-	rep := bd.Stop(user.ChannelId)
-	if rep.Code != "200" {
-		data, _ := MRespond(&rep)
-		conn.Write(ProtocolPack(data))
-		return
-	}
-
 	//添加记录
-	record := &model.BrandAccountRecord{}
-	record.Account = user.Name
+	record := model.HtCardRecord{}
+	record.HtId = convert.ToInt64(account)
 	record.BeginTime = user.BTime
 	record.EndTime = time.Now().Unix()
 	record.Date = convert.ToInt64(function.GetDateUnix())
-	record.AddRecord(*record)
+	record.AddRecord(record)
 
 	//删除链接
 	nreq := &Request{}
@@ -105,7 +94,6 @@ func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 
 	accountManager.Del(account)
 	connManager.Del(account)
-
 }
 
 // 内部调用停止

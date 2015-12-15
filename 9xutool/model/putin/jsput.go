@@ -281,7 +281,9 @@ func (this *JSPut) Domain(query bson.M) {
 				vm := v.(map[string]interface{})
 				tagId := vm["id"].(string)
 				piadverts := this.merageAdverts2(tagId)
+				log.Info(piadverts)
 				this.filterAdvert(ad+ua, piadverts)
+				log.Info(piadverts)
 				if len(piadverts) > 0 {
 					this.PutDxSystem(ad)
 				}

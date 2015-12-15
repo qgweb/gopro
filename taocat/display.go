@@ -17,7 +17,7 @@ var (
 	mo_host    = "192.168.1.199"
 	mo_port    = "27017"
 	mo_db      = "xu_precise"
-	mo_table   = "taocat_big"
+	mo_table   = "taocat"
 )
 
 type Category struct {
@@ -58,7 +58,7 @@ func getAllCatroy() []Category {
 	sess := GetSession()
 	defer sess.Close()
 	var list []Category
-	sess.DB("xu_precise").C(mo_table).Find(bson.M{}).All(&list)
+	sess.DB("xu_precise").C(mo_table).Find(bson.M{"type": "0"}).All(&list)
 	return list
 }
 
@@ -112,7 +112,7 @@ func main() {
 
 	flag.Parse()
 
-	log.SetHighlighting(true)
+	log.SetHighlighting(false)
 	list := catTree(getAllCatroy(), "")
 
 	if *sid != "" {

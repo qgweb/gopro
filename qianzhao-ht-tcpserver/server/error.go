@@ -47,19 +47,15 @@ func DealData(data []byte) {
 	}
 
 	if len(list) > 0 {
-		bd := &BDInterfaceManager{}
 		for k, v := range list {
 			log.Println(k, v)
-			// 调用停止接口
-			bd.Stop(v.ChannelId)
-
 			// 把记录添加到数据库
-			record := &model.BrandAccountRecord{}
-			record.Account = v.Name
+			record := model.HtCardRecord{}
+			record.HtId = convert.ToInt64(v.Name)
 			record.BeginTime = v.BTime
 			record.EndTime = v.ETime
 			record.Date = convert.ToInt64(function.GetDateUnix())
-			record.AddRecord(*record)
+			record.AddRecord(record)
 		}
 	}
 }

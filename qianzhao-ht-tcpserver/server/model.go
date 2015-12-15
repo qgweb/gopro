@@ -5,14 +5,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/common/function"
 	"regexp"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/qgweb/gopro/lib/convert"
 
+	"errors"
 	"github.com/astaxie/beego/httplib"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/encrypt"
@@ -20,13 +21,18 @@ import (
 )
 
 const (
-	APP_KEY        = "APP_MSB704PU"
-	APP_SECRET     = "mv6oy8f2qo0l0ogvxnm02tM7"
-	EBIT_BASE_URL  = "http://218.85.118.9:8000/api2/"
-	CARD_APPLY_URL = "http://221.228.17.114:58886/iherbhelper/services/ApplicationCard"
+	APP_KEY             = "APP_MSB704PU"
+	APP_SECRET          = "mv6oy8f2qo0l0ogvxnm02tM7"
+	EBIT_BASE_URL       = "http://218.85.118.9:8000/api2/"
+	CARD_APPLY_URL      = "http://221.228.17.114:58886/iherbhelper/services/ApplicationCard"
+	CARD_CHECK_URL      = "http://221.228.17.114:58886/iherbhelper/services/CheckCard"
+	CARD_QUERY_TEST_URL = "http://202.102.13.98:7001/services/LcimsForUserInfo?wsdl"
+	CARD_QUERY_URL      = "http://202.102.13.123:17001/services/LcimsForUserInfo?wsdl"
+	FREE_CARD           = 0
+	UNFREE_CARD         = 1
+	IS_DEBUG            = 1
 )
 
-// 海淘卡信息
 type Card struct {
 	Flag          string `json:"Flag"`
 	CardID        string `json:"CardID"`
@@ -35,159 +41,138 @@ type Card struct {
 	Transactionid string `json:"Transactionid"`
 }
 
-type BDInterfaceManager struct{}
-
-func (this *BDInterfaceManager) HaveTime(account string) int {
-	model := model.BrandAccountRecord{}
-	return model.GetAccountCanUserTime(account)
+type MCard struct {
+	CardNO    string `json:"CardNO"`
+	CardPass  string `json:"CardPass"`
+	Serviceid string `json:"Serviceid"`
+	Digest    string `json:"Digest"`
+	Mobile    string `json:"Mobile"`
 }
 
-// 判断是否开启
-func (this *BDInterfaceManager) CanStart(ip string) string {
-	var (
-		timestamp = convert.ToString(time.Now().Unix())
-		secret    = getSecret(timestamp)
-	)
+type BDInterfaceManager struct{}
 
-	// 正式删除
-	//return "1111"
-
-	req := httplib.Post(EBIT_BASE_URL + "user/query")
-	req.JsonBody(map[string]string{
-		"app":       APP_KEY,
-		"secret":    secret,
-		"timestamp": timestamp,
-		"_type":     "0",
-		"data":      ip,
-	})
-
-	res := make(map[string]interface{})
-	req.ToJson(&res)
-	if CheckError(res) {
-		return ""
+func (this *BDInterfaceManager) GetQueryUrl() string {
+	if IS_DEBUG == 1 {
+		return CARD_QUERY_TEST_URL
 	}
-
-	if task_id, ok := res["task_id"]; ok {
-		time.Sleep(time.Second * 3)
-		info := TaskQuery(task_id.(string))
-		if CheckError(info) {
-			return ""
-		}
-		return info["dial_acct"].(string)
-	}
-
-	return ""
-
+	return CARD_QUERY_URL
 }
 
 // 开启
-func (this *BDInterfaceManager) Start(account string, ip string) Respond {
+func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
+	if cardType == 0 { //免费卡
+		ht, err := this.freeCard(card.Mobile)
+		r := Respond{}
+		if err != nil {
+			r.Code = "500"
+			r.Msg = err.Error()
+			return r
+		} else {
+			r.Code = "200"
+			r.Msg = fmt.Sprintf("%d|%s|%s|%s|%d", ht.Id, ht.CardNum, ht.CardPwd, ht.CardToken, ht.TotalTime)
+			return r
+		}
+
+	}
+	if cardType == 1 { //购买卡
+		ht, err := this.moneyCard(card)
+		r := Respond{}
+		if err != nil {
+			r.Code = "500"
+			r.Msg = err.Error()
+			return r
+		} else {
+			r.Code = "200"
+			r.Msg = fmt.Sprintf("%d|%s|%s|%s|%d", ht.Id, ht.CardNum, ht.CardPwd, ht.CardToken, ht.TotalTime)
+			return r
+		}
+	}
+	return Respond{"500", "系统发生错误"}
+}
+
+func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err error) {
 	var (
-		timestamp = convert.ToString(time.Now().Unix())
-		secret    = getSecret(timestamp)
-		errmsg    = "抱歉，程序发生错误,提速失败"
+		hmodel  = model.HTCard{}
+		date    = function.GetDateUnix()
+	)
+	ht := hmodel.GetInfoByPhone(phone, date, 0, 1)
+	if ht.Id == 0 {
+		//申请卡
+		card := this.FreeCardApplyFor(phone)
+		if card.Flag == "-2" {
+			return hcard, errors.New("体验卡已经发放完毕")
+		}
+		if card.Flag != "0" {
+			return hcard, errors.New("系统发生异常")
+		}
+		info := model.HTCard{}
+		info.CardNum = card.CardID
+		info.CardPwd = card.CardPass
+		info.CardToken = card.Transactionid
+		info.CardType = 0
+		info.Date = convert.ToInt(date)
+		info.Phone = phone
+		info.Remark = ""
+		info.Status = 1
+		info.TotalTime = model.HT_SPEED_UP_TIME
+		info.Id = hmodel.AddReocrd(info)
+		return info, nil
+	} else {
+		balance := this.CardInfoQuery(ht.CardNum)
+		if balance <= 0 {
+			ht.Status = 3
+			hmodel.UpdateCard(ht)
+			ht.TotalTime = 0
+			return ht, errors.New("用户免费体验时间已到")
+		}
+		return ht, nil
+	}
+}
+
+func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err error) {
+	var (
+		hmodel  = model.HTCard{}
+		date    = function.GetDateUnix()
 	)
 
-	//// 正式删除
-	//return Respond{Code: "200", Msg: "xxxxxxxxxxx"}
-
-	req := httplib.Post(EBIT_BASE_URL + "speedup/open")
-	req.JsonBody(map[string]string{
-		"app":       APP_KEY,
-		"secret":    secret,
-		"timestamp": timestamp,
-		"ip_addr":   ip,
-		"duration":  "60",
-		"dial_acct": account,
-	})
-	res := make(map[string]interface{})
-	req.ToJson(&res)
-
-	if CheckError(res) {
-		return Respond{Code: "500", Msg: errmsg}
+	//验证卡有效
+	tid, err := this.CheckCardCanUse(card)
+	log.Error(err)
+	if err != nil {
+		log.Error(err)
+		return hcard, err
 	}
 
-	if task_id, ok := res["task_id"]; ok {
-		time.Sleep(time.Second * 3)
-		info := TaskQuery(task_id.(string))
-		if CheckError(info) {
-			return Respond{Code: "500", Msg: errmsg}
+	ht := hmodel.GetInfoByCard(card.Mobile, date, card.CardNO, 1)
+	balance := this.CardInfoQuery(card.CardNO)
+
+	if ht.Id == 0 && balance > 0 {
+		info := model.HTCard{}
+		info.CardNum = card.CardNO
+		info.CardPwd = card.CardPass
+		info.CardToken = tid
+		info.CardType = 1
+		info.Date = convert.ToInt(date)
+		info.Phone = card.Mobile
+		info.Remark = ""
+		info.Status = 1
+		info.TotalTime = balance * 72
+		ht.Id = hmodel.AddReocrd(info)
+		return info, nil
+	} else {
+		if balance <= 0 {
+			ht.Status = 3
+			hmodel.UpdateCard(ht)
+			ht.TotalTime = 0
+			return ht, errors.New("用户免费体验时间已到")
 		}
-		return Respond{Code: "200", Msg: info["channel_id"].(string)}
 	}
-
-	return Respond{Code: "500", Msg: errmsg}
+	return hcard,nil
 }
 
 // 关闭
 func (this *BDInterfaceManager) Stop(channel_id string) Respond {
-	var (
-		timestamp = convert.ToString(time.Now().Unix())
-		secret    = getSecret(timestamp)
-		errmsg    = "抱歉，程序发生错误,提速关闭失败"
-	)
-	//// 正式删除
-	//return Respond{Code: "200", Msg: ""}
-
-	req := httplib.Post(EBIT_BASE_URL + "speedup/close")
-	req.JsonBody(map[string]string{
-		"app":        APP_KEY,
-		"secret":     secret,
-		"timestamp":  timestamp,
-		"channel_id": channel_id,
-	})
-	res := make(map[string]interface{})
-	req.ToJson(&res)
-
-	if CheckError(res) {
-		return Respond{Code: "500", Msg: errmsg}
-	}
-
-	if task_id, ok := res["task_id"]; ok {
-		time.Sleep(time.Second * 3)
-		info := TaskQuery(task_id.(string))
-		if CheckError(info) {
-			return Respond{Code: "500", Msg: errmsg}
-		}
-		return Respond{Code: "200", Msg: ""}
-	}
-	return Respond{Code: "500", Msg: errmsg}
-}
-
-func CheckError(res map[string]interface{}) bool {
-	if err, ok := res["errno"]; ok && err.(float64) != 0 {
-		if msg, ok := res["message"]; ok {
-			log.Error(msg)
-		}
-		return true
-	}
-	return false
-}
-
-func TaskQuery(taskId string) map[string]interface{} {
-	var (
-		timestamp = convert.ToString(time.Now().Unix())
-		secret    = getSecret(timestamp)
-	)
-
-	req := httplib.Post(EBIT_BASE_URL + "task/query")
-
-	body := make(map[string]string)
-	body["app"] = APP_KEY
-	body["secret"] = secret
-	body["timestamp"] = timestamp
-	body["task_id"] = taskId
-
-	req.JsonBody(&body)
-
-	v := make(map[string]interface{})
-
-	req.ToJson(&v)
-	return v
-}
-
-func getSecret(timestamp string) string {
-	return encrypt.DefaultMd5.Encode(APP_KEY + timestamp + APP_SECRET)
+	return Respond{}
 }
 
 //1、正式接口地址为
@@ -229,8 +214,6 @@ func (this *BDInterfaceManager) FreeCardApplyFor(phone string) (card Card) {
 </x:Envelope>`
 	var serviceid = "0001"
 	var jsonMobil = fmt.Sprintf(`{"Mobile":"%s","Serviceid":"%s"}`, phone, serviceid)
-	log.Info(jsonMobil)
-	log.Info(function.AESEncrypt(jsonMobil))
 	var encryptVal = function.AESEncrypt(jsonMobil)
 	var digest = strings.ToUpper(encrypt.DefaultMd5.Encode(phone + encryptVal))
 
@@ -258,12 +241,88 @@ func (this *BDInterfaceManager) FreeCardApplyFor(phone string) (card Card) {
 	if vv := r.FindStringSubmatch(resp); len(vv) >= 2 {
 		log.Info(function.AESDecrypt(strings.TrimSpace(vv[1])))
 		err := json.Unmarshal([]byte(function.AESDecrypt(strings.TrimSpace(vv[1]))), &card)
+		log.Info(card)
 		if err != nil {
 			log.Error(vv[1])
 			log.Error(err)
 		}
 	}
 	return
+}
+
+func (this *BDInterfaceManager) CheckCardCanUse(card MCard) (string, error) {
+	var tmp = `<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>{{.CardNO}}</ser:in0>
+			<ser:in1>{{.CardPass}}</ser:in1>
+			<ser:in2>{{.Serviceid}}</ser:in2>
+			<ser:in3>{{.Mobile}}</ser:in3>
+			<ser:in4>{{.Digest}}</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope>`
+	log.Info(card)
+	card.CardNO = function.AESEncrypt(card.CardNO)
+	card.CardPass = function.AESEncrypt(card.CardPass)
+	card.Serviceid = function.AESEncrypt(card.Serviceid)
+	card.Digest = encrypt.DefaultMd5.Encode(card.CardNO + card.CardPass + card.Serviceid + card.Mobile)
+
+	log.Info(card)
+
+	bf := bytes.NewBuffer(nil)
+	t, _ := template.New("").Parse(tmp)
+	t.Execute(bf, card)
+
+	req := httplib.Post(CARD_CHECK_URL)
+	req.Header("Content-Type", "text/xml; charset=utf-8")
+	req.Header("SOAPAction", CARD_CHECK_URL)
+	req.Body(bf.String())
+	log.Error(bf.String())
+	resp, err := req.String()
+	if err != nil {
+		log.Error(err)
+		return "", errors.New("系统异常")
+	}
+
+	//resp := `<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body>  <ns1:checkCardResponse xmlns:ns1="http://service.com"><ns1:out>aJaWUxQpbge+M2JLSMQLWg==</ns1:out></ns1:checkCardResponse></soap:Body></soap:Envelope>`
+	r, _ := regexp.Compile(`<ns1:out>(.+)</ns1:out>`)
+	if vv := r.FindStringSubmatch(resp); len(vv) >= 2 {
+		log.Info(function.AESDecrypt(strings.TrimSpace(vv[1])))
+		flag := make(map[string]interface{})
+		err := json.Unmarshal([]byte(function.AESDecrypt(strings.TrimSpace(vv[1]))), &flag)
+		log.Info(flag)
+		if err != nil {
+			log.Error(vv[1])
+			log.Error(err)
+			return "", errors.New("系统异常")
+		}
+
+		/*
+			0：成功
+			-1 :不存在账号
+			-2：密码错误
+			-3：该卡类型不对
+			-4：该卡正在使用中
+			-10：参数格式错误
+			-11：参数校验失败
+			-99：系统异常
+		*/
+		switch flag["Flag"].(string) {
+		case "0":
+			return flag["Transactionid"].(string), nil
+		case "-1":
+			return "", errors.New("不存在账号")
+		case "-2":
+			return "", errors.New("密码错误")
+		case "-3", "-10", "-99", "-11":
+			return "", errors.New("系统异常")
+		case "-4":
+			return "", errors.New("该卡正在使用中")
+		}
+	}
+	return "", errors.New("系统异常")
 }
 
 /*
@@ -282,3 +341,40 @@ func (this *BDInterfaceManager) FreeCardApplyFor(phone string) (card Card) {
     </soapenv:body>
 </soapenv:envelope>
 */
+
+// 查询卡余额信息
+func (this *BDInterfaceManager) CardInfoQuery(cardNo string) int {
+	var rhead = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:lcim="http://lcimsforuserinfo.webservice.lcbms.linkage.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <lcim:getCardUserInfo soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <in0 xsi:type="lcim:GetCardUserInfoRequest">
+            <cardno xsi:type="soapenc:string" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">` + cardNo + `</cardno>
+         </in0>
+      </lcim:getCardUserInfo>
+   </soapenv:Body>
+</soapenv:Envelope>`
+	req := httplib.Post(this.GetQueryUrl())
+	req.Header("Content-Type", "text/xml; charset=utf-8")
+	req.Header("SOAPAction", this.GetQueryUrl())
+	req.Body(rhead)
+	body, err := req.String()
+	if err != nil {
+		log.Error(err)
+		return 0
+	}
+
+	p, err := goquery.NewDocumentFromReader(strings.NewReader(body))
+	if err != nil {
+		log.Error(err)
+		log.Error(body)
+		return 0
+	}
+	balance := p.Find("cardinfoxml").Find("balance").Text()
+	if balance == "" {
+		return 0
+	}
+	// 200分->2小时
+	// 1分->72秒
+	return convert.ToInt(balance)
+}

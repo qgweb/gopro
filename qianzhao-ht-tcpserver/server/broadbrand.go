@@ -30,7 +30,6 @@ type Account struct {
 	BTime      int64  `json:"begin_time"`  // 开始时间
 	ETime      int64  `json:"end_time"`    // 结束时间
 	CTime      int64  `json:"used_time"`   // 可使用时间
-	ChannelId  string `json:"channel_id:`  // 加速频道ID
 	RemoteAddr string `json:"remote_addr"` // 客户端的地址
 }
 

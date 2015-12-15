@@ -29,7 +29,7 @@ func GetTimeUnix() string {
 
 // 获取当前日期时间戳
 func GetDateUnix() string {
-	date, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+	date, _ := time.ParseInLocation("2006-01-02", time.Now().Format("2006-01-02"), time.Local)
 	return convert.ToString(date.Unix())
 }
 

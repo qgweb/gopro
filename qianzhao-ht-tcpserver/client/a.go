@@ -85,14 +85,15 @@ func main() {
 
 	r := &Request{}
 	r.Action = "link"
-	r.Content = ""
+	r.Content = "1|15158117079|56000005038843|zta3t7M0"
 	d, _ := MRequest(r)
 
 	buf := make([]byte, 2048)
 	// log.Println(ProtocolPack(d))
 
+	conn.Write(ProtocolPack(d))
+
 	for {
-		conn.Write(ProtocolPack(d))
 		n, err := conn.Read(buf)
 		if err != nil {
 			log.Println(err)

@@ -15,7 +15,7 @@ import (
 
 func main() {
 	log.SetHighlighting(false)
-	log.SetOutputByName("./dztcp.log")
+	log.SetOutputByName("./hztcp.log")
 
 	var (
 		nlog     = logger.New("qianzhao-ht-tcpserver")

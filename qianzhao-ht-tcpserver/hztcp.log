@@ -1,0 +1,36 @@
+2015/12/15 14:44:18 model.go:266: [info] {56000005038843 zta3t7M0 001  15158117079} 
+2015/12/15 14:44:19 model.go:272: [info] {qR2QS0ILoWc0geyb/+J2Wg== 54cEDjBuOxYNm+yfrTpE/g== DmIOdskGIMIpQs8eCvj8wA== b6d6800a8ca95bf96ece11543623285e 15158117079} 
+2015/12/15 14:44:19 model.go:282: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
+			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
+			<ser:in2>DmIOdskGIMIpQs8eCvj8wA==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>b6d6800a8ca95bf96ece11543623285e</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/15 14:44:20 model.go:292: [info] {"Flag":"-11"} 
+2015/12/15 14:44:20 model.go:295: [info] map[Flag:-11] 
+2015/12/15 14:44:20 model.go:140: [error] 系统异常 
+2015/12/15 14:44:20 model.go:142: [error] 系统异常 
+2015/12/15 14:45:45 model.go:266: [info] {56000005038843 zta3t7M0 0001  15158117079} 
+2015/12/15 14:45:47 model.go:272: [info] {qR2QS0ILoWc0geyb/+J2Wg== 54cEDjBuOxYNm+yfrTpE/g== 8KLQnhRUkSUoKKMvBDKADQ== f4419ddb2d83c1d5636a33e58f844dfa 15158117079} 
+2015/12/15 14:45:47 model.go:282: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
+			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
+			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>f4419ddb2d83c1d5636a33e58f844dfa</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/15 14:45:48 model.go:292: [info] {"Flag":"-11"} 
+2015/12/15 14:45:49 model.go:295: [info] map[Flag:-11] 
+2015/12/15 14:45:49 model.go:140: [error] 系统异常 
+2015/12/15 14:45:49 model.go:142: [error] 系统异常 

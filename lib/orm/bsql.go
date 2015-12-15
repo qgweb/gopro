@@ -79,8 +79,8 @@ func (this *BuildSQL) Update(fields string) *BuildSQL {
 	return this
 }
 
-func (this *BuildSQL) Insert(fields string) *BuildSQL {
-	this.sql += " INSERT INTO " + fields
+func (this *BuildSQL) Insert(tableName string) *BuildSQL {
+	this.sql += " INSERT INTO " + tableName
 	return this
 }
 
