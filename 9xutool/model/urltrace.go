@@ -1,23 +1,23 @@
 package model
 
 import (
-	"github.com/qgweb/gopro/lib/convert"
-	"github.com/qgweb/gopro/lib/encrypt"
-	"io/ioutil"
-	"math"
-	"strings"
-	"time"
-
 	"github.com/codegangsta/cli"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
+	"github.com/qgweb/gopro/lib/cache"
+	"github.com/qgweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/lib/mongodb"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"io/ioutil"
+	"strings"
+	"time"
 )
 
 type URLTrace struct {
-	mp      *common.MgoPool
+	mp      *mongodb.DialContext
+	ldb     *cache.LevelDBCache
 	iniFile *ini.File
 }
 
@@ -44,144 +44,101 @@ func NewURLTraceCli() cli.Command {
 			ur.iniFile, _ = ini.Load(f)
 
 			// mgo 配置文件
-			mconf := &common.MgoConfig{}
+			mconf := mongodb.MgoConfig{}
 			mconf.DBName = ur.iniFile.Section("mongo").Key("db").String()
 			mconf.Host = ur.iniFile.Section("mongo").Key("host").String()
 			mconf.Port = ur.iniFile.Section("mongo").Key("port").String()
 			mconf.UserName = ur.iniFile.Section("mongo").Key("user").String()
 			mconf.UserPwd = ur.iniFile.Section("mongo").Key("pwd").String()
-			ur.mp = common.NewMgoPool(mconf)
+			ur.mp, err = mongodb.Dial(mongodb.GetLinkUrl(mconf), mongodb.GetCpuSessionNum())
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
 
+			// leveldb cache
+			path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
+			log.Info(path)
+			if ur.ldb, err = cache.NewLevelDbCache(path); err != nil {
+				log.Fatal(err)
+				return
+			}
 			ur.Do(c)
+			ur.mp.Close()
+			ur.ldb.Close()
 		},
 	}
 }
 
-func (this *URLTrace) Do(c *cli.Context) {
+func (this *URLTrace) ReadData() {
 	var (
-		now       = time.Now()
-		now1      = now.Add(-time.Second * time.Duration(now.Second())).Add(-time.Minute * time.Duration(now.Minute()))
-		eghour    = convert.ToString(now1.Add(-time.Hour).Unix())
-		bghour    = convert.ToString(now1.Add(-time.Duration(time.Hour * 2)).Unix())
-		month     = time.Now().Format("200601")
-		table     = "urltrack_" + month
-		table_put = "urltrack_put"
-		sess      = this.mp.Get()
-		db        = this.iniFile.Section("mongo").Key("db").String()
-		list      map[string][]map[string]interface{}
+		db     = this.iniFile.Section("mongo").Key("db").String()
+		table  = "urltrack_" + time.Now().Format("200601")
+		bgTime = common.GetHourTimestamp(-1)
+		edTime = common.GetHourTimestamp(-2)
+		query  = mongodb.MulQueryParam{}
 	)
-	defer sess.Close()
 
-	list = make(map[string][]map[string]interface{})
-	var appendFun = func(l []map[string]interface{}) {
-		for _, v := range l {
-			ad := v["ad"].(string)
-			ua := "ua"
-			if u, ok := v["ua"]; ok {
-				ua = u.(string)
-			}
+	query.DbName = db
+	query.ColName = table
+	query.Query = bson.M{"timestamp": bson.M{"$lte": bgTime, "$gte": edTime}}
+	query.Fun = func(info map[string]interface{}) {
+		ad := info["ad"].(string)
+		ua := "ua"
+		cids := info["cids"].([]interface{})
+		if u, ok := info["ua"]; ok {
+			ua = u.(string)
+		}
+		key := "adua_" + ad + "_" + ua
 
-			key := ad + "_" + ua
-			if tag, ok := list[key]; ok {
-				//去重
-				for _, tv := range v["cids"].([]interface{}) {
-					isee := false
-					tvm := tv.(map[string]interface{})
-					for _, tv1 := range tag {
-						if tvm["id"] == tv1["id"] {
-							isee = true
-							break
-						}
-					}
-					if !isee {
-						list[key] = append(list[key], tvm)
-					}
-				}
-			} else {
-				tag := make([]map[string]interface{}, 0, len(v["cids"].([]interface{})))
-				for _, vv := range v["cids"].([]interface{}) {
-					tag = append(tag, vv.(map[string]interface{}))
-				}
-				list[key] = tag
-			}
+		for _, v := range cids {
+			vm := v.(map[string]interface{})
+			this.ldb.HSet(key, vm["id"].(string), "1")
+			this.ldb.HSet("adua_keys", key, "1")
 		}
 	}
-	// 读取数据函数
-	var readDataFun = func(query ...interface{}) {
-		var (
-			count     = 0
-			page      = 1
-			pageSize  = 100000
-			totalPage = 0
-			sess      = this.mp.Get()
-			querym    bson.M
-		)
+	this.mp.Query(query)
+}
 
-		if v, ok := query[0].(bson.M); ok {
-			querym = v
-		} else {
-			return
-		}
+func (this *URLTrace) PutData() {
+	var (
+		db        = this.iniFile.Section("mongo").Key("db").String()
+		table_put = "urltrack_put"
+		sess      = this.mp.Ref()
+	)
+	defer this.mp.UnRef(sess)
 
-		count, err := sess.DB(db).C(table).Find(querym).Count()
-		if err != nil {
-			log.Error(err)
-			return
-		}
+	if keys, err := this.ldb.HGetAllKeys("adua_keys"); err == nil {
+		sess.DB(db).C(table_put).DropCollection()
+		sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+		sess.DB(db).C(table_put).EnsureIndexKey("cids.id")
+		sess.DB(db).C(table_put).EnsureIndexKey("adua")
+		list := make([]interface{}, 0, len(keys))
 
-		totalPage = int(math.Ceil(float64(count) / float64(pageSize)))
-
-		for ; page <= totalPage; page++ {
-			var tmpList []map[string]interface{}
-			if err := sess.DB(db).C(table).Find(querym).
-				Select(bson.M{"_id": 0, "ad": 1, "ua": 1, "cids": 1}).
-				Limit(pageSize).
-				Skip((page - 1) * pageSize).All(&tmpList); err != nil {
+		for _, key := range keys {
+			cids, err := this.ldb.HGetAllKeys(key)
+			if err != nil {
 				log.Error(err)
 				continue
 			}
-
-			appendFun(tmpList)
-			log.Warn(len(list))
+			cidsmap := make([]bson.M, 0, len(cids))
+			for _, cid := range cids {
+				cidsmap = append(cidsmap, bson.M{"id": cid})
+			}
+			adua := strings.Split(strings.TrimPrefix(key, "adua_"), "_")
+			list = append(list, bson.M{
+				"ad":   adua[0],
+				"ua":   adua[1],
+				"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
+				"cids": cidsmap,
+			})
 		}
-
-		sess.Close()
+		log.Debug("共计:", len(list),"条")
+		this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil}, list)
 	}
+}
 
-	//读取数据
-	//_ = bson.M{"date": day, "hour": bson.M{"$lte": hour, "$gte": hour}}
-	readDataFun(bson.M{"timestamp": bson.M{"$lte": eghour, "$gte": bghour}})
-	//readDataFun(bson.M{"date": b1day, "hour": bson.M{"$lte": "23", "$gte": hour}})
-
-	//更新投放表
-	log.Info(len(list))
-	sess.DB(db).C(table_put).DropCollection()
-
-	//加索引
-	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
-	sess.DB(db).C(table_put).EnsureIndexKey("cids.id")
-	sess.DB(db).C(table_put).EnsureIndexKey("adua")
-
-	var (
-		size     = 10000
-		list_num = len(list)
-	)
-
-	list_put := make([]interface{}, 0, size)
-	for k, v := range list {
-		adua := strings.Split(k, "_")
-		list_put = append(list_put, bson.M{
-			"ad":   adua[0],
-			"ua":   adua[1],
-			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
-			"cids": v,
-		})
-
-		if len(list_put) == size || len(list_put) == list_num {
-			sess.DB(db).C(table_put).Insert(list_put...)
-			log.Warn(len(list_put))
-			list_put = make([]interface{}, 0, size)
-			list_num = list_num - size
-		}
-	}
+func (this *URLTrace) Do(c *cli.Context) {
+	this.ReadData()
+	this.PutData()
 }

@@ -83,7 +83,7 @@ func (this *LevelDBCache) HGetAllKeys(hname string) ([]string, error) {
 	var hvalues = make([]string, 0, 100)
 	iter := this.db.NewIterator(util.BytesPrefix([]byte(hname+"_")), nil)
 	for iter.Next() {
-		hvalues = append(hvalues, strings.TrimLeft(string(iter.Key()), hname+"_"))
+		hvalues = append(hvalues, strings.TrimPrefix(string(iter.Key()), hname+"_"))
 	}
 	iter.Release()
 	err := iter.Error()

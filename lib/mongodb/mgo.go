@@ -4,6 +4,7 @@ package mongodb
 
 import (
 	"container/heap"
+	"fmt"
 	"github.com/ngaut/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -26,6 +27,14 @@ type MulQueryParam struct {
 	Query   bson.M
 	Size    int                          // 取多少页
 	Fun     func(map[string]interface{}) // 回调函数
+}
+
+type MgoConfig struct {
+	UserName string
+	UserPwd  string
+	Host     string
+	Port     string
+	DBName   string
 }
 
 // session heap
@@ -64,6 +73,14 @@ type DialContext struct {
 	isDebug  bool
 }
 
+func GetLinkUrl(p MgoConfig) string {
+	if p.UserName == "" && p.UserPwd == "" {
+		return fmt.Sprintf("%s:%s/%s", p.Host, p.Port, p.DBName)
+	}
+	return fmt.Sprintf("%s:%s@%s:%s/%s", p.UserName, p.UserPwd,
+		p.Host, p.Port, p.DBName)
+}
+
 // goroutine safe
 func Dial(url string, sessionNum int) (*DialContext, error) {
 	c, err := DialWithTimeout(url, sessionNum, 10*time.Second, 5*time.Minute)
@@ -87,6 +104,7 @@ func DialWithTimeout(url string, sessionNum int, dialTimeout time.Duration, time
 	}
 	s.SetSyncTimeout(timeout)
 	s.SetSocketTimeout(timeout)
+	s.SetCursorTimeout(0)
 
 	c := new(DialContext)
 
@@ -187,4 +205,27 @@ func (c *DialContext) Query(param MulQueryParam) error {
 	}
 	wg.Wait()
 	return nil
+}
+
+func (c *DialContext) Insert(param MulQueryParam, list []interface{}) {
+	var (
+		pageSize  = 10000
+		totalSize = len(list)
+		pageCount = int(math.Ceil(float64(totalSize) / float64(pageSize)))
+	)
+	sess := c.Ref()
+	defer c.UnRef(sess)
+
+	for i := 1; i <= pageCount; i++ {
+		bg := (i - 1) * pageSize
+		eg := bg + pageSize
+		if i == pageCount {
+			eg = totalSize
+		}
+
+		if err := sess.DB(param.DbName).C(param.ColName).Insert(list[bg:eg]...); err != nil {
+			log.Error(err)
+			continue
+		}
+	}
 }

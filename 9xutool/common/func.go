@@ -24,6 +24,12 @@ func GetDayTimestamp(day int) string {
 	return convert.ToString(a.Unix())
 }
 
+func GetHourTimestamp(hour int) string {
+	d := time.Now().Add(time.Hour * time.Duration(hour)) .Format("2006010215")
+	a, _ := time.ParseInLocation("2006010215", d, time.Local)
+	return convert.ToString(a.Unix())
+}
+
 //获取时间字符串
 func GetDay(day int) (tf string) {
 	t := time.Now()

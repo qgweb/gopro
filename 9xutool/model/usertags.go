@@ -20,6 +20,18 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+type WaitGroup struct {
+	sync.WaitGroup
+}
+
+func (this *WaitGroup) Run(fun func(...interface{}), param ...interface{}) {
+	this.Add(1)
+	go func() {
+		fun(param...)
+		this.Done()
+	}()
+}
+
 type TAGSTrace struct {
 	mp                  *common.MgoPool
 	iniFile             *ini.File
