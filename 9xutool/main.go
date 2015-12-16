@@ -19,6 +19,7 @@ func main() {
 		model.NewShopTraceCli(),
 		model.NewURLTraceCli(),
 		model.NewTAGSTraceCli(),
+		model.NewTagsNumberCli(),
 		model.NewUserCdCli(),
 		model.NewTagsCdCli(),
 		putin.NewZheJiangPutCli(),
