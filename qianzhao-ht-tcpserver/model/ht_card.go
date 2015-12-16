@@ -92,7 +92,7 @@ func (this *HTCard) GetInfo(id int) (ht HTCard) {
 
 // 获取信息
 func (this *HTCard) GetInfoByPhone(phone string, date string, ctype int, status int) (ht HTCard) {
-	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and date=? and and type = ? and status=?")
+	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and date=? and type = ? and status=?")
 	list, err := myorm.Query(phone, date, ctype, status)
 	if err != nil {
 		log.Error(err)
@@ -106,7 +106,7 @@ func (this *HTCard) GetInfoByPhone(phone string, date string, ctype int, status 
 
 // 获取信息
 func (this *HTCard) GetInfoByCard(phone string, date string, cardno string, status int) (ht HTCard) {
-	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and date=? and and card_num = ? and status=?")
+	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and date=? and card_num = ? and status=?")
 	list, err := myorm.Query(phone, date, cardno, status)
 	if err != nil {
 		log.Error(err)

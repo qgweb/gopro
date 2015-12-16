@@ -18,6 +18,7 @@ import (
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/model"
+	"github.com/qgweb/gopro/qianzhao/common/config"
 )
 
 const (
@@ -26,11 +27,10 @@ const (
 	EBIT_BASE_URL       = "http://218.85.118.9:8000/api2/"
 	CARD_APPLY_URL      = "http://221.228.17.114:58886/iherbhelper/services/ApplicationCard"
 	CARD_CHECK_URL      = "http://221.228.17.114:58886/iherbhelper/services/CheckCard"
-	CARD_QUERY_TEST_URL = "http://202.102.13.98:7001/services/LcimsForUserInfo?wsdl"
-	CARD_QUERY_URL      = "http://202.102.13.123:17001/services/LcimsForUserInfo?wsdl"
+	CARD_QUERY_TEST_URL = "http://202.102.13.98:7001/services/LcimsForUserInfo"
+	CARD_QUERY_URL      = "http://202.102.13.123:7001/services/LcimsForUserInfo"
 	FREE_CARD           = 0
 	UNFREE_CARD         = 1
-	IS_DEBUG            = 1
 )
 
 type Card struct {
@@ -52,7 +52,7 @@ type MCard struct {
 type BDInterfaceManager struct{}
 
 func (this *BDInterfaceManager) GetQueryUrl() string {
-	if IS_DEBUG == 1 {
+	if v,_:=config.GetDefault().Key("debug").Int();v==1 {
 		return CARD_QUERY_TEST_URL
 	}
 	return CARD_QUERY_URL
@@ -60,6 +60,7 @@ func (this *BDInterfaceManager) GetQueryUrl() string {
 
 // 开启
 func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
+	log.Info(config.GetDefault().Key("debug").Int())
 	if cardType == 0 { //免费卡
 		ht, err := this.freeCard(card.Mobile)
 		r := Respond{}
@@ -263,13 +264,11 @@ func (this *BDInterfaceManager) CheckCardCanUse(card MCard) (string, error) {
         </ser:checkCard>
     </x:Body>
 </x:Envelope>`
-	log.Info(card)
+
 	card.CardNO = function.AESEncrypt(card.CardNO)
 	card.CardPass = function.AESEncrypt(card.CardPass)
 	card.Serviceid = function.AESEncrypt(card.Serviceid)
-	card.Digest = encrypt.DefaultMd5.Encode(card.CardNO + card.CardPass + card.Serviceid + card.Mobile)
-
-	log.Info(card)
+	card.Digest = strings.ToUpper(encrypt.DefaultMd5.Encode(card.CardNO + card.CardPass + card.Serviceid + card.Mobile))
 
 	bf := bytes.NewBuffer(nil)
 	t, _ := template.New("").Parse(tmp)
@@ -310,7 +309,7 @@ func (this *BDInterfaceManager) CheckCardCanUse(card MCard) (string, error) {
 			-99：系统异常
 		*/
 		switch flag["Flag"].(string) {
-		case "0":
+		case "0","-4":
 			return flag["Transactionid"].(string), nil
 		case "-1":
 			return "", errors.New("不存在账号")
@@ -318,8 +317,6 @@ func (this *BDInterfaceManager) CheckCardCanUse(card MCard) (string, error) {
 			return "", errors.New("密码错误")
 		case "-3", "-10", "-99", "-11":
 			return "", errors.New("系统异常")
-		case "-4":
-			return "", errors.New("该卡正在使用中")
 		}
 	}
 	return "", errors.New("系统异常")

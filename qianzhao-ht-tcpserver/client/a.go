@@ -85,7 +85,8 @@ func main() {
 
 	r := &Request{}
 	r.Action = "link"
-	r.Content = "1|15158117079|56000005038843|zta3t7M0"
+	//r.Content = "1|15158117079|56000005038843|zta3t7M0"
+	r.Content = "0|15158117079"
 	d, _ := MRequest(r)
 
 	buf := make([]byte, 2048)

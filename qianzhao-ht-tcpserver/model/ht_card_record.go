@@ -9,7 +9,7 @@ import (
 
 const (
 	HT_CARD_RECORD_TABLE_NAME = "221su_ht_card_record"
-	HT_SPEED_UP_TIME          = 60 //免费版提速时间
+	HT_SPEED_UP_TIME          = 7200 //免费版提速时间
 )
 
 type HtCardRecord struct {

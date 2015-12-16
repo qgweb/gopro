@@ -15,6 +15,7 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
+	"os/exec"
 )
 
 // 浙江投放数据生成
@@ -320,19 +321,39 @@ func (this *JSPut) saveTjData() {
 // 保存投放ad到文件
 func (this *JSPut) savePutData() {
 	var path = this.iniFile.Section("default").Key("put_path").String()
+	var path2 = this.iniFile.Section("default").Key("put_path2").String()
+	var ftp = this.iniFile.Section("default").Key("ftp_bash").String()
+
 	rk := time.Now().Add(-time.Hour).Format("2006010215")
 	fname := path + "/" + rk + ".txt"
+	fname2 := path2 + "/tag_" + rk+".txt"
+
+
 	f, err := os.Create(fname)
 	if err != nil {
 		log.Error(err)
 		return
 	}
+
+	f1,err:= os.Create(fname2)
+	if err !=nil {
+		log.Error(err)
+		return
+	}
+
 	if list, err := redis.Strings(this.rc_cache.Do("KEYS", this.prefix+"*")); err == nil {
 		for _, v := range list {
 			f.WriteString(strings.Split(v, "_")[1] + "\n")
+			f1.WriteString(strings.Split(v, "_")[1] + "\n")
 		}
 		f.Close()
+		f1.Close()
 	}
+
+	//提交ftp
+	cmd:=exec.Command(ftp,"tag_" + rk+".txt")
+	str,err:=cmd.Output()
+	log.Info(string(str),err)
 }
 
 func (this *JSPut) Test() {
