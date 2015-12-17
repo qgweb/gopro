@@ -24,6 +24,7 @@ import (
 type ZJPut struct {
 	iniFile         *ini.File
 	mp              *common.MgoPool
+	mp_tj           *common.MgoPool
 	rc_put          redis.Conn
 	rc_dx_put       redis.Conn
 	prefix          string
@@ -40,13 +41,13 @@ type ZJPut struct {
 }
 
 // 获取monggo对象
-func getMongoObj(inifile *ini.File) *common.MgoPool {
+func getMongoObj(inifile *ini.File, section string) *common.MgoPool {
 	mconf := &common.MgoConfig{}
-	mconf.DBName = inifile.Section("mongo").Key("db").String()
-	mconf.Host = inifile.Section("mongo").Key("host").String()
-	mconf.Port = inifile.Section("mongo").Key("port").String()
-	mconf.UserName = inifile.Section("mongo").Key("user").String()
-	mconf.UserPwd = inifile.Section("mongo").Key("pwd").String()
+	mconf.DBName = inifile.Section(section).Key("db").String()
+	mconf.Host = inifile.Section(section).Key("host").String()
+	mconf.Port = inifile.Section(section).Key("port").String()
+	mconf.UserName = inifile.Section(section).Key("user").String()
+	mconf.UserPwd = inifile.Section(section).Key("pwd").String()
 	return common.NewMgoPool(mconf)
 }
 
@@ -98,7 +99,8 @@ func NewZheJiangPutCli() cli.Command {
 			}()
 			ur := &ZJPut{}
 			ur.iniFile = getConfig("zp.conf")
-			ur.mp = getMongoObj(ur.iniFile)
+			ur.mp = getMongoObj(ur.iniFile, "mongo")
+			ur.mp_tj = getMongoObj(ur.iniFile, "mongo-tj")
 			ur.rc_put = getRedisObj("redis_put", ur.iniFile)
 			ur.rc_dx_put = getRedisObj("redis_dx_put", ur.iniFile)
 			ur.prefix = bson.NewObjectId().Hex() + "_"
@@ -402,6 +404,34 @@ func (this *ZJPut) saveTjData() {
 	}
 }
 
+// 点击的白名单
+func (this *ZJPut) GetClickWhiteMenu() {
+	var (
+		sess    = this.mp_tj.Get()
+		db      = this.iniFile.Section("mongo-tj").Key("db").String()
+		table   = "adreport_click"
+		adverts = make([]string, 0, len(this.provinceAdverts))
+	)
+	defer sess.Close()
+
+	for k, _ := range this.provinceAdverts {
+		adverts = append(adverts, k)
+	}
+
+	iter := sess.DB(db).C(table).Find(bson.M{"aid": bson.M{"$in": adverts}}).Iter()
+	for {
+		var info map[string]interface{}
+		if !iter.Next(&info) {
+			break
+		}
+		this.PutAdvertToCache(info["ad"].(string), info["ua"].(string), info["aid"].(string))
+		this.pushAdToAdvert(info["ad"].(string), info["ua"].(string), info["aid"].(string))
+		this.PutAdToCache(info["ad"].(string))
+
+	}
+	iter.Close()
+}
+
 func (this *ZJPut) Do(c *cli.Context) {
 	this.initBlackMenu()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
@@ -412,6 +442,7 @@ func (this *ZJPut) Do(c *cli.Context) {
 	this.flushDb()
 	this.Other()
 	this.Domain()
+	this.GetClickWhiteMenu()
 	this.PutAdvertToRedis()
 	this.PutAdsToDxSystem()
 	this.saveTjData()

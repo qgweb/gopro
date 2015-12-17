@@ -23,6 +23,7 @@ import (
 type JSPut struct {
 	iniFile         *ini.File
 	mp              *mongodb.DialContext
+	mp_tj           *mongodb.DialContext
 	rc_put          redis.Conn
 	prefix          string
 	proprefix       string                    // 浙江省对应的广告前缀
@@ -52,7 +53,11 @@ func NewJiangSuPutCli() cli.Command {
 			var err error
 			ur := &JSPut{}
 			ur.iniFile = getConfig("js.conf")
-			if ur.mp, err = ur.getMongoObj(ur.iniFile); err != nil {
+			if ur.mp, err = ur.getMongoObj(ur.iniFile, "mongo"); err != nil {
+				log.Fatal(err)
+				return
+			}
+			if ur.mp_tj, err = ur.getMongoObj(ur.iniFile, "mongo-tj"); err != nil {
 				log.Fatal(err)
 				return
 			}
@@ -66,6 +71,8 @@ func NewJiangSuPutCli() cli.Command {
 			ur.tjprefix = "advert_tj_js_" + time.Now().Format("2006010215") + "_"
 			ur.ldb = ur.initLevelDb()
 			ur.Do(c)
+			ur.mp.Close()
+			ur.mp_tj.Close()
 			ur.ldb.Close()
 			ur.rc_put.Close()
 		},
@@ -73,13 +80,13 @@ func NewJiangSuPutCli() cli.Command {
 }
 
 // 获取monggo对象
-func (this *JSPut) getMongoObj(inifile *ini.File) (*mongodb.DialContext, error) {
+func (this *JSPut) getMongoObj(inifile *ini.File, section string) (*mongodb.DialContext, error) {
 	mconf := mongodb.MgoConfig{}
-	mconf.DBName = inifile.Section("mongo").Key("db").String()
-	mconf.Host = inifile.Section("mongo").Key("host").String()
-	mconf.Port = inifile.Section("mongo").Key("port").String()
-	mconf.UserName = inifile.Section("mongo").Key("user").String()
-	mconf.UserPwd = inifile.Section("mongo").Key("pwd").String()
+	mconf.DBName = inifile.Section(section).Key("db").String()
+	mconf.Host = inifile.Section(section).Key("host").String()
+	mconf.Port = inifile.Section(section).Key("port").String()
+	mconf.UserName = inifile.Section(section).Key("user").String()
+	mconf.UserPwd = inifile.Section(section).Key("pwd").String()
 	return mongodb.Dial(mongodb.GetLinkUrl(mconf), mongodb.GetCpuSessionNum())
 }
 
@@ -377,6 +384,34 @@ func (this *JSPut) savePutData() {
 	log.Info(string(str), err)
 }
 
+
+// 点击的白名单
+func (this *JSPut) GetClickWhiteMenu() {
+	var (
+		sess    = this.mp_tj.Ref()
+		db      = this.iniFile.Section("mongo-tj").Key("db").String()
+		table   = "adreport_click"
+		adverts = make([]string, 0, len(this.provinceAdverts))
+	)
+	defer this.mp_tj.UnRef(sess)
+
+	for k, _ := range this.provinceAdverts {
+		adverts = append(adverts, k)
+	}
+
+	iter := sess.DB(db).C(table).Find(bson.M{"aid": bson.M{"$in": adverts}}).Iter()
+	for {
+		var info map[string]interface{}
+		if !iter.Next(&info) {
+			break
+		}
+		this.PutAdvertToCache(info["ad"].(string), info["ua"].(string), info["aid"].(string))
+		this.pushAdToAdvert(info["ad"].(string), info["ua"].(string), info["aid"].(string))
+		this.PutAdToCache(info["ad"].(string))
+	}
+	iter.Close()
+}
+
 func (this *JSPut) Do(c *cli.Context) {
 	var (
 		eghour = common.GetHourTimestamp(-1)
@@ -391,6 +426,7 @@ func (this *JSPut) Do(c *cli.Context) {
 
 	this.Other(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
 	this.Domain(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
+	this.GetClickWhiteMenu()
 	this.PutAdvertToRedis()
 	this.saveTjData()
 	this.savePutData()

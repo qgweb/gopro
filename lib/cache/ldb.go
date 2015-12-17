@@ -9,6 +9,7 @@ package cache
 import (
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/filter"
+	"github.com/syndtr/goleveldb/leveldb/iterator"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 	"github.com/syndtr/goleveldb/leveldb/util"
 	"os"
@@ -97,13 +98,39 @@ func (this *LevelDBCache) HGetAllKeys(hname string) ([]string, error) {
 
 func (this *LevelDBCache) Keys(prefix string) ([]string, error) {
 	var hvalues = make([]string, 0, 100)
-	iter := this.db.NewIterator(util.BytesPrefix([]byte(prefix)), nil)
+	var lrange *util.Range
+
+	if prefix == "*" {
+		lrange = nil
+	} else {
+		lrange = util.BytesPrefix([]byte(prefix))
+	}
+
+	iter := this.db.NewIterator(lrange, nil)
 	for iter.Next() {
 		hvalues = append(hvalues, string(iter.Key()))
 	}
 	iter.Release()
 	err := iter.Error()
 	return hvalues, err
+}
+
+func (this *LevelDBCache) Iter(beginKey string, endkey string, fn func(iter iterator.Iterator)) (err error) {
+	var (
+		lrange *util.Range = nil
+	)
+	if beginKey != "" && endkey != "" {
+		lrange = &util.Range{Start: []byte(beginKey), Limit: []byte(endkey)}
+	}
+	if beginKey != "" && endkey == "" {
+		lrange = util.BytesPrefix([]byte(beginKey))
+	}
+	iter := this.db.NewIterator(lrange, nil)
+	for iter.Next() {
+		fn(iter)
+	}
+	iter.Release()
+	return iter.Error()
 }
 
 func (this *LevelDBCache) Close() {

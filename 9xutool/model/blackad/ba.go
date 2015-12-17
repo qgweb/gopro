@@ -6,8 +6,10 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
+	"github.com/qgweb/gopro/lib/cache"
 	"github.com/qgweb/gopro/lib/encrypt"
-	"github.com/syndtr/goleveldb/leveldb"
+	"github.com/qgweb/gopro/lib/mongodb"
+	"github.com/syndtr/goleveldb/leveldb/iterator"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
@@ -21,26 +23,25 @@ import (
 // 找出点击比较低的广告
 type BlackMenu struct {
 	iniFile         *ini.File
-	mp              *common.MgoPool
+	mp              *mongodb.DialContext
 	rc_put          redis.Conn
 	blackprefix     string         // 黑名单
 	provinceAdverts map[string]int // 浙江广告集合
 	proprefix       string         // 浙江省对应的广告前缀
-	data_path       string         // leveldb目录
 	blackFilePath   string         // 黑名单存放目录
 	blackFileName   string         // 黑名单文件
-	ldb             *leveldb.DB
+	ldb             *cache.LevelDBCache
 }
 
 // 获取monggo对象
-func getMongoObj(inifile *ini.File) *common.MgoPool {
-	mconf := &common.MgoConfig{}
+func getMongoObj(inifile *ini.File) (*mongodb.DialContext, error) {
+	mconf := mongodb.MgoConfig{}
 	mconf.DBName = inifile.Section("mongo").Key("db").String()
 	mconf.Host = inifile.Section("mongo").Key("host").String()
 	mconf.Port = inifile.Section("mongo").Key("port").String()
 	mconf.UserName = inifile.Section("mongo").Key("user").String()
 	mconf.UserPwd = inifile.Section("mongo").Key("pwd").String()
-	return common.NewMgoPool(mconf)
+	return mongodb.Dial(mongodb.GetLinkUrl(mconf), mongodb.GetCpuSessionNum())
 }
 
 // 获取redis对象
@@ -57,7 +58,7 @@ func getRedisObj(section string, inifile *ini.File) redis.Conn {
 	if strings.TrimSpace(rauth) != "" {
 		rc.Do("AUTH", "qaz#qiguan#wsx") //电信密钥
 	}
-	rc.Send("SELECT", rdb)
+	rc.Do("SELECT", rdb)
 	return rc
 }
 
@@ -89,15 +90,19 @@ func NewBlackMenuCli() cli.Command {
 					debug.PrintStack()
 				}
 			}()
+			var err error
 			ur := &BlackMenu{}
 			ur.iniFile = getConfig("black.conf")
-			ur.mp = getMongoObj(ur.iniFile)
+			if ur.mp, err = getMongoObj(ur.iniFile); err != nil {
+				log.Fatal(err)
+				return
+			}
 			ur.rc_put = getRedisObj("redis_put", ur.iniFile)
 			ur.blackprefix = ur.iniFile.Section("default").Key("black_prefix").String()
 			ur.proprefix = ur.iniFile.Section("default").Key("province_prefix").String()
-			ur.data_path = ur.iniFile.Section("default").Key("data_path").String()
-			ur.blackFilePath = ur.iniFile.Section("default").Key("balck_file_path").String()
 			ur.blackFileName = ur.iniFile.Section("default").Key("black_file_put_name").String()
+			ur.blackFilePath = ur.iniFile.Section("default").Key("balck_file_path").String()
+			ur.ldb = ur.initLevelDb()
 			ur.Do(c)
 			ur.rc_put.Close()
 			ur.ldb.Close()
@@ -105,24 +110,16 @@ func NewBlackMenuCli() cli.Command {
 	}
 }
 
-func (this *BlackMenu) initLevelDb() {
-	var err error
-	this.ldb, err = leveldb.OpenFile(this.data_path, nil)
-	if err != nil {
-		log.Fatal(err)
-		return
+func (this *BlackMenu) initLevelDb() *cache.LevelDBCache {
+	path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
+	if ldb, err := cache.NewLevelDbCache(path); err == nil {
+		return ldb
 	}
-
-	//清理原先的key
-	iter := this.ldb.NewIterator(nil, nil)
-	for iter.Next() {
-		this.ldb.Delete(iter.Key(), nil)
-	}
-	iter.Release()
+	return nil
 }
 
 func (this *BlackMenu) setDataToDb(key string, value string) {
-	this.ldb.Put([]byte(key), []byte(value), nil)
+	this.ldb.Set(key, value)
 }
 
 //把黑名单保存到文件中
@@ -142,14 +139,12 @@ func (this *BlackMenu) getBalckMenuData() {
 	}
 	defer fn.Close()
 
-	iter := this.ldb.NewIterator(nil, nil)
-	for iter.Next() {
+	this.ldb.Iter("", "", func(iter iterator.Iterator) {
 		key := iter.Key()
 		value := iter.Value()
 		f.WriteString(string(value) + "\n")
 		fn.WriteString(string(key) + "\n")
-	}
-	iter.Release()
+	})
 }
 
 func (this *BlackMenu) getProAdverts() map[string]int {
@@ -173,39 +168,30 @@ func (this *BlackMenu) setFilterAdvert() {
 	var (
 		db       = this.iniFile.Section("mongo").Key("db").String()
 		table    = "adreport"
-		num      = 5
-		sess     = this.mp.Get()
 		fadverts = make([]string, 0, len(this.provinceAdverts))
+		param    = mongodb.MulQueryParam{}
+		num      = 5
 	)
 
-	defer sess.Close()
 	for k, _ := range this.provinceAdverts {
 		fadverts = append(fadverts, k)
 	}
 
-	iter := sess.DB(db).C(table).Find(bson.M{"pv": bson.M{"$gte": num},
+	param.DbName = db
+	param.ColName = table
+	param.Query = bson.M{"pv": bson.M{"$gte": num},
 		"click": nil,
-		"aid":   bson.M{"$in": fadverts}}).
-		Select(bson.M{"ad": 1, "tua": 1, "aid": 1}).Iter()
-
-	for {
-		var info map[string]interface{}
-		if !iter.Next(&info) {
-			break
-		}
-
+		"aid":   bson.M{"$in": fadverts}}
+	param.Fun = func(info map[string]interface{}) {
 		ua := encrypt.DefaultBase64.Encode(info["tua"].(string))
 		ad := info["ad"].(string)
 		aid := info["aid"].(string)
 		key := encrypt.DefaultMd5.Encode(ad + ua + aid)
 		this.setDataToDb(key, aid+"_"+ad+"_"+ua)
 	}
-
-	iter.Close()
 }
 
 func (this *BlackMenu) Do(c *cli.Context) {
-	this.initLevelDb()
 	this.provinceAdverts = this.getProAdverts()
 	this.setFilterAdvert()
 	this.getBalckMenuData()
