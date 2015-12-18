@@ -55,7 +55,7 @@ func NewURLTraceCli() cli.Command {
 				log.Fatal(err)
 				return
 			}
-
+			ur.mp.Debug()
 			// leveldb cache
 			path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
 			log.Info(path)
@@ -109,12 +109,7 @@ func (this *URLTrace) PutData() {
 	defer this.mp.UnRef(sess)
 
 	if keys, err := this.ldb.HGetAllKeys("adua_keys"); err == nil {
-		sess.DB(db).C(table_put).DropCollection()
-		sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
-		sess.DB(db).C(table_put).EnsureIndexKey("cids.id")
-		sess.DB(db).C(table_put).EnsureIndexKey("adua")
 		list := make([]interface{}, 0, len(keys))
-
 		for _, key := range keys {
 			cids, err := this.ldb.HGetAllKeys(key)
 			if err != nil {
@@ -134,6 +129,10 @@ func (this *URLTrace) PutData() {
 			})
 		}
 		log.Debug("共计:", len(list),"条")
+		sess.DB(db).C(table_put).DropCollection()
+		sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+		sess.DB(db).C(table_put).EnsureIndexKey("cids.id")
+		sess.DB(db).C(table_put).EnsureIndexKey("adua")
 		this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil}, list)
 	}
 }

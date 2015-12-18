@@ -16,6 +16,7 @@ import (
 	"os/exec"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -37,6 +38,7 @@ type JSPut struct {
 	blackFileName   string                    //黑名单文件
 	blackMenus      map[string]int            // 黑名单
 	ldb             *cache.LevelDBCache       //ldb缓存类
+	mux             sync.Mutex
 }
 
 func NewJiangSuPutCli() cli.Command {
@@ -243,6 +245,7 @@ func (this *JSPut) PutAdvertToRedis() {
 		}
 		log.Info(count, time.Now().Sub(bt).Seconds())
 		this.rc_put.Flush()
+		this.rc_put.Receive()
 		log.Info(count, hour)
 	}
 	this.rc_put.Do("SELECT", "0")
@@ -255,11 +258,19 @@ func (this *JSPut) PutAdToCache(ad string) {
 
 // 把ad放入对应的广告集合里去
 func (this *JSPut) pushAdToAdvert(ad string, ua string, advertId string) {
+	defer func() {
+		if msg := recover(); msg != nil {
+			log.Info(msg)
+		}
+	}()
+	this.mux.Lock()
+	defer this.mux.Unlock()
 	if _, ok := this.advertADS[advertId]; !ok {
 		this.advertADS[advertId] = make(map[string]int)
 	}
 	key := ad + "_" + ua
 	this.advertADS[advertId][key] = 1
+
 }
 
 // 医疗金融电商数据处理
@@ -269,7 +280,7 @@ func (this *JSPut) Other(query bson.M) {
 		db    = this.iniFile.Section("mongo").Key("db").String()
 		param = mongodb.MulQueryParam{}
 	)
-
+	log.Info(query)
 	param.DbName = db
 	param.ColName = table
 	param.Query = query
@@ -277,14 +288,17 @@ func (this *JSPut) Other(query bson.M) {
 		if tags, ok := data["tag"].([]interface{}); ok {
 			ad := data["AD"].(string)
 			ua := data["UA"].(string)
+
 			for _, v := range tags {
 				vm := v.(map[string]interface{})
 				tagId := vm["tagId"].(string)
 				piadverts := this.merageAdverts(tagId)
 				this.filterAdvert(ad+ua, piadverts)
+
 				if len(piadverts) > 0 {
 					this.PutAdToCache(ad)
 				}
+
 				for aid, _ := range piadverts {
 					this.PutAdvertToCache(ad, ua, aid)
 					this.pushAdToAdvert(ad, ua, aid)
@@ -371,7 +385,7 @@ func (this *JSPut) savePutData() {
 	if ads, err := this.ldb.HGetAllKeys("sad"); err == nil {
 		log.Info("总ad数", len(ads))
 		for _, ad := range ads {
-			f.WriteString(ad + "\n")
+			//f.WriteString(ad + "\n")
 			f1.WriteString(ad + "\n")
 		}
 		f.Close()
@@ -383,7 +397,6 @@ func (this *JSPut) savePutData() {
 	str, err := cmd.Output()
 	log.Info(string(str), err)
 }
-
 
 // 点击的白名单
 func (this *JSPut) GetClickWhiteMenu() {

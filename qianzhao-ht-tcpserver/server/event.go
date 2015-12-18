@@ -12,6 +12,7 @@ import (
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/common/function"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/model"
+	"fmt"
 )
 
 type Event struct{}
@@ -116,6 +117,29 @@ func (this *Event) RepPing(conn *net.TCPConn) {
 	b, _ := MRespond(r)
 	conn.Write(b)
 }
+
+func (this *Event) HaveCardByPhone(conn *net.TCPConn, req *Request) {
+	var (
+		phone = req.Content
+		hmodel = model.HTCard{}
+	)
+
+	if ht:=hmodel.GetMoneyLastCard(phone); ht.Id >0 {
+		r := &Respond{}
+		r.Code = "200"
+		r.Msg = fmt.Sprintf("%s|%s",ht.CardNum,ht.CardPwd)
+
+		b, _ := MRespond(r)
+		conn.Write(b)
+	} else {
+		r := &Respond{}
+		r.Code = "500"
+		r.Msg = "无绑定"
+		b, _ := MRespond(r)
+		conn.Write(b)
+	}
+}
+
 
 // 检测内部程序状态
 func (this *Event) Info(conn *net.TCPConn) {

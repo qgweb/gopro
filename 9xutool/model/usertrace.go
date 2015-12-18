@@ -193,19 +193,8 @@ func (this *UserTrace) saveData() {
 
 	defer this.mp.UnRef(sess)
 
-	sess.DB(db).C(table_put).DropCollection()
-	sess.DB(db).C(table_put_big).DropCollection()
-
-	//加索引
-	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
-	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
-	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
-	sess.DB(db).C(table_put).EnsureIndexKey("adua")
-	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
-	sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
 	//初始化淘宝分类
 	taoCategory = this.getBigCat()
-
 	if keys, err := this.ldb.HGetAllKeys(this.prefix + "adua_keys"); err == nil {
 		list := make([]interface{}, 0, len(keys))
 		list_put := make([]interface{}, 0, len(keys))
@@ -246,6 +235,15 @@ func (this *UserTrace) saveData() {
 			})
 		}
 		log.Debug("共计:", len(list), "条")
+		//加索引
+		sess.DB(db).C(table_put).DropCollection()
+		sess.DB(db).C(table_put_big).DropCollection()
+		sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+		sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
+		sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
+		sess.DB(db).C(table_put).EnsureIndexKey("adua")
+		sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
+		sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
 		this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil}, list)
 		this.mp.Insert(mongodb.MulQueryParam{db, table_put_big, nil, 0, nil}, list_put)
 	}
@@ -258,10 +256,10 @@ func (this *UserTrace) Do(c *cli.Context) {
 		egdate = common.GetHourTimestamp(-1)
 		bgdate = common.GetHourTimestamp(-73)
 	)
-
+	this.mp.Debug()
 	this.WhiteCookie()
 	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}})
-	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate, "domainId": "0"}})
+	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate}, "domainId": "0"})
 
 	this.saveData()
 }

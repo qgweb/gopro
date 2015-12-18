@@ -52,7 +52,7 @@ type MCard struct {
 type BDInterfaceManager struct{}
 
 func (this *BDInterfaceManager) GetQueryUrl() string {
-	if v,_:=config.GetDefault().Key("debug").Int();v==1 {
+	if v, _ := config.GetDefault().Key("debug").Int(); v == 1 {
 		return CARD_QUERY_TEST_URL
 	}
 	return CARD_QUERY_URL
@@ -93,8 +93,8 @@ func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
 
 func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err error) {
 	var (
-		hmodel  = model.HTCard{}
-		date    = function.GetDateUnix()
+		hmodel = model.HTCard{}
+		date   = function.GetDateUnix()
 	)
 	ht := hmodel.GetInfoByPhone(phone, date, 0, 1)
 	if ht.Id == 0 {
@@ -132,9 +132,13 @@ func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err 
 
 func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err error) {
 	var (
-		hmodel  = model.HTCard{}
-		date    = function.GetDateUnix()
+		hmodel = model.HTCard{}
+		date   = function.GetDateUnix()
 	)
+	if ht := hmodel.GetMoneyLastCard(card.Mobile); ht.Id > 0 {
+		card.CardNO = ht.CardNum
+		card.CardPass = ht.CardPwd
+	}
 
 	//验证卡有效
 	tid, err := this.CheckCardCanUse(card)
@@ -144,7 +148,7 @@ func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err e
 		return hcard, err
 	}
 
-	ht := hmodel.GetInfoByCard(card.Mobile, date, card.CardNO, 1)
+	ht := hmodel.GetInfoByCard(card.Mobile, card.CardNO, 1)
 	balance := this.CardInfoQuery(card.CardNO)
 
 	if ht.Id == 0 && balance > 0 {
@@ -168,7 +172,7 @@ func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err e
 			return ht, errors.New("用户免费体验时间已到")
 		}
 	}
-	return hcard,nil
+	return hcard, nil
 }
 
 // 关闭
@@ -308,9 +312,12 @@ func (this *BDInterfaceManager) CheckCardCanUse(card MCard) (string, error) {
 			-11：参数校验失败
 			-99：系统异常
 		*/
+
 		switch flag["Flag"].(string) {
-		case "0","-4":
+		case "0":
 			return flag["Transactionid"].(string), nil
+		case "-4":
+			return "", errors.New("该卡正在使用中")
 		case "-1":
 			return "", errors.New("不存在账号")
 		case "-2":

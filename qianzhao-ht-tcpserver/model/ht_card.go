@@ -105,9 +105,24 @@ func (this *HTCard) GetInfoByPhone(phone string, date string, ctype int, status 
 }
 
 // 获取信息
-func (this *HTCard) GetInfoByCard(phone string, date string, cardno string, status int) (ht HTCard) {
-	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and date=? and card_num = ? and status=?")
-	list, err := myorm.Query(phone, date, cardno, status)
+func (this *HTCard) GetInfoByCard(phone string, cardno string, status int) (ht HTCard) {
+	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=?  and card_num = ? and status=?").
+		Order("date desc").Limit(1)
+	list, err := myorm.Query(phone, cardno, status)
+	if err != nil {
+		log.Error(err)
+		return ht
+	}
+	if len(list) > 0 {
+		return this.getCard(list[0])
+	}
+	return ht
+}
+
+// 获取最近的卡信息
+func (this *HTCard) GetMoneyLastCard(phone string) (ht HTCard) {
+	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and type=? and status=?").Order("date desc").Limit(1)
+	list, err := myorm.Query(phone, 1, 1)
 	if err != nil {
 		log.Error(err)
 		return ht
