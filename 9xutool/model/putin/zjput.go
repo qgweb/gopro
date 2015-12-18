@@ -18,6 +18,7 @@ import (
 	"github.com/qgweb/gopro/lib/cache"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
+	"sync"
 )
 
 // 浙江投放数据生成
@@ -38,6 +39,7 @@ type ZJPut struct {
 	blackFileName   string                    //黑名单文件
 	blackMenus      map[string]int            // 黑名单
 	ldb             *cache.LevelDBCache       //ldb缓存类
+	mux             sync.Mutex
 }
 
 // 获取monggo对象
@@ -252,6 +254,7 @@ func (this *ZJPut) PutAdvertToRedis() {
 		bt := time.Now()
 		var count = 0
 		var hour float64
+		log.Info(len(keys))
 		for _, key := range keys {
 			hkey := strings.TrimPrefix(key, "adua_")
 			eflag := 0
@@ -269,6 +272,7 @@ func (this *ZJPut) PutAdvertToRedis() {
 		}
 		log.Info(count, time.Now().Sub(bt).Seconds())
 		this.rc_put.Flush()
+		this.rc_put.Receive()
 		log.Info(count, hour)
 	}
 }
@@ -286,12 +290,15 @@ func (this *ZJPut) PutAdsToDxSystem() {
 			this.rc_dx_put.Send("SET", ad, "34")
 		}
 		this.rc_dx_put.Flush()
+		this.rc_dx_put.Receive()
 		log.Info(len(ads), time.Now().Sub(bt).Seconds())
 	}
 }
 
 // 把ad放入对应的广告集合里去
 func (this *ZJPut) pushAdToAdvert(ad string, ua string, advertId string) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
 	if _, ok := this.advertADS[advertId]; !ok {
 		this.advertADS[advertId] = make(map[string]int)
 	}
@@ -439,11 +446,11 @@ func (this *ZJPut) Do(c *cli.Context) {
 	this.tagMap5 = this.getTagsAdverts("TAGS_5_*")
 	this.provinceAdverts = this.getProAdverts()
 
-	this.flushDb()
 	this.Other()
 	this.Domain()
 	this.GetClickWhiteMenu()
 	this.PutAdvertToRedis()
+	this.flushDb()
 	this.PutAdsToDxSystem()
 	this.saveTjData()
 }

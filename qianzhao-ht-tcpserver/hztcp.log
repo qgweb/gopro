@@ -1,42 +1,14 @@
-2015/12/15 14:44:18 model.go:266: [info] {56000005038843 zta3t7M0 001  15158117079} 
-2015/12/15 14:44:19 model.go:272: [info] {qR2QS0ILoWc0geyb/+J2Wg== 54cEDjBuOxYNm+yfrTpE/g== DmIOdskGIMIpQs8eCvj8wA== b6d6800a8ca95bf96ece11543623285e 15158117079} 
-2015/12/15 14:44:19 model.go:282: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
-    <x:Header/>
-    <x:Body>
-        <ser:checkCard>
-            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
-			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
-			<ser:in2>DmIOdskGIMIpQs8eCvj8wA==</ser:in2>
-			<ser:in3>15158117079</ser:in3>
-			<ser:in4>b6d6800a8ca95bf96ece11543623285e</ser:in4>
-        </ser:checkCard>
-    </x:Body>
-</x:Envelope> 
-2015/12/15 14:44:20 model.go:292: [info] {"Flag":"-11"} 
-2015/12/15 14:44:20 model.go:295: [info] map[Flag:-11] 
-2015/12/15 14:44:20 model.go:140: [error] 系统异常 
-2015/12/15 14:44:20 model.go:142: [error] 系统异常 
-2015/12/15 14:45:45 model.go:266: [info] {56000005038843 zta3t7M0 0001  15158117079} 
-2015/12/15 14:45:47 model.go:272: [info] {qR2QS0ILoWc0geyb/+J2Wg== 54cEDjBuOxYNm+yfrTpE/g== 8KLQnhRUkSUoKKMvBDKADQ== f4419ddb2d83c1d5636a33e58f844dfa 15158117079} 
-2015/12/15 14:45:47 model.go:282: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
-    <x:Header/>
-    <x:Body>
-        <ser:checkCard>
-            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
-			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
-			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
-			<ser:in3>15158117079</ser:in3>
-			<ser:in4>f4419ddb2d83c1d5636a33e58f844dfa</ser:in4>
-        </ser:checkCard>
-    </x:Body>
-</x:Envelope> 
-2015/12/15 14:45:48 model.go:292: [info] {"Flag":"-11"} 
-2015/12/15 14:45:49 model.go:295: [info] map[Flag:-11] 
-2015/12/15 14:45:49 model.go:140: [error] 系统异常 
-2015/12/15 14:45:49 model.go:142: [error] 系统异常 
-2015/12/15 16:33:07 model.go:266: [info] {56000005038843 zta3t7M0 0001  15158117079} 
-2015/12/15 16:33:09 model.go:272: [info] {qR2QS0ILoWc0geyb/+J2Wg== 54cEDjBuOxYNm+yfrTpE/g== 8KLQnhRUkSUoKKMvBDKADQ== F4419DDB2D83C1D5636A33E58F844DFA 15158117079} 
-2015/12/15 16:33:09 model.go:282: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+2015/12/18 16:51:06 model.go:63: [info] 1 <nil> 
+2015/12/18 16:51:06 model.go:144: [info] {  0001  } 
+2015/12/18 16:51:47 model.go:63: [info] 1 <nil> 
+2015/12/18 16:51:47 model.go:138: [info]  
+2015/12/18 16:51:47 model.go:144: [info] {  0001  } 
+2015/12/18 16:52:05 model.go:63: [info] 1 <nil> 
+2015/12/18 16:52:05 model.go:138: [info] 15158117079 
+2015/12/18 16:52:05 model.go:142: [info] {56000005038843 zta3t7M0 0001  15158117079} 
+2015/12/18 16:52:05 model.go:144: [info] {56000005038843 zta3t7M0 0001  15158117079} 
+2015/12/18 16:54:05 model.go:63: [info] 1 <nil> 
+2015/12/18 16:54:08 model.go:285: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
     <x:Header/>
     <x:Body>
         <ser:checkCard>
@@ -48,14 +20,38 @@
         </ser:checkCard>
     </x:Body>
 </x:Envelope> 
-2015/12/15 16:33:09 model.go:292: [info] {"Flag":"-4"} 
-2015/12/15 16:33:10 model.go:295: [info] map[Flag:-4] 
-2015/12/15 16:33:10 model.go:140: [error] 该卡正在使用中 
-2015/12/15 16:33:10 model.go:142: [error] 该卡正在使用中 
-2015/12/15 17:07:31 ht_card.go:98: [error] Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'and type = ? and status=?' at line 1 
-2015/12/15 17:08:30 ht_card.go:98: [error] Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'and type = ? and status=?' at line 1 
-2015/12/15 17:10:32 ht_card.go:98: [error] Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'and type = ? and status=?' at line 1 
-2015/12/15 17:11:22 ht_card.go:101: [info] [map[card_pwd:zta3t7M0 status:1 date:1450108800 remark: id:9 phone:15158117079 card_num:56000005038843 card_token:1449817500610 type:0 total_time:60] map[card_pwd:zta3t7M0 card_token:1449817500610 total_time:60 status:1 id:10 phone:15158117079 card_num:56000005038843 type:0 date:1450108800 remark:] map[remark: id:11 phone:15158117079 date:1450108800 type:0 total_time:60 status:1 card_num:56000005038843 card_pwd:zta3t7M0 card_token:1449817500610]] 
-2015/12/15 17:11:22 model.go:359: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo?wsdl: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
-2015/12/15 17:12:50 model.go:359: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo?wsdl: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
-2015/12/15 17:18:22 model.go:63: [info] 1 <nil> 
+2015/12/18 16:54:08 model.go:295: [info] {"Flag":"-4"} 
+2015/12/18 16:54:08 model.go:298: [info] map[Flag:-4] 
+2015/12/18 16:55:47 model.go:63: [info] 1 <nil> 
+2015/12/18 16:55:48 model.go:285: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
+			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
+			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>F4419DDB2D83C1D5636A33E58F844DFA</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/18 16:55:49 model.go:295: [info] {"Flag":"-4"} 
+2015/12/18 16:55:49 model.go:298: [info] map[Flag:-4] 
+2015/12/18 16:55:49 model.go:315: [info] map[Flag:-4] 
+2015/12/18 16:56:55 model.go:63: [info] 1 <nil> 
+2015/12/18 16:56:56 model.go:285: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
+			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
+			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>F4419DDB2D83C1D5636A33E58F844DFA</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/18 16:56:57 model.go:295: [info] {"Flag":"-4"} 
+2015/12/18 16:56:57 model.go:298: [info] map[Flag:-4] 
+2015/12/18 16:56:57 model.go:145: [error] 该卡正在使用中 
+2015/12/18 16:56:57 model.go:147: [error] 该卡正在使用中 

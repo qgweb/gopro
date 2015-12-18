@@ -25,7 +25,7 @@ func NewLevelDbCache(path string) (*LevelDBCache, error) {
 	o := &opt.Options{
 		Filter:             filter.NewBloomFilter(10),
 		BlockCacheCapacity: 64,
-		WriteBuffer:        256 * 1024 * 1024,
+		WriteBuffer:        512 * 1024 * 1024,
 	}
 	db, err := leveldb.OpenFile(path, o)
 	if err != nil {

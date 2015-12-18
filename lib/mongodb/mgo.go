@@ -173,6 +173,12 @@ func (c *DialContext) Query(param MulQueryParam) error {
 		cpunum   = runtime.NumCPU()
 	)
 
+	defer func() {
+		if msg := recover(); msg != nil {
+			log.Error(msg)
+		}
+	}()
+
 	count, err = sess.DB(param.DbName).C(param.ColName).Find(param.Query).Count()
 	c.UnRef(sess)
 	c.Log(count)
@@ -189,8 +195,6 @@ func (c *DialContext) Query(param MulQueryParam) error {
 		go func(p int) {
 			sess := c.Ref()
 			defer c.UnRef(sess)
-			c.Log(sess.DB(param.DbName).C(param.ColName).Find(param.Query).
-				Limit(param.Size).Skip((p - 1) * param.Size).Count())
 			iter := sess.DB(param.DbName).C(param.ColName).Find(param.Query).
 				Limit(param.Size).Skip((p - 1) * param.Size).Iter()
 			for {
@@ -200,21 +204,24 @@ func (c *DialContext) Query(param MulQueryParam) error {
 				}
 				param.Fun(info)
 			}
+			iter.Close()
+			c.Log(iter.Err())
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
+	c.Log("ok")
 	return nil
 }
 
 func (c *DialContext) Insert(param MulQueryParam, list []interface{}) {
 	var (
-		pageSize  = 10000
+		wg        = sync.WaitGroup{}
 		totalSize = len(list)
+		cpunum    = runtime.NumCPU()
+		pageSize  = int(math.Ceil(float64(totalSize) / float64(cpunum) / 2))
 		pageCount = int(math.Ceil(float64(totalSize) / float64(pageSize)))
 	)
-	sess := c.Ref()
-	defer c.UnRef(sess)
 
 	for i := 1; i <= pageCount; i++ {
 		bg := (i - 1) * pageSize
@@ -222,10 +229,16 @@ func (c *DialContext) Insert(param MulQueryParam, list []interface{}) {
 		if i == pageCount {
 			eg = totalSize
 		}
-
-		if err := sess.DB(param.DbName).C(param.ColName).Insert(list[bg:eg]...); err != nil {
-			log.Error(err)
-			continue
-		}
+		wg.Add(1)
+		go func(b int, e int) {
+			sess := c.Ref()
+			defer c.UnRef(sess)
+			err := sess.DB(param.DbName).C(param.ColName).Insert(list[b:e]...)
+			c.Log(err)
+			wg.Done()
+			c.Log(b, e)
+		}(bg, eg)
 	}
+	wg.Wait()
+	c.Log("ok")
 }

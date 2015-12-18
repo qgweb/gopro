@@ -171,6 +171,8 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 			break
 		case "info": //监听内部程序状态
 			(&Event{}).Info(conn)
+		case "havebind":
+			(&Event{}).HaveCardByPhone(conn, &r)
 		}
 	}
 }
