@@ -4,6 +4,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/model"
 	"github.com/qgweb/gopro/9xutool/model/blackad"
+	"github.com/qgweb/gopro/9xutool/model/lonlat"
 	"github.com/qgweb/gopro/9xutool/model/putin"
 	"os"
 )
@@ -19,9 +20,10 @@ func main() {
 		model.NewShopTraceCli(),
 		model.NewURLTraceCli(),
 		model.NewTAGSTraceCli(),
-		model.NewTagsNumberCli(),
-		model.NewUserCdCli(),
-		model.NewTagsCdCli(),
+		lonlat.NewTagsNumberCli(),
+		lonlat.NewUserCdCli(),
+		lonlat.NewTagsCdCli(),
+		lonlat.NewLonLatCli(),
 		putin.NewZheJiangPutCli(),
 		putin.NewJiangSuPutCli(),
 		blackad.NewBlackMenuCli(),
