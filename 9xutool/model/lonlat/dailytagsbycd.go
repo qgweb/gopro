@@ -39,7 +39,7 @@ func NewTagsCdCli() cli.Command {
 			}()
 
 			// 获取配置文件
-			filePath := common.GetBasePath() + "/conf/ut.conf"
+			filePath := common.GetBasePath() + "/conf/jw.conf"
 			f, err := ioutil.ReadFile(filePath)
 			if err != nil {
 				log.Fatal(err)
@@ -52,11 +52,12 @@ func NewTagsCdCli() cli.Command {
 
 			// mgo 配置文件
 			mconf := &common.MgoConfig{}
-			mconf.DBName = uc.iniFile.Section("mongo").Key("db").String()
-			mconf.Host = uc.iniFile.Section("mongo").Key("host").String()
-			mconf.Port = uc.iniFile.Section("mongo").Key("port").String()
-			mconf.UserName = uc.iniFile.Section("mongo").Key("user").String()
-			mconf.UserPwd = uc.iniFile.Section("mongo").Key("pwd").String()
+			mconf.DBName = uc.iniFile.Section("mongo-data_source").Key("db").String()
+			mconf.Host = uc.iniFile.Section("mongo-data_source").Key("host").String()
+			mconf.Port = uc.iniFile.Section("mongo-data_source").Key("port").String()
+			mconf.UserName = uc.iniFile.Section("mongo-data_source").Key("user").String()
+			mconf.UserPwd = uc.iniFile.Section("mongo-data_source").Key("pwd").String()
+			uc.debug, _ = uc.iniFile.Section("mongo-data_source").Key("debug").Int()
 			uc.mp = common.NewMgoPool(mconf)
 			//mysql 配置文件
 			uc.mysql = orm.NewORM()
@@ -75,7 +76,9 @@ func (this *UserCdTrace) Doit(c *cli.Context) {
 	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter() //昨天的数据
 	i := 1
 	for {
-		log.Info("已处理", convert.ToString(i), "条记录")
+		if this.debug == 1 {
+			log.Info("已处理", convert.ToString(i), "条记录")
+		}
 		i++
 		var info map[string]interface{}
 		if !iter.Next(&info) {
@@ -89,7 +92,7 @@ func (this *UserCdTrace) Doit(c *cli.Context) {
 
 		DayTimestamp := common.GetDayTimestamp(-1)
 		for _, t := range tagsByJwd {
-			if _, ok := taocat_list[t.tagid]; !ok {
+			if _, ok := this.taocat_list[t.tagid]; !ok {
 				continue
 			}
 			this.mysql.BSQL().Insert("tags_report_jw").Values("tag_id", "lon", "lat", "num", "time")
@@ -127,9 +130,9 @@ func (this *UserCdTrace) getTagsJWDInfo(info map[string]interface{}) {
 					continue
 				}
 				cid := tagm["tagId"].(string)
-				cg := taocat_list[cid] //从总标签的map判断是否是3级标签
+				cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
 				if cg.Level != 3 {
-					cid, err = cg.getLv3Id()
+					cid, err = cg.getLv3Id(this)
 					if err != nil {
 						continue
 					}

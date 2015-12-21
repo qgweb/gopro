@@ -29,7 +29,7 @@ func NewTagsNumberCli() cli.Command {
 			}()
 
 			// 获取配置文件
-			filePath := common.GetBasePath() + "/conf/ut.conf"
+			filePath := common.GetBasePath() + "/conf/jw.conf"
 			f, err := ioutil.ReadFile(filePath)
 			if err != nil {
 				log.Fatal(err)
@@ -42,11 +42,11 @@ func NewTagsNumberCli() cli.Command {
 
 			// mgo 配置文件
 			mconf := &common.MgoConfig{}
-			mconf.DBName = uc.iniFile.Section("mongo").Key("db").String()
-			mconf.Host = uc.iniFile.Section("mongo").Key("host").String()
-			mconf.Port = uc.iniFile.Section("mongo").Key("port").String()
-			mconf.UserName = uc.iniFile.Section("mongo").Key("user").String()
-			mconf.UserPwd = uc.iniFile.Section("mongo").Key("pwd").String()
+			mconf.DBName = uc.iniFile.Section("mongo-data_source").Key("db").String()
+			mconf.Host = uc.iniFile.Section("mongo-data_source").Key("host").String()
+			mconf.Port = uc.iniFile.Section("mongo-data_source").Key("port").String()
+			mconf.UserName = uc.iniFile.Section("mongo-data_source").Key("user").String()
+			mconf.UserPwd = uc.iniFile.Section("mongo-data_source").Key("pwd").String()
 			uc.mp = common.NewMgoPool(mconf)
 			//mysql 配置文件
 			uc.mysql = orm.NewORM()
@@ -63,7 +63,7 @@ func (this *UserCdTrace) DataHandle(c *cli.Context) {
 		sess = this.mp.Get()
 		err  error
 	)
-	tags_num = make(map[string]int)
+	this.tags_num = make(map[string]int)
 	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"day": "20151207"}).Iter() //昨天的数据
 	i := 1
 	for {
@@ -77,14 +77,14 @@ func (this *UserCdTrace) DataHandle(c *cli.Context) {
 				continue
 			}
 			cid := tagm["tagId"].(string)
-			if cg, ok := taocat_list[cid]; ok {
+			if cg, ok := this.taocat_list[cid]; ok {
 				if cg.Level != 3 { //从总标签的map判断是否是3级标签
-					cid, err = cg.getLv3Id()
+					cid, err = cg.getLv3Id(this)
 					if err != nil {
 						continue
 					}
 				}
-				tags_num[cid] = tags_num[cid] + 1
+				this.tags_num[cid] = this.tags_num[cid] + 1
 			}
 
 		}
@@ -93,7 +93,7 @@ func (this *UserCdTrace) DataHandle(c *cli.Context) {
 	}
 	//排序
 	fmt.Println("开始排序...")
-	s_tags_num := grab.NewMapSorter(tags_num)
+	s_tags_num := grab.NewMapSorter(this.tags_num)
 	s_tags_num.Sort()
 	fmt.Println("排序完毕，开始插入数据")
 	//入库
@@ -107,7 +107,7 @@ func (this *UserCdTrace) DataHandle(c *cli.Context) {
 		NowTime := time.Now().Unix()
 		for _, v := range s_tags_num {
 			this.mysql.BSQL().Insert("tags_daily_report").Values("tag_id", "tag_text", "num", "create_time", "time")
-			_, err := this.mysql.Insert(v.Key, taocat_list[v.Key].Name, v.Val, NowTime, DayTimestamp)
+			_, err := this.mysql.Insert(v.Key, this.taocat_list[v.Key].Name, v.Val, NowTime, DayTimestamp)
 			if err != nil {
 				log.Warn("插入失败 ", err)
 			}

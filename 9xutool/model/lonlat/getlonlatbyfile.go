@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ngaut/log"
 	"io"
+	"math"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -12,7 +13,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/common"
 	"gopkg.in/ini.v1"
-	// "gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type LonLat struct {
@@ -75,19 +76,36 @@ func (this *LonLat) Do(c *cli.Context) {
 	var (
 		db   = this.iniFile.Section("mongo").Key("db").String()
 		sess = this.mp.Get()
-		err  error
 	)
 	defer sess.Close()
 
 	fmt.Println("开始读取文件，整理经纬度数据...")
-	this.extData()
+	this.data = this.extData()
 
-	fmt.Println("开始存入数据库")
-	for _, v := range this.data {
-		err = sess.DB(db).C("tbl_map").Insert(v)
-		if err != nil {
-			panic(err)
+	count := len(this.data)
+	r := 100000
+	total_page := int(math.Ceil(float64(count) / float64(r)))
+
+	for i := 1; i <= total_page; i++ {
+		begin := (i - 1) * r
+		end := begin + r
+		if i == total_page {
+			end = count
 		}
+		tmp_data := this.data[begin:end]
+		if this.debug == 1 {
+			fmt.Println("第", i, "批数据导入完成!")
+		}
+		var info []interface{}
+		for _, v := range tmp_data {
+			info = append(info, bson.M{
+				"AD":  v.AD,
+				"Lon": v.Lon,
+				"Lat": v.Lat,
+			})
+		}
+
+		sess.DB(db).C("tbl_map").Insert(info...)
 	}
 	fmt.Println("执行完毕!")
 }
@@ -95,14 +113,14 @@ func (this *LonLat) Do(c *cli.Context) {
 /**
  * 从文件中读取数据，放入mdata等待入库
  */
-func (this *LonLat) extData() {
+func (this *LonLat) extData() []*LonLatData {
 	f, err := os.Open(this.filename)
 	if err != nil {
 		log.Fatal("读取文件失败:", err)
 	}
 	defer f.Close()
 	reader := bufio.NewReader(f)
-	result := []*LonLatData{}
+	result := make([]*LonLatData, 0, 5000000)
 	i := 1
 	for {
 		str, err := reader.ReadString('\n')
@@ -131,6 +149,6 @@ func (this *LonLat) extData() {
 		}
 		i++
 	}
-	this.data = result
 	fmt.Println("整理经纬度完毕")
+	return result
 }

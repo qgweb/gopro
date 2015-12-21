@@ -17,9 +17,12 @@ import (
 
 type (
 	UserCdTrace struct {
-		mp      *common.MgoPool
-		mysql   *orm.QGORM
-		iniFile *ini.File
+		mp          *common.MgoPool
+		mysql       *orm.QGORM
+		iniFile     *ini.File
+		debug       int
+		taocat_list map[string]*TaoCat //标签分类总表 map[cid]TaoCat
+		tags_num    map[string]int     //标签计数
 	}
 
 	TaoCat struct { //数据模型
@@ -28,11 +31,6 @@ type (
 		Cid   string
 		Pid   string
 	}
-)
-
-var (
-	taocat_list map[string]*TaoCat //标签分类总表 map[cid]TaoCat
-	tags_num    map[string]int     //标签计数
 )
 
 const ( //表名
@@ -54,7 +52,7 @@ func NewUserCdCli() cli.Command {
 			}()
 
 			// 获取配置文件
-			filePath := common.GetBasePath() + "/conf/ut.conf"
+			filePath := common.GetBasePath() + "/conf/jw.conf"
 			f, err := ioutil.ReadFile(filePath)
 			if err != nil {
 				log.Fatal(err)
@@ -67,12 +65,14 @@ func NewUserCdCli() cli.Command {
 
 			// mgo 配置文件
 			mconf := &common.MgoConfig{}
-			mconf.DBName = ur.iniFile.Section("mongo").Key("db").String()
-			mconf.Host = ur.iniFile.Section("mongo").Key("host").String()
-			mconf.Port = ur.iniFile.Section("mongo").Key("port").String()
-			mconf.UserName = ur.iniFile.Section("mongo").Key("user").String()
-			mconf.UserPwd = ur.iniFile.Section("mongo").Key("pwd").String()
+			mconf.DBName = ur.iniFile.Section("mongo-data_source").Key("db").String()
+			mconf.Host = ur.iniFile.Section("mongo-data_source").Key("host").String()
+			mconf.Port = ur.iniFile.Section("mongo-data_source").Key("port").String()
+			mconf.UserName = ur.iniFile.Section("mongo-data_source").Key("user").String()
+			mconf.UserPwd = ur.iniFile.Section("mongo-data_source").Key("pwd").String()
+			ur.debug, _ = ur.iniFile.Section("mongo-data_source").Key("debug").Int()
 			ur.mp = common.NewMgoPool(mconf)
+
 			//mysql 配置文件
 			ur.mysql = orm.NewORM()
 
@@ -93,7 +93,7 @@ func (this *UserCdTrace) initData() {
 		log.Error(err)
 	}
 
-	taocat_list = make(map[string]*TaoCat)
+	this.taocat_list = make(map[string]*TaoCat)
 	if len(list) > 0 {
 		for _, v := range list {
 			//处理等级map
@@ -103,7 +103,7 @@ func (this *UserCdTrace) initData() {
 				Cid:   v["cid"].(string),
 				Pid:   v["pid"].(string),
 			}
-			taocat_list[category.Cid] = category
+			this.taocat_list[category.Cid] = category
 		}
 	}
 	log.Info("初始化taocat_list完毕")
@@ -115,13 +115,15 @@ func (this *UserCdTrace) initData() {
 //最后把tags_num入库，入库的时候再做映射取标签中文名
 func (this *UserCdTrace) Do(c *cli.Context) {
 	var (
-		db   = this.iniFile.Section("mongo").Key("db").String()
+		db   = this.iniFile.Section("mongo-data_source").Key("db").String()
 		sess = this.mp.Get()
 	)
 	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter() //昨天的数据
 	i := 1
 	for {
-		log.Info("已处理", convert.ToString(i), "条记录")
+		if this.debug == 1 {
+			log.Info("已处理", convert.ToString(i), "条记录")
+		}
 		i++
 		var info map[string]interface{}
 		if !iter.Next(&info) {
@@ -131,15 +133,15 @@ func (this *UserCdTrace) Do(c *cli.Context) {
 		this.getTagsInfo(ad)
 	}
 
-	if len(tags_num) > 0 {
+	if len(this.tags_num) > 0 {
 		this.getMysqlConnect() //连接mysql
 
 		DayTimestamp := common.GetDayTimestamp(-1)
-		for tag_id, num := range tags_num {
-			if _, ok := taocat_list[tag_id]; !ok {
+		for tag_id, num := range this.tags_num {
+			if _, ok := this.taocat_list[tag_id]; !ok {
 				continue
 			}
-			tag_text := taocat_list[tag_id].Name
+			tag_text := this.taocat_list[tag_id].Name
 			this.mysql.BSQL().Insert("tags_report_day").Values("tag_id", "tag_text", "num", "time")
 			_, err := this.mysql.Insert(tag_id, tag_text, num, DayTimestamp)
 			if err != nil {
@@ -171,7 +173,7 @@ func (this *UserCdTrace) getMysqlConnect() {
 //根据ad获取标签
 func (this *UserCdTrace) getTagsInfo(ad string) {
 	var (
-		db       = this.iniFile.Section("mongo").Key("db").String()
+		db       = this.iniFile.Section("mongo-data_source").Key("db").String()
 		sess     = this.mp.Get()
 		tagsInfo []map[string]interface{}
 		dayTime  = common.GetDay(-1) //0为今日
@@ -185,7 +187,7 @@ func (this *UserCdTrace) getTagsInfo(ad string) {
 		log.Error(err)
 	}
 	if len(tagsInfo) > 0 {
-		tags_num = make(map[string]int)
+		this.tags_num = make(map[string]int)
 		for _, v := range tagsInfo { //可能会有多条数据，即多个ad
 			for _, tag := range v["tag"].([]interface{}) { //获取每个ad内的tagid
 				tagm := tag.(map[string]interface{})
@@ -193,21 +195,21 @@ func (this *UserCdTrace) getTagsInfo(ad string) {
 					continue
 				}
 				cid := tagm["tagId"].(string)
-				cg := taocat_list[cid] //从总标签的map判断是否是3级标签
+				cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
 				if cg.Level != 3 {
-					cid, err = cg.getLv3Id()
+					cid, err = cg.getLv3Id(this)
 					if err != nil {
 						continue
 					}
 				}
-				tags_num[cid] = tags_num[cid] + 1
+				this.tags_num[cid] = this.tags_num[cid] + 1
 			}
 		}
 	}
 }
 
 //获取相应的三级标签id
-func (this *TaoCat) getLv3Id() (string, error) {
+func (this *TaoCat) getLv3Id(uc *UserCdTrace) (string, error) {
 	if this.Level == 3 {
 		return this.Cid, nil
 	}
@@ -217,7 +219,7 @@ func (this *TaoCat) getLv3Id() (string, error) {
 	}
 	tmp := *this
 	for i := 0; i < n; i++ {
-		tmp = *taocat_list[tmp.Pid] //获取父级
+		tmp = *uc.taocat_list[tmp.Pid] //获取父级
 	}
 	return tmp.Cid, nil
 }
