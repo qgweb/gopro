@@ -2,7 +2,6 @@ package lonlat
 
 import (
 	"github.com/ngaut/log"
-	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/orm"
 	"io/ioutil"
 	"runtime/debug"
@@ -20,10 +19,6 @@ type (
 		lat   string
 		num   int
 	}
-)
-
-var (
-	tagsByJwd map[string]*TagInfo
 )
 
 func NewTagsCdCli() cli.Command {
@@ -70,28 +65,28 @@ func NewTagsCdCli() cli.Command {
 
 func (this *UserCdTrace) Doit(c *cli.Context) {
 	var (
-		db   = this.iniFile.Section("mongo").Key("db").String()
+		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
 		sess = this.mp.Get()
 	)
-	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter() //昨天的数据
+	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter()
 	i := 1
 	for {
-		if this.debug == 1 {
-			log.Info("已处理", convert.ToString(i), "条记录")
-		}
-		i++
 		var info map[string]interface{}
 		if !iter.Next(&info) {
 			break
 		}
 		this.getTagsJWDInfo(info)
+		if this.debug == 1 {
+			log.Info("已处理", i, "条记录")
+		}
+		i++
 	}
 
-	if len(tagsByJwd) > 0 {
+	if len(this.tagsByJwd) > 0 {
 		this.getMysqlConnect() //连接mysql
 
 		DayTimestamp := common.GetDayTimestamp(-1)
-		for _, t := range tagsByJwd {
+		for _, t := range this.tagsByJwd {
 			if _, ok := this.taocat_list[t.tagid]; !ok {
 				continue
 			}
@@ -108,48 +103,47 @@ func (this *UserCdTrace) Doit(c *cli.Context) {
 //根据ad获取标签
 func (this *UserCdTrace) getTagsJWDInfo(info map[string]interface{}) {
 	var (
-		db       = this.iniFile.Section("mongo").Key("db").String()
-		sess     = this.mp.Get()
-		tagsInfo []map[string]interface{}
-		// dayTime  = getDay(-1) //0为今日
-		// ad       = info["ad"].(string)
+		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess      = this.mp.Get()
+		timestamp = common.GetDayTimestamp(-1) //0为今日
+		ad        = info["AD"].(string)
+		err       error
 	)
 	defer sess.Close()
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": ad, "timestamp": timestamp}).Iter()
+	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).Iter()
 
-	// err := sess.DB(db).C("useraction").Find(bson.M{"AD": ad, "day": dayTime}).All(&tagsInfo)
-	err := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).All(&tagsInfo)
-	if err != nil {
-		log.Error(err)
-	}
-	if len(tagsInfo) > 0 {
-		tagsByJwd = make(map[string]*TagInfo)
-		for _, v := range tagsInfo { //可能会有多条数据，即多个ad
-			for _, tag := range v["tag"].([]interface{}) { //获取每个ad内的tagid
-				tagm := tag.(map[string]interface{})
-				if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
-					continue
-				}
-				cid := tagm["tagId"].(string)
-				cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
-				if cg.Level != 3 {
-					cid, err = cg.getLv3Id(this)
-					if err != nil {
-						continue
-					}
-				}
-				key := cid + info["lon"].(string) + info["lat"].(string)
-				if t, ok := tagsByJwd[key]; ok {
-					t.num++
-					continue
-				}
-				tmp_info := &TagInfo{
-					tagid: cid,
-					lon:   info["lon"].(string),
-					lat:   info["lat"].(string),
-					num:   1,
-				}
-				tagsByJwd[key] = tmp_info
+	this.tagsByJwd = make(map[string]*TagInfo)
+	for {
+		var tagsInfo map[string]interface{}
+		if !iter.Next(&tagsInfo) {
+			break
+		}
+		for _, tag := range tagsInfo["tag"].([]interface{}) { //获取每个ad内的tagid
+			tagm := tag.(map[string]interface{})
+			if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
+				continue
 			}
+			cid := tagm["tagId"].(string)
+			cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
+			if cg.Level != 3 {
+				cid, err = cg.getLv3Id(this)
+				if err != nil {
+					continue
+				}
+			}
+			key := cid + info["Lon"].(string) + info["Lat"].(string)
+			if t, ok := this.tagsByJwd[key]; ok {
+				t.num++
+				continue
+			}
+			tmp_info := &TagInfo{
+				tagid: cid,
+				lon:   info["Lon"].(string),
+				lat:   info["Lat"].(string),
+				num:   1,
+			}
+			this.tagsByJwd[key] = tmp_info
 		}
 	}
 }

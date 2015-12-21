@@ -59,12 +59,14 @@ func NewTagsNumberCli() cli.Command {
 
 func (this *UserCdTrace) DataHandle(c *cli.Context) {
 	var (
-		db   = this.iniFile.Section("mongo").Key("db").String()
-		sess = this.mp.Get()
-		err  error
+		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess      = this.mp.Get()
+		timestamp = common.GetDayTimestamp(-1)
+		err       error
 	)
 	this.tags_num = make(map[string]int)
-	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"day": "20151207"}).Iter() //昨天的数据
+	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"day": "20151207"}).Iter() //昨天的数据
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": timestamp}).Iter() //昨天的数据
 	i := 1
 	for {
 		var info map[string]interface{}

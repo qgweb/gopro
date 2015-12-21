@@ -59,12 +59,12 @@ func NewLonLatCli() cli.Command {
 			}
 			// mgo 配置文件
 			mconf := &common.MgoConfig{}
-			mconf.DBName = ll.iniFile.Section("mongo").Key("db").String()
-			mconf.Host = ll.iniFile.Section("mongo").Key("host").String()
-			mconf.Port = ll.iniFile.Section("mongo").Key("port").String()
-			mconf.UserName = ll.iniFile.Section("mongo").Key("user").String()
-			mconf.UserPwd = ll.iniFile.Section("mongo").Key("pwd").String()
-			ll.debug, _ = ll.iniFile.Section("mongo").Key("debug").Int()
+			mconf.DBName = ll.iniFile.Section("mongo-lonlat_data").Key("db").String()
+			mconf.Host = ll.iniFile.Section("mongo-lonlat_data").Key("host").String()
+			mconf.Port = ll.iniFile.Section("mongo-lonlat_data").Key("port").String()
+			mconf.UserName = ll.iniFile.Section("mongo-lonlat_data").Key("user").String()
+			mconf.UserPwd = ll.iniFile.Section("mongo-lonlat_data").Key("pwd").String()
+			ll.debug, _ = ll.iniFile.Section("mongo-lonlat_data").Key("debug").Int()
 			ll.mp = common.NewMgoPool(mconf)
 
 			ll.Do(c)
@@ -74,7 +74,7 @@ func NewLonLatCli() cli.Command {
 
 func (this *LonLat) Do(c *cli.Context) {
 	var (
-		db   = this.iniFile.Section("mongo").Key("db").String()
+		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
 		sess = this.mp.Get()
 	)
 	defer sess.Close()

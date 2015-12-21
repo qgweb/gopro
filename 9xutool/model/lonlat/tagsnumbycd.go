@@ -23,6 +23,7 @@ type (
 		debug       int
 		taocat_list map[string]*TaoCat //标签分类总表 map[cid]TaoCat
 		tags_num    map[string]int     //标签计数
+		tagsByJwd   map[string]*TagInfo
 	}
 
 	TaoCat struct { //数据模型
@@ -35,7 +36,7 @@ type (
 
 const ( //表名
 	TAOCAT_TABLE     string = "taocat"
-	JWD_TABLE        string = "jingweidu"
+	JWD_TABLE        string = "tbl_map"
 	USERACTION_TABLE string = "useraction"
 )
 
@@ -83,7 +84,7 @@ func NewUserCdCli() cli.Command {
 }
 
 func (this *UserCdTrace) initData() {
-	db := this.iniFile.Section("mongo").Key("db").String()
+	db := this.iniFile.Section("mongo-data_source").Key("db").String()
 	sess := this.mp.Get()
 	defer sess.Close()
 
@@ -115,22 +116,22 @@ func (this *UserCdTrace) initData() {
 //最后把tags_num入库，入库的时候再做映射取标签中文名
 func (this *UserCdTrace) Do(c *cli.Context) {
 	var (
-		db   = this.iniFile.Section("mongo-data_source").Key("db").String()
+		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
 		sess = this.mp.Get()
 	)
-	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter() //昨天的数据
+	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter()
 	i := 1
 	for {
-		if this.debug == 1 {
-			log.Info("已处理", convert.ToString(i), "条记录")
-		}
-		i++
 		var info map[string]interface{}
 		if !iter.Next(&info) {
 			break
 		}
-		ad := info["ad"].(string)
+		ad := info["AD"].(string)
 		this.getTagsInfo(ad)
+		if this.debug == 1 {
+			log.Info("已处理", convert.ToString(i), "条记录")
+		}
+		i++
 	}
 
 	if len(this.tags_num) > 0 {
@@ -173,39 +174,63 @@ func (this *UserCdTrace) getMysqlConnect() {
 //根据ad获取标签
 func (this *UserCdTrace) getTagsInfo(ad string) {
 	var (
-		db       = this.iniFile.Section("mongo-data_source").Key("db").String()
-		sess     = this.mp.Get()
-		tagsInfo []map[string]interface{}
-		dayTime  = common.GetDay(-1) //0为今日
+		db   = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess = this.mp.Get()
+		// tagsInfo []map[string]interface{}
+		// dayTime  = common.GetDay(-1) //0为今日
+		err error
 	)
 	defer sess.Close()
 
-	_ = ad
-	err := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": ad, "day": dayTime}).All(&tagsInfo)
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).Iter()
+	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": ad, "day": dayTime}).Iter()
 	// err := sess.DB(db).C("useraction").Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).All(&tagsInfo)
-	if err != nil {
-		log.Error(err)
-	}
-	if len(tagsInfo) > 0 {
-		this.tags_num = make(map[string]int)
-		for _, v := range tagsInfo { //可能会有多条数据，即多个ad
-			for _, tag := range v["tag"].([]interface{}) { //获取每个ad内的tagid
-				tagm := tag.(map[string]interface{})
-				if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	this.tags_num = make(map[string]int)
+	for {
+		var info map[string]interface{}
+		if !iter.Next(&info) {
+			break
+		}
+		for _, tag := range info["tag"].([]interface{}) { //获取每个ad内的tagid
+			tagm := tag.(map[string]interface{})
+			if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
+				continue
+			}
+			cid := tagm["tagId"].(string)
+			cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
+			if cg.Level != 3 {
+				cid, err = cg.getLv3Id(this)
+				if err != nil {
 					continue
 				}
-				cid := tagm["tagId"].(string)
-				cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
-				if cg.Level != 3 {
-					cid, err = cg.getLv3Id(this)
-					if err != nil {
-						continue
-					}
-				}
-				this.tags_num[cid] = this.tags_num[cid] + 1
 			}
+			this.tags_num[cid] = this.tags_num[cid] + 1
 		}
 	}
+
+	// if len(tagsInfo) > 0 {
+	// 	this.tags_num = make(map[string]int)
+	// 	for _, v := range tagsInfo { //可能会有多条数据，即多个ad
+	// 		for _, tag := range v["tag"].([]interface{}) { //获取每个ad内的tagid
+	// 			tagm := tag.(map[string]interface{})
+	// 			if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
+	// 				continue
+	// 			}
+	// 			cid := tagm["tagId"].(string)
+	// 			cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
+	// 			if cg.Level != 3 {
+	// 				cid, err = cg.getLv3Id(this)
+	// 				if err != nil {
+	// 					continue
+	// 				}
+	// 			}
+	// 			this.tags_num[cid] = this.tags_num[cid] + 1
+	// 		}
+	// 	}
+	// }
 }
 
 //获取相应的三级标签id
