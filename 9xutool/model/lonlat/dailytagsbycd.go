@@ -3,6 +3,7 @@ package lonlat
 import (
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/orm"
+	"gopkg.in/mgo.v2"
 	"io/ioutil"
 	"runtime/debug"
 
@@ -10,15 +11,6 @@ import (
 	"github.com/qgweb/gopro/9xutool/common"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
-)
-
-type (
-	TagInfo struct { //数据模型
-		tagid string
-		lon   string
-		lat   string
-		num   int
-	}
 )
 
 func NewTagsCdCli() cli.Command {
@@ -54,6 +46,17 @@ func NewTagsCdCli() cli.Command {
 			mconf.UserPwd = uc.iniFile.Section("mongo-data_source").Key("pwd").String()
 			uc.debug, _ = uc.iniFile.Section("mongo-data_source").Key("debug").Int()
 			uc.mp = common.NewMgoPool(mconf)
+
+			// mgo 配置文件 经纬
+			mconf_jw := &common.MgoConfig{}
+			mconf_jw.DBName = uc.iniFile.Section("mongo-lonlat_data").Key("db").String()
+			mconf_jw.Host = uc.iniFile.Section("mongo-lonlat_data").Key("host").String()
+			mconf_jw.Port = uc.iniFile.Section("mongo-lonlat_data").Key("port").String()
+			mconf_jw.UserName = uc.iniFile.Section("mongo-lonlat_data").Key("user").String()
+			mconf_jw.UserPwd = uc.iniFile.Section("mongo-lonlat_data").Key("pwd").String()
+			uc.debug_jw, _ = uc.iniFile.Section("mongo-lonlat_data").Key("debug").Int()
+			uc.mp_jw = common.NewMgoPool(mconf_jw)
+
 			//mysql 配置文件
 			uc.mysql = orm.NewORM()
 
@@ -65,10 +68,15 @@ func NewTagsCdCli() cli.Command {
 
 func (this *UserCdTrace) Doit(c *cli.Context) {
 	var (
-		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
-		sess = this.mp.Get()
+		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess      = this.mp.Get()
+		timestamp = common.GetDayTimestamp(-1) //0为今日
 	)
-	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter()
+
+	this.tagsByJwd = make(map[string]*TagInfo)
+
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": timestamp}).Iter()
+	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": "1449417600"}).Limit(5).Iter()
 	i := 1
 	for {
 		var info map[string]interface{}
@@ -101,46 +109,54 @@ func (this *UserCdTrace) Doit(c *cli.Context) {
 }
 
 //根据ad获取标签
-func (this *UserCdTrace) getTagsJWDInfo(info map[string]interface{}) {
+func (this *UserCdTrace) getTagsJWDInfo(userInfo map[string]interface{}) {
 	var (
-		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
-		sess      = this.mp.Get()
-		timestamp = common.GetDayTimestamp(-1) //0为今日
-		ad        = info["AD"].(string)
-		err       error
+		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
+		sess = this.mp_jw.Get()
+		ad   = userInfo["AD"].(string)
+		err  error
 	)
 	defer sess.Close()
-	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": ad, "timestamp": timestamp}).Iter()
-	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": "YwdLb0cZUVlABmVXcAhgeg==", "day": "20151206"}).Iter()
 
-	this.tagsByJwd = make(map[string]*TagInfo)
-	for {
-		var tagsInfo map[string]interface{}
-		if !iter.Next(&tagsInfo) {
-			break
-		}
-		for _, tag := range tagsInfo["tag"].([]interface{}) { //获取每个ad内的tagid
+	var lonlatInfo map[string]interface{}
+	err = sess.DB(db).C(JWD_TABLE).Find(bson.M{"ad": ad}).One(&lonlatInfo)
+	if err != nil && err != mgo.ErrNotFound {
+		log.Info(err)
+		return
+	}
+
+	if len(lonlatInfo) > 0 {
+		for _, tag := range userInfo["tag"].([]interface{}) { //获取每个ad内的tagid
 			tagm := tag.(map[string]interface{})
+
 			if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
 				continue
 			}
 			cid := tagm["tagId"].(string)
-			cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
-			if cg.Level != 3 {
+			if _, ok := this.taocat_list[cid]; !ok { //是否有这个标签，有时候标签格式会错误导致程序终止
+				log.Info(cid)
+				continue
+			}
+			cg := this.taocat_list[cid]
+			if cg.Level != 3 { //从总标签的map判断是否是3级标签
 				cid, err = cg.getLv3Id(this)
 				if err != nil {
 					continue
 				}
 			}
-			key := cid + info["Lon"].(string) + info["Lat"].(string)
+
+			lon := lonlatInfo["lon"].(string)
+			lat := lonlatInfo["lat"].(string)
+
+			key := cid + lon + lat
 			if t, ok := this.tagsByJwd[key]; ok {
 				t.num++
 				continue
 			}
 			tmp_info := &TagInfo{
 				tagid: cid,
-				lon:   info["Lon"].(string),
-				lat:   info["Lat"].(string),
+				lon:   lon,
+				lat:   lat,
 				num:   1,
 			}
 			this.tagsByJwd[key] = tmp_info

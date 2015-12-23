@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ngaut/log"
-	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/orm"
 	"io/ioutil"
 	"runtime/debug"
@@ -18,9 +17,11 @@ import (
 type (
 	UserCdTrace struct {
 		mp          *common.MgoPool
+		mp_jw       *common.MgoPool
 		mysql       *orm.QGORM
 		iniFile     *ini.File
 		debug       int
+		debug_jw    int
 		taocat_list map[string]*TaoCat //标签分类总表 map[cid]TaoCat
 		tags_num    map[string]int     //标签计数
 		tagsByJwd   map[string]*TagInfo
@@ -31,6 +32,13 @@ type (
 		Level int
 		Cid   string
 		Pid   string
+	}
+
+	TagInfo struct { //数据模型
+		tagid string
+		lon   string
+		lat   string
+		num   int
 	}
 )
 
@@ -74,9 +82,18 @@ func NewUserCdCli() cli.Command {
 			ur.debug, _ = ur.iniFile.Section("mongo-data_source").Key("debug").Int()
 			ur.mp = common.NewMgoPool(mconf)
 
+			// mgo 配置文件 经纬
+			mconf_jw := &common.MgoConfig{}
+			mconf_jw.DBName = ur.iniFile.Section("mongo-lonlat_data").Key("db").String()
+			mconf_jw.Host = ur.iniFile.Section("mongo-lonlat_data").Key("host").String()
+			mconf_jw.Port = ur.iniFile.Section("mongo-lonlat_data").Key("port").String()
+			mconf_jw.UserName = ur.iniFile.Section("mongo-lonlat_data").Key("user").String()
+			mconf_jw.UserPwd = ur.iniFile.Section("mongo-lonlat_data").Key("pwd").String()
+			ur.debug_jw, _ = ur.iniFile.Section("mongo-lonlat_data").Key("debug").Int()
+			ur.mp_jw = common.NewMgoPool(mconf_jw)
+
 			//mysql 配置文件
 			ur.mysql = orm.NewORM()
-
 			ur.initData()
 			ur.Do(c)
 		},
@@ -110,26 +127,24 @@ func (this *UserCdTrace) initData() {
 	log.Info("初始化taocat_list完毕")
 }
 
-//整体逻辑
-//从经纬度文件中提取出ad
-//for执行getTagsInfo方法，处理标签
-//最后把tags_num入库，入库的时候再做映射取标签中文名
 func (this *UserCdTrace) Do(c *cli.Context) {
 	var (
-		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
-		sess = this.mp.Get()
+		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess      = this.mp.Get()
+		timestamp = common.GetDayTimestamp(-1) //0为今日
 	)
-	iter := sess.DB(db).C(JWD_TABLE).Find(nil).Iter()
+	this.tags_num = make(map[string]int) //最终数据保存
+	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": "1449417600"}).Limit(5).Iter()
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": timestamp}).Iter()
 	i := 1
 	for {
-		var info map[string]interface{}
-		if !iter.Next(&info) {
+		var userInfo map[string]interface{}
+		if !iter.Next(&userInfo) {
 			break
 		}
-		ad := info["AD"].(string)
-		this.getTagsInfo(ad)
-		if this.debug == 1 {
-			log.Info("已处理", convert.ToString(i), "条记录")
+		this.getTagsInfo(userInfo)
+		if this.debug_jw == 1 {
+			log.Info("已处理", i, "条记录")
 		}
 		i++
 	}
@@ -172,37 +187,40 @@ func (this *UserCdTrace) getMysqlConnect() {
 }
 
 //根据ad获取标签
-func (this *UserCdTrace) getTagsInfo(ad string) {
+func (this *UserCdTrace) getTagsInfo(userInfo map[string]interface{}) {
 	var (
-		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
-		sess      = this.mp.Get()
-		timestamp = common.GetDayTimestamp(-1) //0为今日
-		err       error
+		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
+		sess = this.mp_jw.Get()
 	)
 	defer sess.Close()
 
-	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"AD": ad, "timestamp": timestamp}).Iter()
-
-	this.tags_num = make(map[string]int)
-	for {
-		var info map[string]interface{}
-		if !iter.Next(&info) {
-			break
+	if ad, ok := userInfo["AD"]; ok { //userInfo是useraction取出来的数据
+		has, err := sess.DB(db).C(JWD_TABLE).Find(bson.M{"ad": ad.(string)}).Count() //从经纬度判断是否有这个用户
+		if err != nil {
+			log.Info(err)
 		}
-		for _, tag := range info["tag"].([]interface{}) { //获取每个ad内的tagid
-			tagm := tag.(map[string]interface{})
-			if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
-				continue
-			}
-			cid := tagm["tagId"].(string)
-			cg := this.taocat_list[cid] //从总标签的map判断是否是3级标签
-			if cg.Level != 3 {
-				cid, err = cg.getLv3Id(this)
-				if err != nil {
+
+		if has > 0 {
+			for _, tag := range userInfo["tag"].([]interface{}) {
+				tagm := tag.(map[string]interface{})
+
+				if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
 					continue
 				}
+				cid := tagm["tagId"].(string)
+				if _, ok := this.taocat_list[cid]; !ok { //从总标签的map判断是否是3级标签
+					log.Info(cid)
+					continue
+				}
+				cg := this.taocat_list[cid]
+				if cg.Level != 3 {
+					cid, err = cg.getLv3Id(this)
+					if err != nil {
+						continue
+					}
+				}
+				this.tags_num[cid] = this.tags_num[cid] + 1
 			}
-			this.tags_num[cid] = this.tags_num[cid] + 1
 		}
 	}
 }

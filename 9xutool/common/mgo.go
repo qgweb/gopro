@@ -54,6 +54,10 @@ func (this *MgoPool) Get() *mgo.Session {
 		}
 	}
 	//高并发下会关闭连接,ping下会恢复
-	this.db.Ping()
+	err := this.db.Ping()
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
 	return this.db.Clone()
 }

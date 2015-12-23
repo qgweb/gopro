@@ -99,9 +99,9 @@ func (this *LonLat) Do(c *cli.Context) {
 		var info []interface{}
 		for _, v := range tmp_data {
 			info = append(info, bson.M{
-				"AD":  v.AD,
-				"Lon": v.Lon,
-				"Lat": v.Lat,
+				"ad":  v.AD,
+				"lon": v.Lon,
+				"lat": v.Lat,
 			})
 		}
 
