@@ -2,21 +2,22 @@ package lonlat
 
 import (
 	"github.com/ngaut/log"
+	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/orm"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"runtime/debug"
 
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/common"
 	"gopkg.in/ini.v1"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func NewTagsCdCli() cli.Command {
 	return cli.Command{
 		Name:  "daily_tags_by_cd",
-		Usage: "根据经纬度和ad汇总标签分布和标签经纬度统计",
+		Usage: "经纬度和ua获取标签人数,操作tags_report_jw",
 		Action: func(c *cli.Context) {
 			defer func() {
 				if msg := recover(); msg != nil {
@@ -68,15 +69,16 @@ func NewTagsCdCli() cli.Command {
 
 func (this *UserCdTrace) Doit(c *cli.Context) {
 	var (
-		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
-		sess      = this.mp.Get()
-		timestamp = common.GetDayTimestamp(-1) //0为今日
+		db    = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess  = this.mp.Get()
+		begin = common.GetDayTimestamp(-1)
+		end   = common.GetDayTimestamp(0)
 	)
 
 	this.tagsByJwd = make(map[string]*TagInfo)
+	this.uniqueUser = make(map[string]int)
 
-	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": timestamp}).Iter()
-	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": "1449417600"}).Limit(5).Iter()
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": bson.M{"$gt": begin, "$lte": end}}).Iter()
 	i := 1
 	for {
 		var info map[string]interface{}
@@ -90,7 +92,9 @@ func (this *UserCdTrace) Doit(c *cli.Context) {
 		i++
 	}
 
+	log.Info("数据处理完毕,共有", len(this.tagsByJwd), "条数据")
 	if len(this.tagsByJwd) > 0 {
+		log.Info("开始插入数据库...")
 		this.getMysqlConnect() //连接mysql
 
 		DayTimestamp := common.GetDayTimestamp(-1)
@@ -114,12 +118,17 @@ func (this *UserCdTrace) getTagsJWDInfo(userInfo map[string]interface{}) {
 		db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
 		sess = this.mp_jw.Get()
 		ad   = userInfo["AD"].(string)
+		ua   = userInfo["UA"].(string)
+		md5  encrypt.Md5
 		err  error
 	)
 	defer sess.Close()
 
 	var lonlatInfo map[string]interface{}
 	err = sess.DB(db).C(JWD_TABLE).Find(bson.M{"ad": ad}).One(&lonlatInfo)
+	if err == mgo.ErrNotFound {
+		log.Info("查询不到此ad:", ad)
+	}
 	if err != nil && err != mgo.ErrNotFound {
 		log.Info(err)
 		return
@@ -133,22 +142,26 @@ func (this *UserCdTrace) getTagsJWDInfo(userInfo map[string]interface{}) {
 				continue
 			}
 			cid := tagm["tagId"].(string)
-			if _, ok := this.taocat_list[cid]; !ok { //是否有这个标签，有时候标签格式会错误导致程序终止
-				log.Info(cid)
+			m5 := md5.Encode(ad + ua + cid)
+			if _, ok := this.uniqueUser[m5]; ok {
 				continue
 			}
-			cg := this.taocat_list[cid]
-			if cg.Level != 3 { //从总标签的map判断是否是3级标签
-				cid, err = cg.getLv3Id(this)
-				if err != nil {
-					continue
+			this.uniqueUser[m5] = 1                        //标记
+			if cStruct, ok := this.taocat_list[cid]; !ok { //是否有这个标签，有时候标签格式会错误导致程序终止
+				continue
+			} else {
+				if cStruct.Level != 3 { //从总标签的map判断是否是3级标签
+					cid, err = cStruct.getLv3Id(this)
+					if err != nil {
+						continue
+					}
 				}
 			}
 
 			lon := lonlatInfo["lon"].(string)
 			lat := lonlatInfo["lat"].(string)
 
-			key := cid + lon + lat
+			key := md5.Encode(cid + lon + lat)
 			if t, ok := this.tagsByJwd[key]; ok {
 				t.num++
 				continue

@@ -25,6 +25,7 @@ type (
 		taocat_list map[string]*TaoCat //标签分类总表 map[cid]TaoCat
 		tags_num    map[string]int     //标签计数
 		tagsByJwd   map[string]*TagInfo
+		uniqueUser  map[string]int //用户去重 md5(ad+ua+cid)
 	}
 
 	TaoCat struct { //数据模型
@@ -129,13 +130,14 @@ func (this *UserCdTrace) initData() {
 
 func (this *UserCdTrace) Do(c *cli.Context) {
 	var (
-		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
-		sess      = this.mp.Get()
-		timestamp = common.GetDayTimestamp(-1) //0为今日
+		db    = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess  = this.mp.Get()
+		begin = common.GetDayTimestamp(-1)
+		end   = common.GetDayTimestamp(0)
 	)
 	this.tags_num = make(map[string]int) //最终数据保存
 	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": "1449417600"}).Limit(5).Iter()
-	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": timestamp}).Iter()
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": bson.M{"$gt": begin, "$lte": end}}).Iter()
 	i := 1
 	for {
 		var userInfo map[string]interface{}

@@ -3,6 +3,7 @@ package lonlat
 import (
 	"fmt"
 	"github.com/ngaut/log"
+	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/grab"
 	"github.com/qgweb/gopro/lib/orm"
 	"io/ioutil"
@@ -19,7 +20,7 @@ import (
 func NewTagsNumberCli() cli.Command {
 	return cli.Command{
 		Name:  "daily_tags",
-		Usage: "汇总昨日标签数据，取前五十个数量最大的标签",
+		Usage: "汇总昨日标签人数,操作tags_daily_report",
 		Action: func(c *cli.Context) {
 			defer func() {
 				if msg := recover(); msg != nil {
@@ -59,26 +60,38 @@ func NewTagsNumberCli() cli.Command {
 
 func (this *UserCdTrace) DataHandle(c *cli.Context) {
 	var (
-		db        = this.iniFile.Section("mongo-data_source").Key("db").String()
-		sess      = this.mp.Get()
-		timestamp = common.GetDayTimestamp(-1)
-		err       error
+		db    = this.iniFile.Section("mongo-data_source").Key("db").String()
+		sess  = this.mp.Get()
+		begin = common.GetDayTimestamp(-1)
+		end   = common.GetDayTimestamp(0)
+		err   error
+		md5   encrypt.Md5
 	)
 	this.tags_num = make(map[string]int)
-	// iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"day": "20151207"}).Iter() //昨天的数据
-	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": timestamp}).Iter() //昨天的数据
+	this.uniqueUser = make(map[string]int)
+
+	iter := sess.DB(db).C(USERACTION_TABLE).Find(bson.M{"timestamp": bson.M{"$gt": begin, "$lte": end}}).Iter() //昨天的数据
 	i := 1
 	for {
 		var info map[string]interface{}
 		if !iter.Next(&info) {
 			break
 		}
+
+		ad := info["AD"].(string)
+		ua := info["UA"].(string)
+
 		for _, tag := range info["tag"].([]interface{}) { //获取每个ad内的tagid
 			tagm := tag.(map[string]interface{})
 			if tagm["tagmongo"].(string) == "1" { //如果是mongoid忽略
 				continue
 			}
 			cid := tagm["tagId"].(string)
+			m5 := md5.Encode(ad + ua + cid)
+			if _, ok := this.uniqueUser[m5]; ok {
+				continue
+			}
+			this.uniqueUser[m5] = 1
 			if cg, ok := this.taocat_list[cid]; ok {
 				if cg.Level != 3 { //从总标签的map判断是否是3级标签
 					cid, err = cg.getLv3Id(this)
@@ -100,9 +113,9 @@ func (this *UserCdTrace) DataHandle(c *cli.Context) {
 	fmt.Println("排序完毕，开始插入数据")
 	//入库
 	if len(s_tags_num) > 0 {
-		if len(s_tags_num) > 50 { //取前50
-			s_tags_num = s_tags_num[0:50]
-		}
+		// if len(s_tags_num) > 50 { //取前50
+		// 	s_tags_num = s_tags_num[0:50]
+		// }
 		this.getMysqlConnect() //连接mysql
 
 		DayTimestamp := common.GetDayTimestamp(-1)
