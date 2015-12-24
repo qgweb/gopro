@@ -76,7 +76,6 @@ func bootstrapNsq(px string) {
 	)
 
 	cfg := nsq.NewConfig()
-
 	cus, err := nsq.NewConsumer(topic+px, topic, cfg)
 	if err != nil {
 		log.Fatal("连接nsq失败")
@@ -97,7 +96,7 @@ func grabPage(uidsAry []string) *MapGoods {
 		ginfoAry  = NewMapGoods(uidsLen)
 		wg        = sync.WaitGroup{}
 		uuidsAry  = uidsAry
-		pageSize  = 10
+		pageSize  = runtime.NumCPU() * 2
 		page      = 1
 		pageCount = int(math.Ceil(float64(uidsLen) / float64(pageSize)))
 	)

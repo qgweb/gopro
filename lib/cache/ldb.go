@@ -8,7 +8,6 @@ package cache
 
 import (
 	"github.com/syndtr/goleveldb/leveldb"
-	"github.com/syndtr/goleveldb/leveldb/filter"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 	"github.com/syndtr/goleveldb/leveldb/util"
@@ -23,8 +22,8 @@ type LevelDBCache struct {
 
 func NewLevelDbCache(path string) (*LevelDBCache, error) {
 	o := &opt.Options{
-		Filter:             filter.NewBloomFilter(10),
-		BlockCacheCapacity: 64,
+		BlockCacheCapacity: 600 * 1024 * 1024,
+		BlockSize:          4 * opt.MiB,
 		WriteBuffer:        512 * 1024 * 1024,
 	}
 	db, err := leveldb.OpenFile(path, o)

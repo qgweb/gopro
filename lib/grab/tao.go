@@ -20,10 +20,12 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/henrylee2cn/surfer/agent"
 	"github.com/ngaut/log"
+	"sync"
 )
 
 var (
 	client *http.Client
+	mux sync.Mutex
 )
 
 func init() {
@@ -101,7 +103,9 @@ func GrabTaoHTML(url string) string {
 	}
 	//	client.Lock()
 	//	defer client.Unlock()
+	mux.Lock()
 	resp, err := client.Do(req)
+	mux.Unlock()
 	if err != nil {
 		log.Error(err)
 		return ""

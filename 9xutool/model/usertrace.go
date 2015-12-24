@@ -5,24 +5,26 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
-	"github.com/qgweb/gopro/lib/cache"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/mongodb"
+	"github.com/qgweb/gopro/lib/rediscache"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"strings"
+	"sync"
 )
 
 type UserTrace struct {
 	mp      *mongodb.DialContext
 	mcp     *mongodb.DialContext
 	mtcp    *mongodb.DialContext
-	ldb     *cache.LevelDBCache
+	ldb     *rediscache.MemCache
 	rc      redis.Conn
 	iniFile *ini.File
 	prefix  string
+	mux     sync.Mutex
 }
 
 func NewUserTraceCli() cli.Command {
@@ -61,21 +63,30 @@ func NewUserTraceCli() cli.Command {
 				return
 			}
 			// leveldb cache
-			path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
-			log.Info(path)
-			if ur.ldb, err = cache.NewLevelDbCache(path); err != nil {
-				log.Fatal(err)
-				return
-			}
-			//
 			ur.prefix = bson.NewObjectId().Hex() + "_"
+			ur.initLevelDb()
 			ur.Do(c)
 			ur.mp.Close()
 			ur.mcp.Close()
 			ur.mtcp.Close()
+			ur.ldb.Clean(ur.prefix)
+			ur.ldb.Clean(ur.prefix)
 			ur.ldb.Close()
 		},
 	}
+}
+
+func (this *UserTrace) initLevelDb() {
+	var err error
+	config := rediscache.MemConfig{}
+	config.Host = this.iniFile.Section("redis_cache").Key("host").String()
+	config.Port = this.iniFile.Section("redis_cache").Key("port").String()
+
+	if this.ldb, err = rediscache.New(config); err != nil {
+		log.Fatal(err)
+		return
+	}
+	this.ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
 }
 
 func (this *UserTrace) GetMongoObj(section string) (*mongodb.DialContext, error) {
@@ -89,13 +100,15 @@ func (this *UserTrace) GetMongoObj(section string) (*mongodb.DialContext, error)
 }
 
 func (this *UserTrace) setInfo(key string, value string) {
+	this.mux.Lock()
 	key = this.prefix + key
 	this.ldb.HSet(key, value, "1")
-	this.ldb.HSet(this.prefix+"adua_keys", key, "1")
+	this.mux.Unlock()
 }
 
 // cookie白名单数据
 // 格莱美:55e5661525d0a2091a567a70
+// 7k7k : 55e5661525d0a2091a567a64
 func (this *UserTrace) WhiteCookie() {
 	var (
 		tag         = "55e5661525d0a2091a567a70"
@@ -125,13 +138,19 @@ func (this *UserTrace) WhiteCookie() {
 
 		ad := adua["cox"].(string)
 		ua := encrypt.DefaultBase64.Encode(adua["ua"].(string))
-
+		referer := info["referer"].(string)
 		if ad == "" {
 			return
 		}
+
+		if strings.Contains(referer, "7k7k.com") || strings.Contains(referer, "95k.com") {
+			tag = "55e5661525d0a2091a567a64"
+		}
+
 		this.setInfo(ad+"_"+ua, tag)
 	}
 	this.mtcp.Query(param)
+	this.ldb.Flush()
 }
 
 func (this *UserTrace) ReadData(query bson.M) {
@@ -158,6 +177,7 @@ func (this *UserTrace) ReadData(query bson.M) {
 		}
 	}
 	this.mp.Query(param)
+	this.ldb.Flush()
 }
 
 // 获取大分类
@@ -195,58 +215,54 @@ func (this *UserTrace) saveData() {
 
 	//初始化淘宝分类
 	taoCategory = this.getBigCat()
-	if keys, err := this.ldb.HGetAllKeys(this.prefix + "adua_keys"); err == nil {
-		list := make([]interface{}, 0, len(keys))
-		list_put := make([]interface{}, 0, len(keys))
-		for _, key := range keys {
-			tags, err := this.ldb.HGetAllKeys(key)
-			if err != nil {
-				log.Error(err)
-				continue
+	keys := this.ldb.Keys(this.prefix + "*")
+	list := make([]interface{}, 0, len(keys))
+	list_put := make([]interface{}, 0, len(keys))
+	for _, key := range keys {
+		tags := this.ldb.HGetAllKeys(key)
+		tagsmap := make([]bson.M, 0, len(tags))
+		tagsmap_put := make([]bson.M, 0, len(tags))
+		for _, tag := range tags {
+			taginfo := bson.M{"tagId": tag, "tagmongo": "0"}
+			taginfo_put := bson.M{"tagId": tag, "tagmongo": "0"}
+			if bson.IsObjectIdHex(tag) {
+				taginfo["tagmongo"] = "1"
+				taginfo_put["tagmongo"] = "1"
 			}
-			tagsmap := make([]bson.M, 0, len(tags))
-			tagsmap_put := make([]bson.M, 0, len(tags))
-			for _, tag := range tags {
-				taginfo := bson.M{"tagId": tag, "tagmongo": "0"}
-				taginfo_put := bson.M{"tagId": tag, "tagmongo": "0"}
-				if bson.IsObjectIdHex(tag) {
-					taginfo["tagmongo"] = "1"
-					taginfo_put["tagmongo"] = "1"
-				}
-				if bt, ok := taoCategory[tag]; ok {
-					taginfo_put["tagId"] = bt
-				}
-				tagsmap = append(tagsmap, taginfo)
-				tagsmap_put = append(tagsmap_put, taginfo_put)
+			if bt, ok := taoCategory[tag]; ok {
+				taginfo_put["tagId"] = bt
 			}
-
-			adua := strings.Split(strings.TrimPrefix(key, this.prefix), "_")
-			list = append(list, bson.M{
-				"AD":   adua[0],
-				"UA":   adua[1],
-				"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
-				"tag":  tagsmap,
-			})
-			list_put = append(list_put, bson.M{
-				"AD":   adua[0],
-				"UA":   adua[1],
-				"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
-				"tag":  tagsmap_put,
-			})
+			tagsmap = append(tagsmap, taginfo)
+			tagsmap_put = append(tagsmap_put, taginfo_put)
 		}
-		log.Debug("共计:", len(list), "条")
-		//加索引
-		sess.DB(db).C(table_put).DropCollection()
-		sess.DB(db).C(table_put_big).DropCollection()
-		sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
-		sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
-		sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
-		sess.DB(db).C(table_put).EnsureIndexKey("adua")
-		sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
-		sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
-		this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil}, list)
-		this.mp.Insert(mongodb.MulQueryParam{db, table_put_big, nil, 0, nil}, list_put)
+
+		adua := strings.Split(strings.TrimPrefix(key, this.prefix), "_")
+		list = append(list, bson.M{
+			"AD":   adua[0],
+			"UA":   adua[1],
+			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
+			"tag":  tagsmap,
+		})
+		list_put = append(list_put, bson.M{
+			"AD":   adua[0],
+			"UA":   adua[1],
+			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
+			"tag":  tagsmap_put,
+		})
 	}
+
+	log.Debug("共计:", len(list), "条")
+	//加索引
+	sess.DB(db).C(table_put).DropCollection()
+	sess.DB(db).C(table_put_big).DropCollection()
+	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put).EnsureIndexKey("adua")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
+	this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil, 1}, list)
+	this.mp.Insert(mongodb.MulQueryParam{db, table_put_big, nil, 0, nil, 1}, list_put)
 }
 
 func (this *UserTrace) Do(c *cli.Context) {
@@ -257,9 +273,8 @@ func (this *UserTrace) Do(c *cli.Context) {
 		bgdate = common.GetHourTimestamp(-73)
 	)
 	this.mp.Debug()
-	this.WhiteCookie()
 	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}})
 	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate}, "domainId": "0"})
-
+	this.WhiteCookie()
 	this.saveData()
 }

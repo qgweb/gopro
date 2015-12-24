@@ -22,11 +22,12 @@ type Session struct {
 }
 
 type MulQueryParam struct {
-	DbName  string
-	ColName string
-	Query   bson.M
-	Size    int                          // 取多少页
-	Fun     func(map[string]interface{}) // 回调函数
+	DbName   string
+	ColName  string
+	Query    bson.M
+	Size     int                          // 取多少页
+	Fun      func(map[string]interface{}) // 回调函数
+	ChanSize int                          //开多少协程
 }
 
 type MgoConfig struct {
@@ -89,6 +90,10 @@ func Dial(url string, sessionNum int) (*DialContext, error) {
 
 func GetCpuSessionNum() int {
 	return runtime.NumCPU() * 2
+}
+
+func GetObjectId() string {
+	return bson.NewObjectId().Hex()
 }
 
 // goroutine safe
@@ -170,7 +175,7 @@ func (c *DialContext) Query(param MulQueryParam) error {
 		pageSize = 0
 		sess     = c.Ref()
 		err      error
-		cpunum   = runtime.NumCPU()
+		cpunum   = param.ChanSize
 	)
 
 	defer func() {
@@ -179,14 +184,18 @@ func (c *DialContext) Query(param MulQueryParam) error {
 		}
 	}()
 
+	if cpunum == 0 {
+		cpunum = 1
+	}
+	c.Log(param.Query)
 	count, err = sess.DB(param.DbName).C(param.ColName).Find(param.Query).Count()
 	c.UnRef(sess)
-	c.Log(count)
 	if err != nil {
 		return err
 	}
 	if param.Size == 0 {
-		param.Size = int(math.Ceil(float64(count) / float64(cpunum) / 2))
+		param.Size = int(math.Ceil(float64(count) / float64(cpunum)))
+		c.Log(count, param.Size)
 	}
 	pageSize = int(math.Ceil(float64(count) / float64(param.Size)))
 	c.Log(pageSize)
@@ -195,6 +204,7 @@ func (c *DialContext) Query(param MulQueryParam) error {
 		go func(p int) {
 			sess := c.Ref()
 			defer c.UnRef(sess)
+			c.Log("begin")
 			iter := sess.DB(param.DbName).C(param.ColName).Find(param.Query).
 				Limit(param.Size).Skip((p - 1) * param.Size).Iter()
 			for {
@@ -205,7 +215,7 @@ func (c *DialContext) Query(param MulQueryParam) error {
 				param.Fun(info)
 			}
 			iter.Close()
-			c.Log(iter.Err())
+			c.Log("end")
 			wg.Done()
 		}(i)
 	}

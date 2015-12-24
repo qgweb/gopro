@@ -126,17 +126,17 @@ func (this *Event) HaveCardByPhone(conn *net.TCPConn, req *Request) {
 
 	if ht:=hmodel.GetMoneyLastCard(phone); ht.Id >0 {
 		r := &Respond{}
-		r.Code = "200"
+		r.Code = "199"
 		r.Msg = fmt.Sprintf("%s|%s",ht.CardNum,ht.CardPwd)
 
 		b, _ := MRespond(r)
-		conn.Write(b)
+		conn.Write(ProtocolPack(b))
 	} else {
 		r := &Respond{}
 		r.Code = "500"
 		r.Msg = "无绑定"
 		b, _ := MRespond(r)
-		conn.Write(b)
+		conn.Write(ProtocolPack(b))
 	}
 }
 

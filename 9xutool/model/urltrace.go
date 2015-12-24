@@ -4,21 +4,24 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
-	"github.com/qgweb/gopro/lib/cache"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/mongodb"
+	"github.com/qgweb/gopro/lib/rediscache"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"strings"
+	"sync"
 	"time"
 )
 
 type URLTrace struct {
-	mp      *mongodb.DialContext
-	ldb     *cache.LevelDBCache
-	iniFile *ini.File
+	mp        *mongodb.DialContext
+	ldb       *rediscache.MemCache
+	iniFile   *ini.File
+	keyprefix string
+	mux       sync.Mutex
 }
 
 func NewURLTraceCli() cli.Command {
@@ -56,18 +59,35 @@ func NewURLTraceCli() cli.Command {
 				return
 			}
 			ur.mp.Debug()
+			ur.keyprefix = mongodb.GetObjectId() + "_"
 			// leveldb cache
-			path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
-			log.Info(path)
-			if ur.ldb, err = cache.NewLevelDbCache(path); err != nil {
-				log.Fatal(err)
-				return
-			}
+			ur.initLevelDb()
 			ur.Do(c)
 			ur.mp.Close()
+			ur.ldb.Clean(ur.keyprefix)
+			ur.ldb.Clean(ur.keyprefix)
 			ur.ldb.Close()
 		},
 	}
+}
+
+func (this *URLTrace) initLevelDb() {
+	var err error
+	config := rediscache.MemConfig{}
+	config.Host = this.iniFile.Section("redis_cache").Key("host").String()
+	config.Port = this.iniFile.Section("redis_cache").Key("port").String()
+
+	if this.ldb, err = rediscache.New(config); err != nil {
+		log.Fatal(err)
+		return
+	}
+	this.ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
+}
+
+func (this *URLTrace) SetData(key string, value string) {
+	this.mux.Lock()
+	this.ldb.HSet(this.keyprefix+key, value, "1")
+	this.mux.Unlock()
 }
 
 func (this *URLTrace) ReadData() {
@@ -81,6 +101,7 @@ func (this *URLTrace) ReadData() {
 
 	query.DbName = db
 	query.ColName = table
+	query.ChanSize = 1
 	query.Query = bson.M{"timestamp": bson.M{"$lte": bgTime, "$gte": edTime}}
 	query.Fun = func(info map[string]interface{}) {
 		ad := info["ad"].(string)
@@ -89,15 +110,14 @@ func (this *URLTrace) ReadData() {
 		if u, ok := info["ua"]; ok {
 			ua = u.(string)
 		}
-		key := "adua_" + ad + "_" + ua
-
+		key := ad + "_" + ua
 		for _, v := range cids {
 			vm := v.(map[string]interface{})
-			this.ldb.HSet(key, vm["id"].(string), "1")
-			this.ldb.HSet("adua_keys", key, "1")
+			this.SetData(key, vm["id"].(string))
 		}
 	}
 	this.mp.Query(query)
+	this.ldb.Flush()
 }
 
 func (this *URLTrace) PutData() {
@@ -108,33 +128,32 @@ func (this *URLTrace) PutData() {
 	)
 	defer this.mp.UnRef(sess)
 
-	if keys, err := this.ldb.HGetAllKeys("adua_keys"); err == nil {
-		list := make([]interface{}, 0, len(keys))
-		for _, key := range keys {
-			cids, err := this.ldb.HGetAllKeys(key)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			cidsmap := make([]bson.M, 0, len(cids))
-			for _, cid := range cids {
-				cidsmap = append(cidsmap, bson.M{"id": cid})
-			}
-			adua := strings.Split(strings.TrimPrefix(key, "adua_"), "_")
-			list = append(list, bson.M{
-				"ad":   adua[0],
-				"ua":   adua[1],
-				"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
-				"cids": cidsmap,
-			})
+	keys := this.ldb.Keys(this.keyprefix + "*")
+	list := make([]interface{}, 0, len(keys))
+	log.Debug(len(keys))
+	for _, key := range keys {
+		cids := this.ldb.HGetAllKeys(key)
+		cidsmap := make([]bson.M, 0, len(cids))
+		for _, cid := range cids {
+			cidsmap = append(cidsmap, bson.M{"id": cid})
 		}
-		log.Debug("共计:", len(list),"条")
-		sess.DB(db).C(table_put).DropCollection()
-		sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
-		sess.DB(db).C(table_put).EnsureIndexKey("cids.id")
-		sess.DB(db).C(table_put).EnsureIndexKey("adua")
-		this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil}, list)
+		adua := strings.Split(strings.TrimPrefix(key, this.keyprefix), "_")
+		list = append(list, bson.M{
+			"ad":   adua[0],
+			"ua":   adua[1],
+			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
+			"cids": cidsmap,
+		})
+		if len(list)%10000 == 0 {
+			log.Error(len(list))
+		}
 	}
+	log.Debug("共计:", len(list), "条")
+	sess.DB(db).C(table_put).DropCollection()
+	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put).EnsureIndexKey("cids.id")
+	sess.DB(db).C(table_put).EnsureIndexKey("adua")
+	this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil, 1}, list)
 }
 
 func (this *URLTrace) Do(c *cli.Context) {

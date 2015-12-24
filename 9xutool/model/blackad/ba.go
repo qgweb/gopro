@@ -6,17 +6,18 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
-	"github.com/qgweb/gopro/lib/cache"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/mongodb"
-	"github.com/syndtr/goleveldb/leveldb/iterator"
+	"github.com/qgweb/gopro/lib/rediscache"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
+	"github.com/qgweb/gopro/lib/convert"
 )
 
 // 广告黑名单生成
@@ -30,7 +31,9 @@ type BlackMenu struct {
 	proprefix       string         // 浙江省对应的广告前缀
 	blackFilePath   string         // 黑名单存放目录
 	blackFileName   string         // 黑名单文件
-	ldb             *cache.LevelDBCache
+	ldb             *rediscache.MemCache
+	mux             sync.Mutex
+	keyprefix       string
 }
 
 // 获取monggo对象
@@ -103,23 +106,33 @@ func NewBlackMenuCli() cli.Command {
 			ur.blackFileName = ur.iniFile.Section("default").Key("black_file_put_name").String()
 			ur.blackFilePath = ur.iniFile.Section("default").Key("balck_file_path").String()
 			ur.ldb = ur.initLevelDb()
+			ur.keyprefix = mongodb.GetObjectId() + "_"
 			ur.Do(c)
+			ur.ldb.Clean(ur.keyprefix)
+			ur.ldb.Clean(ur.keyprefix)
 			ur.rc_put.Close()
 			ur.ldb.Close()
 		},
 	}
 }
 
-func (this *BlackMenu) initLevelDb() *cache.LevelDBCache {
-	path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
-	if ldb, err := cache.NewLevelDbCache(path); err == nil {
-		return ldb
+func (this *BlackMenu) initLevelDb() *rediscache.MemCache {
+	config := rediscache.MemConfig{}
+	config.Host = this.iniFile.Section("redis_cache").Key("host").String()
+	config.Port = this.iniFile.Section("redis_cache").Key("port").String()
+	ldb, err := rediscache.New(config)
+	if err != nil {
+		log.Fatal(err)
+		return nil
 	}
-	return nil
+	ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
+	return ldb
 }
 
 func (this *BlackMenu) setDataToDb(key string, value string) {
-	this.ldb.Set(key, value)
+	this.mux.Lock()
+	this.ldb.Set(this.keyprefix+key, value)
+	this.mux.Unlock()
 }
 
 //把黑名单保存到文件中
@@ -138,13 +151,11 @@ func (this *BlackMenu) getBalckMenuData() {
 		return
 	}
 	defer fn.Close()
-
-	this.ldb.Iter("", "", func(iter iterator.Iterator) {
-		key := iter.Key()
-		value := iter.Value()
-		f.WriteString(string(value) + "\n")
-		fn.WriteString(string(key) + "\n")
-	})
+	for _, key := range this.ldb.Keys("*") {
+		value := this.ldb.Get(key)
+		f.WriteString(value + "\n")
+		fn.WriteString(key + "\n")
+	}
 }
 
 func (this *BlackMenu) getProAdverts() map[string]int {
@@ -166,29 +177,32 @@ func (this *BlackMenu) getProAdverts() map[string]int {
 
 func (this *BlackMenu) setFilterAdvert() {
 	var (
-		db       = this.iniFile.Section("mongo").Key("db").String()
-		table    = "adreport"
-		fadverts = make([]string, 0, len(this.provinceAdverts))
-		param    = mongodb.MulQueryParam{}
-		num      = 5
+		db    = this.iniFile.Section("mongo").Key("db").String()
+		table = "adreport"
+		param = mongodb.MulQueryParam{}
+		num   = 5
 	)
 
-	for k, _ := range this.provinceAdverts {
-		fadverts = append(fadverts, k)
-	}
-
+	this.mp.Debug()
 	param.DbName = db
 	param.ColName = table
-	param.Query = bson.M{"pv": bson.M{"$gte": num},
-		"click": nil,
-		"aid":   bson.M{"$in": fadverts}}
+	param.Query = bson.M{}
+	param.ChanSize = 1
 	param.Fun = func(info map[string]interface{}) {
-		ua := encrypt.DefaultBase64.Encode(info["tua"].(string))
-		ad := info["ad"].(string)
-		aid := info["aid"].(string)
-		key := encrypt.DefaultMd5.Encode(ad + ua + aid)
-		this.setDataToDb(key, aid+"_"+ad+"_"+ua)
+		if convert.ToInt(info["pv"]) >= num {
+			if _, ok := this.provinceAdverts[info["aid"].(string)]; ok {
+				if _, ok := info["click"]; !ok {
+					ua := encrypt.DefaultBase64.Encode(info["tua"].(string))
+					ad := info["ad"].(string)
+					aid := info["aid"].(string)
+					key := encrypt.DefaultMd5.Encode(ad + ua + aid)
+					this.setDataToDb(key, aid+"_"+ad+"_"+ua)
+				}
+			}
+		}
 	}
+	this.mp.Query(param)
+	this.ldb.Flush()
 }
 
 func (this *BlackMenu) Do(c *cli.Context) {

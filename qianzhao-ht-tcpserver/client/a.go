@@ -84,10 +84,10 @@ func main() {
 	}
 
 	r := &Request{}
-	r.Action = "havebind"
+	r.Action = "stop"
 	//r.Content = "1|15158117079|56000005038843|zta3t7M0"
-	//r.Content = "0|15158117079"
-	r.Content ="151581170791"
+	r.Content = "0|15158117079"
+	//r.Content ="151581170791"
 	d, _ := MRequest(r)
 
 	buf := make([]byte, 2048)
@@ -104,11 +104,7 @@ func main() {
 		log.Println(string(buf[0:n]))
 		log.Println(len(buf[0:n]))
 
-		// r.Action = "stop"
-		// r.Content = "10327158471"
-		// d, _ := MRequest(r)
-		// conn.Write(ProtocolPack(d))
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 3)
 	}
 
 }

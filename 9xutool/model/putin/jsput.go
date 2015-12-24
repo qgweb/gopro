@@ -6,9 +6,9 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
-	"github.com/qgweb/gopro/lib/cache"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/mongodb"
+	"github.com/qgweb/gopro/lib/rediscache"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
 	"io"
@@ -26,7 +26,6 @@ type JSPut struct {
 	mp              *mongodb.DialContext
 	mp_tj           *mongodb.DialContext
 	rc_put          redis.Conn
-	prefix          string
 	proprefix       string                    // 浙江省对应的广告前缀
 	blackprefix     string                    //黑名单
 	tagMap0         map[string]map[string]int // cpc
@@ -37,8 +36,9 @@ type JSPut struct {
 	tjprefix        string                    //统计prefix
 	blackFileName   string                    //黑名单文件
 	blackMenus      map[string]int            // 黑名单
-	ldb             *cache.LevelDBCache       //ldb缓存类
+	ldb             *rediscache.MemCache      //ldb缓存类
 	mux             sync.Mutex
+	keyprefix       string
 }
 
 func NewJiangSuPutCli() cli.Command {
@@ -65,16 +65,18 @@ func NewJiangSuPutCli() cli.Command {
 			}
 			ur.mp.Debug()
 			ur.rc_put = getRedisObj("redis_put", ur.iniFile)
-			ur.prefix = bson.NewObjectId().Hex() + "_"
 			ur.proprefix = ur.iniFile.Section("default").Key("province_prefix").String()
 			ur.blackprefix = ur.iniFile.Section("default").Key("black_prefix").String()
 			ur.blackFileName = ur.iniFile.Section("default").Key("black_data_file").String()
 			ur.advertADS = make(map[string]map[string]int)
 			ur.tjprefix = "advert_tj_js_" + time.Now().Format("2006010215") + "_"
-			ur.ldb = ur.initLevelDb()
+			ur.keyprefix = mongodb.GetObjectId() + "_"
+			ur.initLevelDb()
 			ur.Do(c)
 			ur.mp.Close()
 			ur.mp_tj.Close()
+			ur.ldb.Clean(ur.keyprefix)
+			ur.ldb.Clean(ur.keyprefix)
 			ur.ldb.Close()
 			ur.rc_put.Close()
 		},
@@ -92,12 +94,17 @@ func (this *JSPut) getMongoObj(inifile *ini.File, section string) (*mongodb.Dial
 	return mongodb.Dial(mongodb.GetLinkUrl(mconf), mongodb.GetCpuSessionNum())
 }
 
-func (this *JSPut) initLevelDb() *cache.LevelDBCache {
-	path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
-	if ldb, err := cache.NewLevelDbCache(path); err == nil {
-		return ldb
+func (this *JSPut) initLevelDb() {
+	var err error
+	config := rediscache.MemConfig{}
+	config.Host = this.iniFile.Section("redis_cache").Key("host").String()
+	config.Port = this.iniFile.Section("redis_cache").Key("port").String()
+
+	if this.ldb, err = rediscache.New(config); err != nil {
+		log.Fatal(err)
+		return
 	}
-	return nil
+	this.ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
 }
 
 // 初始化黑名单
@@ -217,43 +224,45 @@ func (this *JSPut) PutAdvertToCache(ad string, ua string, advert string) {
 	if strings.ToLower(ua) != "ua" {
 		key = encrypt.DefaultMd5.Encode(ad + "_" + ua)
 	}
-	this.ldb.HSet("adua_"+key, hashkey, advert)
-	this.ldb.HSet("adua_keys", "adua_"+key, "1")
+	this.mux.Lock()
+	this.ldb.HSet(this.keyprefix+key, hashkey, advert)
+	this.mux.Unlock()
 }
 
 // 把广告信息写入投放系统
 func (this *JSPut) PutAdvertToRedis() {
 	this.rc_put.Do("SELECT", "1")
-	if keys, err := this.ldb.HGetAllKeys("adua_keys"); err == nil {
-		bt := time.Now()
-		var count = 0
-		var hour float64
-		for _, key := range keys {
-			hkey := strings.TrimPrefix(key, "adua_")
-			eflag := 0
-			bbt := time.Now()
-			if adverts, err := this.ldb.HGetAllValue(key); err == nil {
-				hour += time.Now().Sub(bbt).Seconds()
-				for _, advert := range adverts {
-					count++
-					this.rc_put.Send("HSET", hkey, "advert:"+advert, advert)
-					if eflag = eflag + 1; eflag == 1 {
-						this.rc_put.Send("EXPIRE", hkey, 3600)
-					}
-				}
+	keys := this.ldb.Keys(this.keyprefix + "*")
+	bt := time.Now()
+	var count = 0
+	var hour float64
+	for _, key := range keys {
+		hkey := strings.TrimPrefix(key, "adua_")
+		eflag := 0
+		bbt := time.Now()
+		adverts := this.ldb.HGetAllValue(key)
+		hour += time.Now().Sub(bbt).Seconds()
+		for _, advert := range adverts {
+			count++
+			this.rc_put.Send("HSET", hkey, "advert:"+advert, advert)
+			if eflag = eflag + 1; eflag == 1 {
+				this.rc_put.Send("EXPIRE", hkey, 3600)
 			}
 		}
-		log.Info(count, time.Now().Sub(bt).Seconds())
-		this.rc_put.Flush()
-		this.rc_put.Receive()
-		log.Info(count, hour)
+
 	}
+	log.Info(count, time.Now().Sub(bt).Seconds())
+	this.rc_put.Flush()
+	this.rc_put.Receive()
+	log.Info(count, hour)
 	this.rc_put.Do("SELECT", "0")
 }
 
 // 把AD放入缓存中
 func (this *JSPut) PutAdToCache(ad string) {
-	this.ldb.HSet("sad", ad, "1")
+	this.mux.Lock()
+	this.ldb.HSet(this.keyprefix+"sad", ad, "1")
+	this.mux.Unlock()
 }
 
 // 把ad放入对应的广告集合里去
@@ -270,7 +279,6 @@ func (this *JSPut) pushAdToAdvert(ad string, ua string, advertId string) {
 	}
 	key := ad + "_" + ua
 	this.advertADS[advertId][key] = 1
-
 }
 
 // 医疗金融电商数据处理
@@ -320,6 +328,7 @@ func (this *JSPut) Domain(query bson.M) {
 	param.DbName = db
 	param.ColName = table
 	param.Query = query
+	param.ChanSize = 1
 	param.Fun = func(data map[string]interface{}) {
 		if tags, ok := data["cids"].([]interface{}); ok {
 			ad := data["ad"].(string)
@@ -340,6 +349,7 @@ func (this *JSPut) Domain(query bson.M) {
 		}
 	}
 	this.mp.Query(param)
+	this.ldb.Flush()
 }
 
 // 报错统计的数据
@@ -382,15 +392,15 @@ func (this *JSPut) savePutData() {
 		return
 	}
 
-	if ads, err := this.ldb.HGetAllKeys("sad"); err == nil {
-		log.Info("总ad数", len(ads))
-		for _, ad := range ads {
-			//f.WriteString(ad + "\n")
-			f1.WriteString(ad + "\n")
-		}
-		f.Close()
-		f1.Close()
+	ads := this.ldb.HGetAllKeys(this.keyprefix + "sad")
+	log.Info(len(ads))
+	log.Info("总ad数", len(ads))
+	for _, ad := range ads {
+		//f.WriteString(ad + "\n")
+		f1.WriteString(ad + "\n")
 	}
+	f.Close()
+	f1.Close()
 
 	//提交ftp
 	cmd := exec.Command(ftp, "tag_"+rk+".txt")

@@ -15,7 +15,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
-	"github.com/qgweb/gopro/lib/cache"
+	"github.com/qgweb/gopro/lib/rediscache"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
 	"sync"
@@ -38,7 +38,7 @@ type ZJPut struct {
 	tjprefix        string                    //统计prefix
 	blackFileName   string                    //黑名单文件
 	blackMenus      map[string]int            // 黑名单
-	ldb             *cache.LevelDBCache       //ldb缓存类
+	ldb             *rediscache.MemCache      //ldb缓存类
 	mux             sync.Mutex
 }
 
@@ -110,8 +110,10 @@ func NewZheJiangPutCli() cli.Command {
 			ur.blackFileName = ur.iniFile.Section("default").Key("black_data_file").String()
 			ur.advertADS = make(map[string]map[string]int)
 			ur.tjprefix = "advert_tj_zj_" + time.Now().Format("2006010215") + "_"
-			ur.ldb = ur.initLevelDb()
+			ur.initLevelDb()
 			ur.Do(c)
+			ur.ldb.Clean(ur.prefix)
+			ur.ldb.Clean(ur.prefix)
 			ur.ldb.Close()
 			ur.rc_put.Close()
 			ur.rc_dx_put.Close()
@@ -119,12 +121,17 @@ func NewZheJiangPutCli() cli.Command {
 	}
 }
 
-func (this *ZJPut) initLevelDb() *cache.LevelDBCache {
-	path := common.GetBasePath() + "/" + bson.NewObjectId().Hex()
-	if ldb, err := cache.NewLevelDbCache(path); err == nil {
-		return ldb
+func (this *ZJPut) initLevelDb() {
+	var err error
+	config := rediscache.MemConfig{}
+	config.Host = this.iniFile.Section("redis_cache").Key("host").String()
+	config.Port = this.iniFile.Section("redis_cache").Key("port").String()
+
+	if this.ldb, err = rediscache.New(config); err != nil {
+		log.Fatal(err)
+		return
 	}
-	return nil
+	this.ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
 }
 
 // 初始化黑名单
@@ -243,56 +250,55 @@ func (this *ZJPut) PutAdvertToCache(ad string, ua string, advert string) {
 	if strings.ToLower(ua) != "ua" {
 		key = encrypt.DefaultMd5.Encode(ad + "_" + ua)
 	}
-	this.ldb.HSet("adua_"+key, hashkey, advert)
-	this.ldb.HSet("adua_keys", "adua_"+key, "1")
+	this.ldb.HSet(this.prefix+key, hashkey, advert)
 }
 
 // 把广告信息写入投放系统
 func (this *ZJPut) PutAdvertToRedis() {
 	this.rc_put.Do("SELECT", "1")
-	if keys, err := this.ldb.HGetAllKeys("adua_keys"); err == nil {
-		bt := time.Now()
-		var count = 0
-		var hour float64
-		log.Info(len(keys))
-		for _, key := range keys {
-			hkey := strings.TrimPrefix(key, "adua_")
-			eflag := 0
-			bbt := time.Now()
-			if adverts, err := this.ldb.HGetAllValue(key); err == nil {
-				hour += time.Now().Sub(bbt).Seconds()
-				for _, advert := range adverts {
-					count++
-					this.rc_put.Send("HSET", hkey, "advert:"+advert, advert)
-					if eflag = eflag + 1; eflag == 1 {
-						this.rc_put.Send("EXPIRE", hkey, 3600)
-					}
-				}
+	keys := this.ldb.Keys(this.prefix + "*")
+	bt := time.Now()
+	var count = 0
+	var hour float64
+	log.Info(len(keys))
+	for _, key := range keys {
+		hkey := strings.TrimPrefix(key, this.prefix)
+		eflag := 0
+		bbt := time.Now()
+		adverts := this.ldb.HGetAllValue(key)
+		hour += time.Now().Sub(bbt).Seconds()
+		for _, advert := range adverts {
+			count++
+			this.rc_put.Send("HSET", hkey, "advert:"+advert, advert)
+			if eflag = eflag + 1; eflag == 1 {
+				this.rc_put.Send("EXPIRE", hkey, 3600)
 			}
 		}
-		log.Info(count, time.Now().Sub(bt).Seconds())
-		this.rc_put.Flush()
-		this.rc_put.Receive()
-		log.Info(count, hour)
+
 	}
+	log.Info(count, time.Now().Sub(bt).Seconds())
+	this.rc_put.Flush()
+	this.rc_put.Receive()
+	log.Info(count, hour)
+
 }
 
 // 把AD放入缓存中
 func (this *ZJPut) PutAdToCache(ad string) {
-	this.ldb.HSet("sad", ad, "1")
+	this.ldb.HSet(this.prefix+"sad", ad, "1")
 }
 
 // 把ad数据放入电信系统
 func (this *ZJPut) PutAdsToDxSystem() {
-	if ads, err := this.ldb.HGetAllKeys("sad"); err == nil {
-		bt := time.Now()
-		for _, ad := range ads {
-			this.rc_dx_put.Send("SET", ad, "34")
-		}
-		this.rc_dx_put.Flush()
-		this.rc_dx_put.Receive()
-		log.Info(len(ads), time.Now().Sub(bt).Seconds())
+	ads := this.ldb.HGetAllKeys(this.prefix + "sad")
+	bt := time.Now()
+	for _, ad := range ads {
+		this.rc_dx_put.Send("SET", ad, "34")
 	}
+	this.rc_dx_put.Flush()
+	this.rc_dx_put.Receive()
+	log.Info(len(ads), time.Now().Sub(bt).Seconds())
+
 }
 
 // 把ad放入对应的广告集合里去
