@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 )
 
 var (
@@ -21,6 +22,10 @@ func init() {
 
 func main() {
 	db, err := mgo.Dial("192.168.0.93:10001/user_cookie")
+	db.SetSocketTimeout(time.Hour)
+	db.SetSyncTimeout(time.Hour)
+	db.SetCursorTimeout(0)
+
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -49,7 +54,10 @@ func main() {
 		}
 		cox := strings.TrimSpace(line)
 
-		n, _ := db.DB("user_cookie").C("dt_user").Find(bson.M{"pid": "31", "cox": cox}).Count()
+		n, err := db.DB("user_cookie").C("dt_user").Find(bson.M{"cox": cox}).Count()
+		if err !=nil {
+			log.Error(err)
+		}
 		if n > 0 {
 			coxTotalNum = coxTotalNum + int64(n)
 			coxNum = coxNum + 1

@@ -9,20 +9,51 @@ import (
 
 	//"github.com/ngaut/log"
 
+	"fmt"
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/common/function"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/model"
-	"fmt"
 )
 
 type Event struct{}
+
+// 连接管理
+func (this *Event) Link(conn *net.TCPConn, req *Request) {
+	var (
+		ip      = strings.Split(conn.RemoteAddr().String(), ":")[0]
+		content = req.Content
+		resp    = Respond{}
+		repAry  = strings.Split(content, "|")
+	)
+
+	if len(repAry) < 5 {
+		resp.Code = "500"
+		resp.Msg = "参数错误"
+		data, _ := MRespond(&resp)
+		conn.Write(ProtocolPack(data))
+		return
+	}
+
+	connManager.Add(repAry[0], conn)
+	user := &Account{}
+	user.Name = repAry[0]
+	user.BTime = time.Now().Unix()
+	user.RemoteAddr = ip
+	user.CTime = convert.ToInt64(repAry[4])
+	accountManager.Add(user)
+
+	resp.Code = "200"
+	resp.Msg = "ok"
+	data, _ := MRespond(&resp)
+	conn.Write(ProtocolPack(data))
+	return
+}
 
 // 开启加速
 func (this *Event) Start(conn *net.TCPConn, req *Request) {
 	var (
 		bd     = &BDInterfaceManager{}
 		reqAry = strings.Split(req.Content, "|")
-		ip     = strings.Split(conn.RemoteAddr().String(), ":")[0]
 		resp   Respond
 	)
 
@@ -51,16 +82,6 @@ func (this *Event) Start(conn *net.TCPConn, req *Request) {
 		conn.Write(ProtocolPack(data))
 		return
 	}
-
-	//获取id
-	repAry := strings.Split(resp.Msg, "|")
-	connManager.Add(repAry[0], conn)
-	user := &Account{}
-	user.Name = repAry[0]
-	user.BTime = time.Now().Unix()
-	user.RemoteAddr = ip
-	user.CTime = convert.ToInt64(repAry[4])
-	accountManager.Add(user)
 
 	// 返回数据
 	data, _ := MRespond(&resp)
@@ -120,14 +141,14 @@ func (this *Event) RepPing(conn *net.TCPConn) {
 
 func (this *Event) HaveCardByPhone(conn *net.TCPConn, req *Request) {
 	var (
-		phone = req.Content
+		phone  = req.Content
 		hmodel = model.HTCard{}
 	)
 
-	if ht:=hmodel.GetMoneyLastCard(phone); ht.Id >0 {
+	if ht := hmodel.GetMoneyLastCard(phone); ht.Id > 0 {
 		r := &Respond{}
 		r.Code = "199"
-		r.Msg = fmt.Sprintf("%s|%s",ht.CardNum,ht.CardPwd)
+		r.Msg = fmt.Sprintf("%s|%s", ht.CardNum, ht.CardPwd)
 
 		b, _ := MRespond(r)
 		conn.Write(ProtocolPack(b))
@@ -139,7 +160,6 @@ func (this *Event) HaveCardByPhone(conn *net.TCPConn, req *Request) {
 		conn.Write(ProtocolPack(b))
 	}
 }
-
 
 // 检测内部程序状态
 func (this *Event) Info(conn *net.TCPConn) {

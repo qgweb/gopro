@@ -237,7 +237,7 @@ func (this *JSPut) PutAdvertToRedis() {
 	var count = 0
 	var hour float64
 	for _, key := range keys {
-		hkey := strings.TrimPrefix(key, "adua_")
+		hkey := strings.TrimPrefix(key, this.keyprefix)
 		eflag := 0
 		bbt := time.Now()
 		adverts := this.ldb.HGetAllValue(key)
@@ -246,7 +246,7 @@ func (this *JSPut) PutAdvertToRedis() {
 			count++
 			this.rc_put.Send("HSET", hkey, "advert:"+advert, advert)
 			if eflag = eflag + 1; eflag == 1 {
-				this.rc_put.Send("EXPIRE", hkey, 3600)
+				this.rc_put.Send("EXPIRE", hkey, 5400)
 			}
 		}
 

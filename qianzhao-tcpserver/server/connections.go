@@ -83,6 +83,7 @@ func (this *AccountConnManager) Ping(fun func(name string)) {
 				b, _ := MRequest(r)
 				conn.Write(ProtocolPack(b))
 				buf := make([]byte, 100)
+				conn.SetReadDeadline(time.Now().Add(time.Second*5))
 				_, err := conn.Read(buf)
 				if err != nil {
 					// 客户端已挂掉

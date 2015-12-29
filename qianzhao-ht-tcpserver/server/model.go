@@ -60,7 +60,6 @@ func (this *BDInterfaceManager) GetQueryUrl() string {
 
 // 开启
 func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
-	log.Info(config.GetDefault().Key("debug").Int())
 	if cardType == 0 { //免费卡
 		ht, err := this.freeCard(card.Mobile)
 		r := Respond{}
@@ -73,7 +72,6 @@ func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
 			r.Msg = fmt.Sprintf("%d|%s|%s|%s|%d", ht.Id, ht.CardNum, ht.CardPwd, ht.CardToken, ht.TotalTime)
 			return r
 		}
-
 	}
 	if cardType == 1 { //购买卡
 		ht, err := this.moneyCard(card)

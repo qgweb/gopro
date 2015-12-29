@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"sync"
+	"github.com/gobuild/log"
 )
 
 type ConnectionManager struct {
@@ -83,7 +84,9 @@ func (this *AccountConnManager) Ping(fun func(name string)) {
 				b, _ := MRequest(r)
 				conn.Write(ProtocolPack(b))
 				buf := make([]byte, 100)
+				conn.SetReadDeadline(time.Now().Add(time.Second*5))
 				_, err := conn.Read(buf)
+				log.Info(k)
 				if err != nil {
 					// 客户端已挂掉
 					fun(k)

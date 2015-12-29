@@ -98,47 +98,6 @@ func (this NSQHandler) HandleMessage(message *nsq.Message) error {
 	return nil
 }
 
-// 队列操作
-func httpsqsQueue(px string) url.Values {
-	var (
-		qshost = iniFile.Section("httpsqs").Key("host").String()
-		qsport = iniFile.Section("httpsqs").Key("port").String()
-		qsauth = iniFile.Section("httpsqs").Key("auth").String()
-		key    = iniFile.Section("queuekey").Key("key").String()
-	)
-	key = key + px
-	hurl := fmt.Sprintf("http://%s:%s/?name=%s&opt=%s&auth=%s", qshost, qsport,
-		key, "get", qsauth)
-
-	r := httplib.Get(hurl)
-
-	transport := http.Transport{
-		DisableKeepAlives: true,
-	}
-	r.SetTransport(&transport)
-
-	res, err := r.String()
-
-	if err != nil {
-		log.Warn("读取http队列出错,错误信息为:", err)
-		return nil
-	}
-
-	if string(res) == "HTTPSQS_GET_END" || string(res) == "HTTPSQS_ERROR" {
-		return nil
-	}
-
-	res = encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Decode(res)
-
-	data, err := url.ParseQuery(res)
-	if err != nil {
-		log.Warn("解析数据失败")
-		return nil
-	}
-
-	return data
-}
-
 //添加商品
 func GrabGoodsInfo(gid string) (info map[string]interface{}) {
 LABEL:

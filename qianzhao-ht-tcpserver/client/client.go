@@ -87,8 +87,8 @@ func main() {
 	}
 
 	r := &Request{}
-	r.Action = "link"
-	r.Content = ""
+	r.Action = "stop"
+	r.Content = "32"
 	d, _ := MRequest(r)
 	conn.Write(ProtocolPack(d))
 	buf := make([]byte, 2048)

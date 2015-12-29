@@ -271,7 +271,7 @@ func (this *ZJPut) PutAdvertToRedis() {
 			count++
 			this.rc_put.Send("HSET", hkey, "advert:"+advert, advert)
 			if eflag = eflag + 1; eflag == 1 {
-				this.rc_put.Send("EXPIRE", hkey, 3600)
+				this.rc_put.Send("EXPIRE", hkey, 5400)
 			}
 		}
 

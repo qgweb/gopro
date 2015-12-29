@@ -56,3 +56,11 @@
 2015/12/18 16:56:57 model.go:145: [error] 该卡正在使用中 
 2015/12/18 16:56:57 model.go:147: [error] 该卡正在使用中 
 2015/12/23 14:38:40 model.go:63: [info] 1 <nil> 
+2015/12/28 13:37:20 model.go:63: [info] 1 <nil> 
+2015/12/28 13:38:21 model.go:63: [info] 1 <nil> 
+2015/12/28 13:38:21 model.go:367: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2015/12/28 13:38:39 model.go:63: [info] 1 <nil> 
+2015/12/28 13:40:35 model.go:63: [info] 1 <nil> 
+2015/12/28 13:40:35 model.go:367: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2015/12/28 13:42:42 model.go:365: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2015/12/28 13:44:12 model.go:98: [info] {0     0 0 0 0 } 

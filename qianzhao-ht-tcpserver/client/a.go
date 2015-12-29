@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net"
-	"time"
 
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/protocol"
 )
@@ -84,9 +83,10 @@ func main() {
 	}
 
 	r := &Request{}
-	r.Action = "stop"
+	r.Action = "link"
 	//r.Content = "1|15158117079|56000005038843|zta3t7M0"
 	r.Content = "0|15158117079"
+	r.Content = "21|56000005038843|zta3t7M0|1449817500610|7200"
 	//r.Content ="151581170791"
 	d, _ := MRequest(r)
 
@@ -103,8 +103,6 @@ func main() {
 
 		log.Println(string(buf[0:n]))
 		log.Println(len(buf[0:n]))
-
-		time.Sleep(time.Second * 3)
 	}
 
 }

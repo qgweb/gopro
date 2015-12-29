@@ -6,6 +6,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
+	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/lib/mongodb"
 	"github.com/qgweb/gopro/lib/rediscache"
@@ -17,7 +18,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"github.com/qgweb/gopro/lib/convert"
 )
 
 // 广告黑名单生成
@@ -154,7 +154,7 @@ func (this *BlackMenu) getBalckMenuData() {
 	for _, key := range this.ldb.Keys("*") {
 		value := this.ldb.Get(key)
 		f.WriteString(value + "\n")
-		fn.WriteString(key + "\n")
+		fn.WriteString(strings.TrimPrefix(key, this.keyprefix) + "\n")
 	}
 }
 

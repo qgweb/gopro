@@ -163,9 +163,11 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 		case "ping": //响应ping包
 			(&Event{}).RepPing(conn)
 			break
-		case "link": // 连接请求
+		case "plink": // 连接请求(前奏)
 			(&Event{}).Start(conn, &r)
 			break
+		case "link": // 连接
+			(&Event{}).Link(conn, &r)
 		case "stop": // 停止请求
 			(&Event{}).Stop(conn, &r)
 			break

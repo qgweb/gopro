@@ -126,7 +126,6 @@ func (this *AccountManager) TimeCheckAccountUTime(fun func(name string)) {
 		case <-t.C: // 检测时间
 			ntime := time.Now().Unix()
 			for k, v := range this.Range() {
-				this.log.Println(k)
 				// 定期把使用时间写入
 				u := this.Get(k)
 				u.ETime = ntime
