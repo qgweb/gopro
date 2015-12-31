@@ -64,3 +64,19 @@
 2015/12/28 13:40:35 model.go:367: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
 2015/12/28 13:42:42 model.go:365: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
 2015/12/28 13:44:12 model.go:98: [info] {0     0 0 0 0 } 
+2015/12/29 11:58:01 model.go:283: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
+			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
+			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>F4419DDB2D83C1D5636A33E58F844DFA</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2015/12/29 11:58:06 model.go:293: [info] {"Flag":"-4"} 
+2015/12/29 11:58:12 model.go:296: [info] map[Flag:-4] 
+2015/12/29 11:58:12 model.go:143: [error] 该卡正在使用中 
+2015/12/29 11:58:12 model.go:145: [error] 该卡正在使用中 

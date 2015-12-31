@@ -86,6 +86,7 @@ func (this *Event) Start(conn *net.TCPConn, req *Request) {
 	// 返回数据
 	data, _ := MRespond(&resp)
 	conn.Write(ProtocolPack(data))
+	conn.Close()
 }
 
 // 停止加速
@@ -159,6 +160,7 @@ func (this *Event) HaveCardByPhone(conn *net.TCPConn, req *Request) {
 		b, _ := MRespond(r)
 		conn.Write(ProtocolPack(b))
 	}
+	conn.Close()
 }
 
 // 检测内部程序状态

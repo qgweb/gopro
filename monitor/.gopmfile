@@ -1,8 +1,0 @@
-[deps]
-code.google.com/p/go.crypto = 
-gopkg.in/ini.v1 = 
-gopkg.in/mgo.v2 = 
-
-[res]
-include = 
-

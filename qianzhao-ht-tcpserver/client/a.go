@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/protocol"
+	"io"
 )
 
 const (
@@ -75,19 +76,25 @@ func ProtocolUnPack(data []byte) []byte {
 	return b[0]
 }
 
+
 func main() {
-	addr, _ := net.ResolveTCPAddr("tcp4", "127.0.0.1:9093")
+	addr, _ := net.ResolveTCPAddr("tcp4", "qianzhao.221su.com:9093")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
 		log.Fatalln("fuck")
 	}
 
 	r := &Request{}
-	r.Action = "link"
-	//r.Content = "1|15158117079|56000005038843|zta3t7M0"
-	r.Content = "0|15158117079"
-	r.Content = "21|56000005038843|zta3t7M0|1449817500610|7200"
-	//r.Content ="151581170791"
+	action := "havebind"
+	switch action {
+	case "plink" :
+		r.Action ="plink"
+		r.Content="1|15158117079|56000005038843|zta3t7M0"
+	case "havebind" :
+		r.Action= "havebind"
+		r.Content ="56000005038843|zta3t7M0"
+	}
+
 	d, _ := MRequest(r)
 
 	buf := make([]byte, 2048)
@@ -97,6 +104,9 @@ func main() {
 
 	for {
 		n, err := conn.Read(buf)
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			log.Println(err)
 		}

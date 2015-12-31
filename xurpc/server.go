@@ -54,7 +54,7 @@ func main() {
 	service := hprose.NewHttpService()
 
 	//服务注册入口
-	//service.AddFunction("hello", hello)
+	//service.AddFunction("hello", hello)dd
 	service.AddMethods(Taotag{})
 	service.AddMethods(TaoShop{})
 	service.AddMethods(TaoCatData{})

@@ -1,40 +1,41 @@
 package main
 
 import (
+	"gopkg.in/mgo.v2"
+	"github.com/ngaut/log"
+	"time"
+	"gopkg.in/mgo.v2/bson"
 	"fmt"
-	"log"
-
-	"github.com/wangbin/jiebago/analyse"
+	"github.com/qgweb/gopro/lib/convert"
 )
-
-var (
-	seg analyse.TagExtracter
-	err error
-)
-
-func init() {
-	fmt.Println(123123)
-	err = seg.LoadDictionary("/data/workgo/src/test/dict.txt")
-	fmt.Println(err)
-	if err != nil {
-		fmt.Println(err)
-		log.Fatal("打开字典文件错误")
-	}
-	err = seg.LoadIdf("./xurpc/dictionary/idf.txt")
-	if err != nil {
-		fmt.Println(err)
-		log.Fatal("打开逆向字典文件错误")
-	}
-	fmt.Println("xxxx")
-}
-
-func print(ch <-chan string) {
-	for word := range ch {
-		fmt.Printf(" %s /", word)
-	}
-	fmt.Println()
-}
 
 func main() {
-	return
+	//1451232000
+	//192.168.0.93:10003
+	sess, err := mgo.Dial("192.168.0.93:10003/user_cookie")
+	if err !=nil {
+		log.Fatal(err)
+		return
+	}
+	defer sess.Close()
+
+	sess.SetCursorTimeout(0)
+	sess.SetSocketTimeout(time.Hour)
+	sess.SetSyncTimeout(time.Hour)
+
+	var count = 0
+	iter:=sess.DB("user_cookie").C("dt_user").Find(bson.M{}).Select(bson.M{"_id":1,"date":1}).Iter()
+	for {
+		count++
+		if count % 10000 == 0{
+			fmt.Println("###################")
+		}
+		var info map[string]interface{}
+		if !iter.Next(&info) {
+			break
+		}
+		if convert.ToInt64(info["date"]) >= int64(1451232000) {
+			fmt.Println(info["_id"].(bson.ObjectId).Hex(),"|",info["date"])
+		}
+	}
 }

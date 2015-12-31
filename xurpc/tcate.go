@@ -67,6 +67,7 @@ func RedisPool() *redis.Pool {
 	}
 }
 
+
 //获取淘宝分类
 func GetTaoCat(cid string) (map[string]interface{}, error) {
 	modb := IniFile.Section("mongo-xu_precise").Key("db").String()
@@ -152,6 +153,12 @@ func AddGoodsInfo(gid string) (cid string) {
 // taobao tag
 type Taotag struct {
 }
+
+func (this Taotag) Hello() string {
+	panic("fuck")
+	return "hello word"
+}
+
 
 //获取标签
 func (this Taotag) GetTag(gid string, taokeUrl string) []byte {

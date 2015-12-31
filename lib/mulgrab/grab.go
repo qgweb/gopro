@@ -1,7 +1,6 @@
 package mulgrab
 
 import (
-	"bufio"
 	"crypto/tls"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/mulgrab/agent"
@@ -87,20 +86,7 @@ func (this *MulGrab) Get(url string, head http.Header) (string, error) {
 
 	if resp.Body != nil {
 		defer resp.Body.Close()
-		bt := time.Now()
-		var bs = make([]byte, 2024)
-		r := bufio.NewReaderSize(resp.Body, 2024)
-		for {
-			l, err := r.ReadSlice('\n')
-			if err == io.EOF {
-				break
-			}
-			bs = append(bs, l...)
-		}
-		ioutil.ReadAll()
-		log.Error(time.Now().Sub(bt).Seconds())
-		return "1", nil
-		//return this.changeCharsetEncodingAuto(resp.Body, resp.Header.Get("Content-Type"))
+		return this.changeCharsetEncodingAuto(resp.Body, resp.Header.Get("Content-Type"))
 	}
 	return "", nil
 }
@@ -112,7 +98,7 @@ func (this *MulGrab) GetHeader() (head http.Header) {
 	head.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	head.Set("Accept-Language", "zh-CN,zh;q=0.8")
 	head.Set("Cache-Control", "no-cache")
-	head.Set("Connection", "keep-alive")
+	//head.Set("Connection", "keep-alive:300")
 	head.Set("Host", "www.taobao.com")
 	head.Set("Pragma", "no-cache")
 	head.Set("User-Agent", agent.UserAgents["common"][r.Intn(l)])

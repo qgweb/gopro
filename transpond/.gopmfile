@@ -1,7 +1,0 @@
-[deps]
-github.com/Unknwon/goconfig = 
-github.com/garyburd/redigo = 
-
-[res]
-include = 
-
