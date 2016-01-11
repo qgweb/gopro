@@ -24,8 +24,17 @@ func GetDayTimestamp(day int) string {
 	return convert.ToString(a.Unix())
 }
 
+/**
+ * 获取任意一天整点时间戳
+ */
+func GetDayTimestampFormat(day int, format string) string {
+	d := time.Now().AddDate(0, 0, day).Format(format)
+	a, _ := time.ParseInLocation(format, d, time.Local)
+	return convert.ToString(a.Unix())
+}
+
 func GetHourTimestamp(hour int) string {
-	d := time.Now().Add(time.Hour * time.Duration(hour)) .Format("2006010215")
+	d := time.Now().Add(time.Hour * time.Duration(hour)).Format("2006010215")
 	a, _ := time.ParseInLocation("2006010215", d, time.Local)
 	return convert.ToString(a.Unix())
 }

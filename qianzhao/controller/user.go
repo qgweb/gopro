@@ -398,6 +398,7 @@ func (this *User) IsLogin(ctx *echo.Context) error {
 		return ctx.JSON(http.StatusOK, map[string]string{
 			"code":     global.CONTROLLER_CODE_SUCCESS,
 			"username": u.Name,
+			"phone":    u.Phone,
 		})
 	}
 }

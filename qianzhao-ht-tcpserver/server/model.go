@@ -123,6 +123,8 @@ func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err 
 			hmodel.UpdateCard(ht)
 			ht.TotalTime = 0
 			return ht, errors.New("用户免费体验时间已到")
+		} else {
+			ht.TotalTime = balance * 36
 		}
 		return ht, nil
 	}
@@ -136,7 +138,12 @@ func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err e
 	if ht := hmodel.GetMoneyLastCard(card.Mobile); ht.Id > 0 {
 		card.CardNO = ht.CardNum
 		card.CardPass = ht.CardPwd
+		log.Error(ht)
+	} else {
+		log.Error(ht)
 	}
+
+	log.Error(card)
 
 	//验证卡有效
 	tid, err := this.CheckCardCanUse(card)
@@ -148,7 +155,6 @@ func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err e
 
 	ht := hmodel.GetInfoByCard(card.Mobile, card.CardNO, 1)
 	balance := this.CardInfoQuery(card.CardNO)
-
 	if ht.Id == 0 && balance > 0 {
 		info := model.HTCard{}
 		info.CardNum = card.CardNO
@@ -159,18 +165,20 @@ func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err e
 		info.Phone = card.Mobile
 		info.Remark = ""
 		info.Status = 1
-		info.TotalTime = balance * 72
-		ht.Id = hmodel.AddReocrd(info)
+		info.TotalTime = balance * 36
+		info.Id = hmodel.AddReocrd(info)
 		return info, nil
 	} else {
 		if balance <= 0 {
 			ht.Status = 3
 			hmodel.UpdateCard(ht)
 			ht.TotalTime = 0
-			return ht, errors.New("用户免费体验时间已到")
+			return ht, errors.New("用户体验时间已到")
+		} else {
+			ht.TotalTime = balance * 36
 		}
 	}
-	return hcard, nil
+	return ht, nil
 }
 
 // 关闭
@@ -196,9 +204,10 @@ func (this *BDInterfaceManager) FreeCardApplyFor(phone string) (card Card) {
 	//测试
 	//{"Flag":"0","CardID":"56000005038843","CardPass":"zta3t7M0","Serviceid":"0001","Transactionid":"1449817500610"}
 	//{0 56000005039489 WhVgF3cR 0001 1449819617343}
+	///56000005040361|SRgZTmDu
 	card.Flag = "0"
-	card.CardID = "56000005038843"
-	card.CardPass = "zta3t7M0"
+	card.CardID = "56000005040361"
+	card.CardPass = "SRgZTmDu"
 	card.Serviceid = "0001"
 	card.Transactionid = "1449817500610"
 	return card
@@ -312,10 +321,13 @@ func (this *BDInterfaceManager) CheckCardCanUse(card MCard) (string, error) {
 		*/
 
 		switch flag["Flag"].(string) {
-		case "0":
-			return flag["Transactionid"].(string), nil
-		case "-4":
-			return "", errors.New("该卡正在使用中")
+		case "0", "-4":
+			if v, ok := flag["Transactionid"]; ok {
+				return v.(string), nil
+			}
+			return "", nil
+		// case "-4":
+		// 	return "", errors.New("该卡正在使用中")
 		case "-1":
 			return "", errors.New("不存在账号")
 		case "-2":
@@ -366,17 +378,26 @@ func (this *BDInterfaceManager) CardInfoQuery(cardNo string) int {
 		return 0
 	}
 
+	log.Info(body)
 	p, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 	if err != nil {
 		log.Error(err)
 		log.Error(body)
 		return 0
 	}
-	balance := p.Find("cardinfoxml").Find("balance").Text()
+
+	cp, err := goquery.NewDocumentFromReader(strings.NewReader(p.Find("cardinfoxml").Text()))
+	if err != nil {
+		log.Error(err)
+		return 0
+	}
+
+	balance := strings.TrimSpace(cp.Find("balance").Text())
 	if balance == "" {
 		return 0
 	}
+
 	// 200分->2小时
-	// 1分->72秒
+	// 1分->36秒
 	return convert.ToInt(balance)
 }

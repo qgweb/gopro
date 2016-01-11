@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"sync"
+	"time"
 )
 
 type UserTrace struct {
@@ -118,7 +119,7 @@ func (this *UserTrace) WhiteCookie() {
 	)
 	defer this.mtcp.UnRef(sess)
 	defer this.mcp.UnRef(sess_cookie)
-
+	log.Info("WhiteCookie begin")
 	param.DbName = "xu_tj"
 	param.ColName = "cookie"
 	param.Query = bson.M{}
@@ -128,11 +129,12 @@ func (this *UserTrace) WhiteCookie() {
 		if !bson.IsObjectIdHex(ck) {
 			return
 		}
-
+		bt := time.Now()
 		err := sess_cookie.DB("user_cookie").C("dt_user").Find(bson.M{"_id": bson.ObjectIdHex(ck)}).
 			Select(bson.M{"cox": 1, "ua": 1}).One(&adua)
+		log.Warn(time.Now().Sub(bt).Seconds())
 		if err != nil {
-			//log.Error(err)
+			log.Error(err)
 			return
 		}
 
@@ -151,6 +153,7 @@ func (this *UserTrace) WhiteCookie() {
 	}
 	this.mtcp.Query(param)
 	this.ldb.Flush()
+	log.Info("WhiteCookie ok")
 }
 
 func (this *UserTrace) ReadData(query bson.M) {
@@ -275,6 +278,6 @@ func (this *UserTrace) Do(c *cli.Context) {
 	this.mp.Debug()
 	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}})
 	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate}, "domainId": "0"})
-	this.WhiteCookie()
+	//this.WhiteCookie()
 	this.saveData()
 }

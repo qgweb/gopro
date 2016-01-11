@@ -42,7 +42,7 @@ func (this *User) UserNameExist(name string) bool {
 		log.Warn("[user UserNameExist]数据获取失败", err)
 		return false
 	}
-
+	log.Info(name)
 	if len(list) > 0 && list[0]["num"] == "1" {
 		return true
 	}

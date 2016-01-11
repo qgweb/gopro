@@ -70,8 +70,8 @@ func (c *MainController) CookieMatch() {
 		return
 	}
 
-	ad,err:= c.checkInUserCookies(mconn, uid)
-	if err !=nil {
+	ad, err := c.checkInUserCookies(mconn, uid)
+	if err != nil {
 		c.Error(err)
 		return
 	}
@@ -80,5 +80,14 @@ func (c *MainController) CookieMatch() {
 		c.pushAdToReids(rconn, ad)
 	}
 
+	c.Ctx.WriteString("ok")
+}
+
+func (c *MainController) Reffer() {
+	var (
+		tu  = c.GetString("tu", "")
+		ref = c.Ctx.Input.Header("Referer")
+	)
+	beego.Info(tu, "---------", ref)
 	c.Ctx.WriteString("ok")
 }

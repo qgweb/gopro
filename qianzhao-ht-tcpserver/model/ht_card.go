@@ -137,9 +137,9 @@ func (this *HTCard) GetMoneyLastCard(phone string) (ht HTCard) {
 func (this *HTCard) UpdateCard(info HTCard) bool {
 	myorm.BSQL().Update(HT_CARD_TABLE_NAME).Set("phone", "card_num",
 		"card_pwd", "card_token", "type", "total_time", "status", "date",
-		"remark")
+		"remark").Where("id=?")
 	n, err := myorm.Update(info.Phone, info.CardNum, info.CardPwd, info.CardToken,
-		info.CardType, info.TotalTime, info.Status, info.Date, info.Remark)
+		info.CardType, info.TotalTime, info.Status, info.Date, info.Remark, info.Id)
 	if err != nil {
 		log.Error(err)
 		return false

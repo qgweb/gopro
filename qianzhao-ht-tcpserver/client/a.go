@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"flag"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/protocol"
 	"io"
 )
@@ -76,8 +77,10 @@ func ProtocolUnPack(data []byte) []byte {
 	return b[0]
 }
 
-
 func main() {
+	var action = flag.String("action", "0", "操作:0 免费卡, 1 申请卡,2 验证是否有卡")
+	flag.Parse()
+	//qianzhao.221su.com
 	addr, _ := net.ResolveTCPAddr("tcp4", "qianzhao.221su.com:9093")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
@@ -85,14 +88,16 @@ func main() {
 	}
 
 	r := &Request{}
-	action := "havebind"
-	switch action {
-	case "plink" :
-		r.Action ="plink"
-		r.Content="1|15158117079|56000005038843|zta3t7M0"
-	case "havebind" :
-		r.Action= "havebind"
-		r.Content ="56000005038843|zta3t7M0"
+	switch *action {
+	case "0":
+		r.Action = "plink"
+		r.Content = "0|15158117079"
+	case "1":
+		r.Action = "plink" //56000005039489          WhVgF3cR //56000005040361          SRgZTmDu
+		r.Content = "1|15158117079|56000005040361|SRgZTmDu"
+	case "2":
+		r.Action = "havebind"
+		r.Content = "56000005038843|zta3t7M0"
 	}
 
 	d, _ := MRequest(r)

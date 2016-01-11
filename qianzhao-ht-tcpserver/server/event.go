@@ -13,6 +13,7 @@ import (
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/common/function"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/model"
+	"github.com/ngaut/log"
 )
 
 type Event struct{}
@@ -63,6 +64,7 @@ func (this *Event) Start(conn *net.TCPConn, req *Request) {
 		resp = bd.Start(mc, 0)
 	}
 
+	log.Error(reqAry)
 	if reqAry[0] == "1" { //申请卡
 		if len(reqAry) < 4 {
 			data, _ := MRespond(&Respond{Code: "500", Msg: "参数错误"})

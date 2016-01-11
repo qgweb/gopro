@@ -316,6 +316,7 @@ func (this *JSPut) Other(query bson.M) {
 	}
 
 	this.mp.Query(param)
+	this.ldb.Flush()
 }
 
 // 域名

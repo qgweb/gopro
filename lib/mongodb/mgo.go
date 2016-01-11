@@ -191,6 +191,7 @@ func (c *DialContext) Query(param MulQueryParam) error {
 	count, err = sess.DB(param.DbName).C(param.ColName).Find(param.Query).Count()
 	c.UnRef(sess)
 	if err != nil {
+		c.Log(err)
 		return err
 	}
 	if param.Size == 0 {

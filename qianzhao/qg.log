@@ -3726,3 +3726,32 @@
 2015/12/08 12:20:21 version.go:60: [error] 160160 
 2015/12/08 12:20:21 version.go:60: [error] 161760 
 2015/12/08 12:20:21 logger.go:38: [info] GET /version/update [32m200[0m 1.909542ms 86
+2016/01/11 09:54:53 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 98.561522ms 71
+2016/01/11 09:55:47 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.355227ms 71
+2016/01/11 09:55:56 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.361562ms 71
+2016/01/11 09:56:08 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.425822ms 71
+2016/01/11 09:58:24 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.373849ms 71
+2016/01/11 09:58:37 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.298245ms 71
+2016/01/11 09:59:01 user.go:45: [info] [map[num:58]] 
+2016/01/11 09:59:01 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 5.6105ms 71
+2016/01/11 09:59:31 user.go:45: [info]  
+2016/01/11 09:59:31 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 4.705536ms 71
+2016/01/11 10:00:14 user.go:45: [info]  
+2016/01/11 10:00:14 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 1.454893ms 71
+2016/01/11 10:00:41 user.go:45: [info] zb214 
+2016/01/11 10:00:41 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.456777ms 37
+2016/01/11 10:00:48 user.go:45: [info] zb214 
+2016/01/11 10:00:48 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 140.064986ms 113
+2016/01/11 10:22:01 user.go:45: [info] zb214 
+2016/01/11 10:22:01 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.44645ms 113
+2016/01/11 10:22:20 logger.go:38: [info] POST /Api/v0.1/user/is_login [33m404[0m 176.017µs 10
+2016/01/11 10:22:22 logger.go:38: [info] GET /Api/v0.1/user/is_login [32m200[0m 44.973µs 45
+2016/01/11 10:22:38 logger.go:38: [info] GET /Api/v0.1/user/is_login [32m200[0m 48.675µs 45
+2016/01/11 10:22:41 logger.go:38: [info] GET /Api/v0.1/user/is_login [32m200[0m 46.057µs 45
+2016/01/11 10:22:50 logger.go:38: [info] GET /Api/v0.1/user/login [33m404[0m 193.126µs 10
+2016/01/11 10:22:57 user.go:45: [info] zb214 
+2016/01/11 10:22:57 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.196634ms 113
+2016/01/11 10:23:08 logger.go:38: [info] GET /Api/v0.1/user/is_login [32m200[0m 143.487µs 45
+2016/01/11 10:24:06 user.go:45: [info] zb214 
+2016/01/11 10:24:06 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.913455ms 113
+2016/01/11 10:24:13 logger.go:38: [info] GET /Api/v0.1/user/is_login [32m200[0m 70.197µs 56

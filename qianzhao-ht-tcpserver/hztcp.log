@@ -80,3 +80,127 @@
 2015/12/29 11:58:12 model.go:296: [info] map[Flag:-4] 
 2015/12/29 11:58:12 model.go:143: [error] 该卡正在使用中 
 2015/12/29 11:58:12 model.go:145: [error] 该卡正在使用中 
+2016/01/05 10:47:02 model.go:365: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/05 10:47:53 model.go:98: [error] {21 15158117079 56000005038843 zta3t7M0 1449817500610 0 7200 1 1451923200 } 
+2016/01/05 10:47:53 model.go:366: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/05 10:50:09 model.go:98: [error] {21 15158117079 56000005038843 zta3t7M0 1449817500610 0 7200 1 1451923200 } 
+2016/01/05 10:50:09 model.go:366: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/05 10:51:04 model.go:98: [error] {0     0 0 0 0 } 
+2016/01/05 10:51:08 model.go:98: [error] {24 15158117079 56000005038843 zta3t7M0 1449817500610 0 7200 1 1451923200 } 
+2016/01/05 10:51:08 model.go:366: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/05 10:51:14 model.go:98: [error] {0     0 0 0 0 } 
+2016/01/05 10:51:20 model.go:98: [error] {25 15158117079 56000005038843 zta3t7M0 1449817500610 0 7200 1 1451923200 } 
+2016/01/05 10:51:20 model.go:366: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/05 10:51:29 model.go:98: [error] {0     0 0 0 0 } 
+2016/01/05 10:51:33 model.go:98: [error] {26 15158117079 56000005038843 zta3t7M0 1449817500610 0 7200 1 1451923200 } 
+2016/01/05 10:51:33 model.go:366: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/05 10:51:42 model.go:98: [error] {24 15158117079 56000005038843 zta3t7M0 1449817500610 0 7200 1 1451923200 } 
+2016/01/05 10:51:42 model.go:366: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/05 10:51:56 model.go:98: [error] {24 15158117079 56000005038843 zta3t7M0 1449817500610 0 7200 1 1451923200 } 
+2016/01/05 10:51:56 model.go:366: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/06 10:41:44 model.go:283: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
+			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
+			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>F4419DDB2D83C1D5636A33E58F844DFA</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2016/01/06 10:41:45 model.go:293: [info] {"Flag":"-4"} 
+2016/01/06 10:41:45 model.go:296: [info] map[Flag:-4] 
+2016/01/06 10:41:45 model.go:143: [error] 该卡正在使用中 
+2016/01/06 10:41:45 model.go:145: [error] 该卡正在使用中 
+2016/01/06 10:47:40 event.go:67: [error] [1 15158117079 56000005038843 zta3t7M0] 
+2016/01/06 10:47:40 model.go:141: [error] {0     0 0 0 0 } 
+2016/01/06 10:47:40 model.go:144: [error] {56000005038843 zta3t7M0 0001  15158117079} 
+2016/01/06 10:47:46 model.go:288: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>qR2QS0ILoWc0geyb/+J2Wg==</ser:in0>
+			<ser:in1>54cEDjBuOxYNm+yfrTpE/g==</ser:in1>
+			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>F4419DDB2D83C1D5636A33E58F844DFA</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2016/01/06 10:47:46 model.go:298: [info] {"Flag":"-4"} 
+2016/01/06 10:47:47 model.go:301: [info] map[Flag:-4] 
+2016/01/06 10:47:47 model.go:148: [error] 该卡正在使用中 
+2016/01/06 10:47:47 model.go:150: [error] 该卡正在使用中 
+2016/01/07 10:10:32 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:10:35 model.go:370: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/07 10:10:35 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:13:26 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:13:28 model.go:376: [info]  
+2016/01/07 10:13:28 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:13:57 model.go:376: [info]  
+2016/01/07 10:13:57 model.go:395: [info] 200 
+2016/01/07 10:13:57 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:13:58 model.go:376: [info]  
+2016/01/07 10:13:58 model.go:395: [info] 200 
+2016/01/07 10:13:58 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:15:14 model.go:376: [info]  
+2016/01/07 10:15:14 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:15:31 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:15:34 model.go:376: [info]  
+2016/01/07 10:15:34 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:15:37 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:15:45 model.go:376: [info]  
+2016/01/07 10:15:45 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:16:14 event.go:67: [error] [0 15158117079] 
+2016/01/07 10:16:16 model.go:370: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/07 10:16:16 event.go:67: [error] [0 15158117079] 
+2016/01/08 15:43:55 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:43:55 model.go:141: [error] {0     0 0 0 0 } 
+2016/01/08 15:43:55 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:43:55 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:44:59 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:44:59 model.go:141: [error] {0     0 0 0 0 } 
+2016/01/08 15:44:59 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:44:59 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:45:25 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:45:25 model.go:141: [error] {0     0 0 0 0 } 
+2016/01/08 15:45:25 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:45:25 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:46:34 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:46:34 model.go:139: [error] {33 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:46:34 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:46:34 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:46:56 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:46:56 model.go:139: [error] {33 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:46:56 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:46:56 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:46:58 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:46:58 model.go:139: [error] {33 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:46:58 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:46:58 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:46:59 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:46:59 model.go:139: [error] {33 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:46:59 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:46:59 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:48:20 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:48:20 model.go:141: [error] {0     0 0 0 0 } 
+2016/01/08 15:48:20 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:48:20 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:48:23 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:48:23 model.go:139: [error] {34 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:48:23 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:48:23 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:49:24 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:49:24 model.go:139: [error] {34 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:49:24 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:49:24 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:49:27 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:49:27 model.go:139: [error] {34 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:49:27 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:49:27 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/08 15:49:28 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/01/08 15:49:28 model.go:139: [error] {34 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
+2016/01/08 15:49:28 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/01/08 15:49:28 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 

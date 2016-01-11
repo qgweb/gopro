@@ -15,6 +15,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
+	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/rediscache"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2/bson"
@@ -40,6 +41,17 @@ type ZJPut struct {
 	blackMenus      map[string]int            // 黑名单
 	ldb             *rediscache.MemCache      //ldb缓存类
 	mux             sync.Mutex
+}
+
+type ShopAdvert struct {
+	AdvertId string
+	Date     int
+}
+
+// 店铺广告信息
+type ShopInfo struct {
+	ShopId      string
+	ShopAdverts []ShopAdvert
 }
 
 // 获取monggo对象
@@ -352,6 +364,7 @@ func (this *ZJPut) Other() {
 			}
 		}
 	}
+	this.ldb.Flush()
 	this.rc_put.Do("SELECT", "0")
 	log.Info(num)
 }
@@ -395,6 +408,7 @@ func (this *ZJPut) Domain() {
 			}
 		}
 	}
+	this.ldb.Flush()
 	this.rc_put.Do("SELECT", "0")
 	log.Info(num)
 }
@@ -445,6 +459,72 @@ func (this *ZJPut) GetClickWhiteMenu() {
 	iter.Close()
 }
 
+// 获取投放店铺信息
+func (this *ZJPut) GetPutShopInfo() (list []ShopInfo) {
+	var shopPrefix = "SHOP_*"
+	this.rc_put.Do("SELECT", "0")
+	if infos, err := redis.Strings(this.rc_put.Do("KEYS", shopPrefix)); err == nil {
+		list = make([]ShopInfo, 0, len(infos))
+		for _, key := range infos {
+			var sinfo ShopInfo
+			shopkeys := strings.Split(key, "_")
+			sk := ""
+			if len(shopkeys) < 3 {
+				continue
+			}
+			sk = shopkeys[2]
+			sinfo.ShopId = sk
+			if aids, err := redis.Strings(this.rc_put.Do("SMEMBERS", key)); err == nil {
+				sinfo.ShopAdverts = make([]ShopAdvert, 0, len(aids))
+				for _, aid := range aids {
+					aaids := strings.Split(aid, "_")
+					if len(aaids) == 2 {
+						sinfo.ShopAdverts = append(sinfo.ShopAdverts, ShopAdvert{
+							AdvertId: aaids[0],
+							Date:     convert.ToInt(aaids[1]),
+						})
+					}
+				}
+			}
+			list = append(list, sinfo)
+		}
+	}
+	return
+}
+
+// 获取店铺的轨迹
+func (this *ZJPut) GetShopAdUaInfo() {
+	var (
+		list      = this.GetPutShopInfo()
+		sess      = this.mp_tj.Get()
+		tableName = "zhejiang_ad_tags_shop"
+		dbName    = "xu_precise"
+	)
+
+	defer sess.Close()
+
+	for _, shopinfo := range list {
+		for _, adids := range shopinfo.ShopAdverts {
+			date := time.Now().AddDate(0, 0, adids.Date*-1).Format("2006-01-02")
+			iter := sess.DB(dbName).C(tableName).Find(bson.M{"date": bson.M{"$gte": date}, "shop.id": shopinfo.ShopId}).
+				Select(bson.M{"ad": 1, "ua": 1}).Iter()
+			for {
+				var info map[string]interface{}
+				if !iter.Next(&info) {
+					break
+				}
+				log.Info(info)
+				ad := info["ad"].(string)
+				ua := encrypt.DefaultBase64.Decode(info["ua"].(string))
+				this.PutAdToCache(ad)
+				this.PutAdvertToCache(ad, ua, adids.AdvertId)
+				this.pushAdToAdvert(ad, ua, adids.AdvertId)
+			}
+		}
+		this.ldb.Flush()
+	}
+}
+
 func (this *ZJPut) Do(c *cli.Context) {
 	this.initBlackMenu()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
@@ -455,6 +535,7 @@ func (this *ZJPut) Do(c *cli.Context) {
 	this.Other()
 	this.Domain()
 	this.GetClickWhiteMenu()
+	this.GetShopAdUaInfo()
 	this.PutAdvertToRedis()
 	this.flushDb()
 	this.PutAdsToDxSystem()
