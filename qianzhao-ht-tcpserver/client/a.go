@@ -81,7 +81,7 @@ func main() {
 	var action = flag.String("action", "0", "操作:0 免费卡, 1 申请卡,2 验证是否有卡")
 	flag.Parse()
 	//qianzhao.221su.com
-	addr, _ := net.ResolveTCPAddr("tcp4", "qianzhao.221su.com:9093")
+	addr, _ := net.ResolveTCPAddr("tcp4", "127.0.0.1:9093")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
 		log.Fatalln("fuck")
@@ -98,6 +98,9 @@ func main() {
 	case "2":
 		r.Action = "havebind"
 		r.Content = "56000005038843|zta3t7M0"
+	case "3":
+		r.Action = "link"
+		r.Content = "35|56000005040361|SRgZTmDu|1449817500610|7194"
 	}
 
 	d, _ := MRequest(r)

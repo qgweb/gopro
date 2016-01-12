@@ -204,3 +204,44 @@
 2016/01/08 15:49:28 model.go:139: [error] {34 15158117079 56000005040361 SRgZTmDu xxx 1 14400 1 1452182400 } 
 2016/01/08 15:49:28 model.go:144: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
 2016/01/08 15:49:28 model.go:371: [error] Post http://202.102.13.98:7001/services/LcimsForUserInfo: dial tcp 202.102.13.98:7001: getsockopt: connection refused 
+2016/01/12 19:33:10 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:33:22 model.go:122: [info] 7200 
+2016/01/12 19:33:22 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:33:24 model.go:122: [info] 7200 
+2016/01/12 19:33:24 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:34:41 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:34:41 ht_card_record.go:42: [info] 1452556800 35 
+2016/01/12 19:34:41 model.go:122: [info] 7200 
+2016/01/12 19:34:41 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:36:01 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:36:01 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:36:01 model.go:122: [info] 7200 
+2016/01/12 19:36:01 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:36:03 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:36:03 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:36:03 model.go:122: [info] 7200 
+2016/01/12 19:36:03 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:36:33 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:36:33 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:36:33 model.go:122: [info] 7194 
+2016/01/12 19:36:33 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:36:34 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:36:34 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:36:34 model.go:122: [info] 7194 
+2016/01/12 19:36:34 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:36:36 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:36:36 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:36:36 model.go:122: [info] 7194 
+2016/01/12 19:36:36 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:39:05 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:39:05 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:39:05 model.go:122: [info] 7182 
+2016/01/12 19:39:05 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:39:09 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:39:09 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:39:09 model.go:122: [info] 7182 
+2016/01/12 19:39:09 event.go:67: [error] [0 15158117079] 
+2016/01/12 19:40:53 ht_card_record.go:41: [info] SELECT sum(end_time - begin_time) as time FROM 221su_ht_card_record WHERE date=? and ht_id=? and end_time <> 0 
+2016/01/12 19:40:53 ht_card_record.go:42: [info] 1452528000 35 
+2016/01/12 19:40:53 model.go:122: [info] 7090 
+2016/01/12 19:40:53 event.go:67: [error] [0 15158117079] 

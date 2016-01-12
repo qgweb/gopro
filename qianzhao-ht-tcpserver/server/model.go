@@ -92,6 +92,7 @@ func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
 func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err error) {
 	var (
 		hmodel = model.HTCard{}
+		hrmodel = model.HtCardRecord{}
 		date   = function.GetDateUnix()
 	)
 	ht := hmodel.GetInfoByPhone(phone, date, 0, 1)
@@ -117,14 +118,15 @@ func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err 
 		info.Id = hmodel.AddReocrd(info)
 		return info, nil
 	} else {
-		balance := this.CardInfoQuery(ht.CardNum)
-		if balance <= 0 {
+		lesstime := hrmodel.GetAccountCanUserTime(ht.Id, model.HT_SPEED_UP_TIME)
+		log.Info(lesstime)
+		if lesstime <= 0 {
 			ht.Status = 3
 			hmodel.UpdateCard(ht)
 			ht.TotalTime = 0
 			return ht, errors.New("用户免费体验时间已到")
 		} else {
-			ht.TotalTime = balance * 36
+			ht.TotalTime =lesstime
 		}
 		return ht, nil
 	}
