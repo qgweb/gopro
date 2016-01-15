@@ -36,10 +36,9 @@ func (this *HtCardRecord) AddRecord(info HtCardRecord) bool {
 
 // 获取账号剩余时间
 func (this *HtCardRecord) GetAccountCanUserTime(HtId int, totalTime int) int {
-	date, _ := time.ParseInLocation("2006-01-02", time.Now().Format("2006-01-02"),time.Local)
-	log.Info(myorm.BSQL().Select("sum(end_time - begin_time) as time").From(HT_CARD_RECORD_TABLE_NAME).
-		Where("date=? and ht_id=? and end_time <> 0").GetSQL())
-	log.Info(date.Unix(),HtId);
+	date, _ := time.ParseInLocation("2006-01-02", time.Now().Format("2006-01-02"), time.Local)
+	myorm.BSQL().Select("sum(end_time - begin_time) as time").From(HT_CARD_RECORD_TABLE_NAME).
+		Where("date=? and ht_id=? and end_time <> 0")
 	list, err := myorm.Query(date.Unix(), HtId)
 	if err != nil {
 		log.Error("[model HtCardRecord GetAccountCanUserTime] 查询失败,", err)

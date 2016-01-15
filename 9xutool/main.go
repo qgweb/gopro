@@ -4,6 +4,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/model"
 	"github.com/qgweb/gopro/9xutool/model/blackad"
+	"github.com/qgweb/gopro/9xutool/model/visitor"
 	"github.com/qgweb/gopro/9xutool/model/lonlat"
 	"github.com/qgweb/gopro/9xutool/model/putin"
 	"os"
@@ -27,6 +28,7 @@ func main() {
 		putin.NewZheJiangPutCli(),
 		putin.NewJiangSuPutCli(),
 		blackad.NewBlackMenuCli(),
+		visitor.NewZhejiangVisitorCli(),
 	}
 
 	app.Run(os.Args)

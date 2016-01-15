@@ -520,9 +520,41 @@ func (this *ZJPut) GetShopAdUaInfo() {
 				this.PutAdvertToCache(ad, ua, adids.AdvertId)
 				this.pushAdToAdvert(ad, ua, adids.AdvertId)
 			}
+			iter.Close()
 		}
 		this.ldb.Flush()
 	}
+}
+
+func (this *ZJPut) GetVisitorInfos() {
+	var (
+		sess = this.mp.Get()
+		db = "data_source"
+		table = "zhejiang_visitor"
+	)
+
+	defer sess.Close()
+
+	iter :=sess.DB(db).C(table).Find(nil).Iter()
+	for {
+		var info map[string]interface{}
+		if !iter.Next(&info) {
+			break
+		}
+
+		ad := convert.ToString(info["ad"])
+		ua := convert.ToString(info["ua"])
+		aids := info["aids"]
+
+		this.PutAdToCache(ad)
+
+		for _,aid := range aids.([]interface{}) {
+			this.PutAdvertToCache(ad, ua, convert.ToString(aid))
+			this.pushAdToAdvert(ad, ua, convert.ToString(aid))
+		}
+	}
+	this.ldb.Flush()
+	iter.Close()
 }
 
 func (this *ZJPut) Do(c *cli.Context) {
@@ -536,6 +568,7 @@ func (this *ZJPut) Do(c *cli.Context) {
 	this.Domain()
 	this.GetClickWhiteMenu()
 	this.GetShopAdUaInfo()
+	this.GetVisitorInfos()
 	this.PutAdvertToRedis()
 	this.flushDb()
 	this.PutAdsToDxSystem()

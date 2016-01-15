@@ -10,10 +10,10 @@ import (
 	//"github.com/ngaut/log"
 
 	"fmt"
+	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/common/function"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/model"
-	"github.com/ngaut/log"
 )
 
 type Event struct{}
@@ -123,6 +123,7 @@ func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 
 // 内部调用停止
 func (this *Event) InnerStop(account string) {
+	log.Info(account)
 	conn := connManager.Get(account)
 	if conn != nil {
 		r := &Request{}
