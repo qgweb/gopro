@@ -12,12 +12,13 @@ import (
 	"github.com/qgweb/new/lib/rediscache"
 	"github.com/qgweb/new/lib/timestamp"
 	"runtime/debug"
+	"time"
 )
 
 type UrlTrace struct {
 	mdb       *mongodb.Mongodb
 	mdbWriter *mongodb.MongodbBufferWriter
-	conf      *config.Config
+	conf      config.ConfigContainer
 	robj      *rediscache.MemCache
 	hobj      hbase.HBaseClient
 	keyprefix string
@@ -46,7 +47,7 @@ func newUrltrace() (ut *UrlTrace, err error) {
 
 func NewURLTraceCli() cli.Command {
 	return cli.Command{
-		Name:  "url_trace_merge",
+		Name:  "url_trace_merge_hbase",
 		Usage: "生成域名1小时的数据,供九旭精准投放",
 		Action: func(c *cli.Context) {
 			defer func() {
@@ -80,13 +81,14 @@ func (this *UrlTrace) Clean() {
 	this.hobj.Close()
 }
 
-func (this *UrlTrace) Read(saveFun func(hbase.ResultRow)) {
+func (this *UrlTrace) Read(saveFun func(*hbase.ResultRow)) {
 	var (
-		tableName = "zhejiang_urltrace_201601"
+		tableName = "zhejiang_urltrack_" + time.Now().Format("200601")
 		beginTime = timestamp.GetHourTimestamp(-2) + "_"
 		endTime   = timestamp.GetHourTimestamp(0) + "_"
 	)
-	scn := hbase.NewScan([]byte(tableName), 10000, this.hobj)
+
+	scn := hbase.NewScan([]byte(tableName), 50000, this.hobj)
 	scn.StartRow = []byte(beginTime)
 	scn.StopRow = []byte(endTime)
 
@@ -107,8 +109,8 @@ func (this *UrlTrace) SaveOne(row *hbase.ResultRow) {
 	cids := make([]mongodb.MM, 0, len(row.Columns)-2)
 
 	for _, v := range row.Columns {
-		if v.Family == []byte("cids") {
-			cids = append(cids, mongodb.MM{"id", string(v.Value)})
+		if string(v.Family) == "cids" {
+			cids = append(cids, mongodb.MM{"id": string(v.Qual)})
 		}
 	}
 
@@ -124,7 +126,20 @@ func (this *UrlTrace) FlushWriter() {
 	this.mdbWriter.Flush()
 }
 
+func (this *UrlTrace) InitMongo() {
+	qconf := mongodb.MongodbQueryConf{}
+	qconf.Db = "data_source"
+	qconf.Table = "urltrack_put"
+	qconf.Index = []string{"cids.id"}
+	this.mdb.Drop(qconf)
+	this.mdb.Create(qconf)
+	this.mdb.EnsureIndex(qconf)
+	qconf.Index = []string{"adua"}
+	this.mdb.EnsureIndex(qconf)
+}
+
 func (this *UrlTrace) Do() {
+	this.InitMongo()
 	this.Read(this.SaveOne)
 	this.FlushWriter()
 }

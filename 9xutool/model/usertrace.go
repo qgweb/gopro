@@ -262,8 +262,10 @@ func (this *UserTrace) saveData() {
 	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
 	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
 	sess.DB(db).C(table_put).EnsureIndexKey("adua")
+	sess.DB(db).C(table_put).EnsureIndexKey("AD")
 	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
 	sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("AD")
 	this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil, 1}, list)
 	this.mp.Insert(mongodb.MulQueryParam{db, table_put_big, nil, 0, nil, 1}, list_put)
 }

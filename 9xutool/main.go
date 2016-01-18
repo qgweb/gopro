@@ -7,6 +7,7 @@ import (
 	"github.com/qgweb/gopro/9xutool/model/visitor"
 	"github.com/qgweb/gopro/9xutool/model/lonlat"
 	"github.com/qgweb/gopro/9xutool/model/putin"
+	"github.com/qgweb/gopro/9xutool/model/domain"
 	"os"
 )
 
@@ -29,6 +30,7 @@ func main() {
 		putin.NewJiangSuPutCli(),
 		blackad.NewBlackMenuCli(),
 		visitor.NewZhejiangVisitorCli(),
+		domain.NewURLTraceCli(),
 	}
 
 	app.Run(os.Args)
