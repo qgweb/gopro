@@ -4,10 +4,10 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/qgweb/gopro/9xutool/model"
 	"github.com/qgweb/gopro/9xutool/model/blackad"
-	"github.com/qgweb/gopro/9xutool/model/visitor"
+	"github.com/qgweb/gopro/9xutool/model/domain"
 	"github.com/qgweb/gopro/9xutool/model/lonlat"
 	"github.com/qgweb/gopro/9xutool/model/putin"
-	"github.com/qgweb/gopro/9xutool/model/domain"
+	"github.com/qgweb/gopro/9xutool/model/visitor"
 	"os"
 )
 
@@ -26,6 +26,7 @@ func main() {
 		lonlat.NewUserCdCli(),
 		lonlat.NewTagsCdCli(),
 		lonlat.NewLonLatCli(),
+		lonlat.NewCarHouseCli(),
 		putin.NewZheJiangPutCli(),
 		putin.NewJiangSuPutCli(),
 		blackad.NewBlackMenuCli(),
