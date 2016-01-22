@@ -18,7 +18,7 @@ type CarHouse struct {
 	iniFile *ini.File
 	mp      *common.MgoPool
 	mysql   *orm.QGORM
-	debug   int
+	debug   string
 }
 
 type CarHouseData struct {
@@ -66,6 +66,8 @@ func NewCarHouseCli() cli.Command {
 			ch.mp = common.NewMgoPool(mconf)
 			//mysql 配置文件
 			ch.mysql = orm.NewORM()
+			//debug
+			ch.debug = ch.iniFile.Section("mongo-industry").Key("debug").String()
 
 			ch.Do(c)
 		},
@@ -93,7 +95,9 @@ func (this *CarHouse) Do(c *cli.Context) {
 			break
 		}
 		//car house表里的ad去匹配经纬度表的用户
-		fmt.Println("正在匹配第", i, "条数据")
+		if this.debug == "1" {
+			fmt.Println("正在匹配第", i, "条数据")
+		}
 		i++
 		ad := result["ad"].(string)
 
@@ -130,8 +134,42 @@ func (this *CarHouse) Do(c *cli.Context) {
 		}
 		CarHouseData_Map[result["ad"].(string)] = r
 	}
-	log.Info("数据处理完毕，开始入库...")
+	fmt.Println("数据处理完毕，开始入库...")
 
+	if len(CarHouseData_Map) > 0 {
+		this.getMysqlConnect()
+		j := 1
+		for _, v := range CarHouseData_Map {
+			this.mysql.BSQL().Insert("car_house_report_jw").Values("lon", "lat", "tag_id", "num", "province", "city", "district", "time")
+			_, err := this.mysql.Insert(v.lon, v.lat, v.category, v.num, v.province, v.city, v.district, v.time)
+			if err != nil {
+				log.Warn("插入失败 ", err)
+			}
+
+			if this.debug == "1" {
+				fmt.Println("已插入mysql", j, "条")
+			}
+			j++
+		}
+	}
+}
+
+func (this *CarHouse) getMysqlConnect() {
+	var (
+		db      = this.iniFile.Section("mysql-jw").Key("db").String()
+		host    = this.iniFile.Section("mysql-jw").Key("host").String()
+		port    = this.iniFile.Section("mysql-jw").Key("port").String()
+		user    = this.iniFile.Section("mysql-jw").Key("user").String()
+		pwd     = this.iniFile.Section("mysql-jw").Key("pwd").String()
+		charset = "utf8"
+		err     = this.mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s",
+			user, pwd, host, port, db, charset))
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	this.mysql.SetMaxIdleConns(50)
+	this.mysql.SetMaxOpenConns(100)
 }
 
 func getIndustryCollectionName() string {
