@@ -39,6 +39,8 @@ type JSPut struct {
 	ldb             *rediscache.MemCache      //ldb缓存类
 	mux             sync.Mutex
 	keyprefix       string
+	coxarea         string // cox对应区域
+	areaMap         map[string]string
 }
 
 func NewJiangSuPutCli() cli.Command {
@@ -71,6 +73,7 @@ func NewJiangSuPutCli() cli.Command {
 			ur.advertADS = make(map[string]map[string]int)
 			ur.tjprefix = "advert_tj_js_" + time.Now().Format("2006010215") + "_"
 			ur.keyprefix = mongodb.GetObjectId() + "_"
+			ur.coxarea = ur.iniFile.Section("default").Key("cox_area").String()
 			ur.initLevelDb()
 			ur.Do(c)
 			ur.mp.Close()
@@ -125,6 +128,32 @@ func (this *JSPut) initBlackMenu() {
 		}
 
 		this.blackMenus[l] = 1
+	}
+}
+
+func (this *JSPut) initAreaMap() {
+	this.areaMap = make(map[string]string)
+	f, err := os.Open(this.coxarea)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer f.Close()
+
+	bi := bufio.NewReader(f)
+	for {
+		line, err := bi.ReadString('\n')
+		if err == io.EOF {
+			break
+		}
+
+		//0006f21d119b032d59acc3c2b90f10624eeaebe8,511
+		info := strings.Split(line, ",")
+		if len(info) != 2 {
+			continue
+		}
+
+		this.areaMap[info[0]] = info[1]
 	}
 }
 
@@ -373,21 +402,13 @@ func (this *JSPut) saveTjData() {
 
 // 保存投放ad到文件
 func (this *JSPut) savePutData() {
-	var path = this.iniFile.Section("default").Key("put_path").String()
-	var path2 = this.iniFile.Section("default").Key("put_path2").String()
+	var path = this.iniFile.Section("default").Key("put_path2").String()
 	var ftp = this.iniFile.Section("default").Key("ftp_bash").String()
 
-	rk := time.Now().Add(-time.Hour).Format("2006010215")
+	rk := time.Now().Add(-time.Hour).Format("200601021504")
 	fname := path + "/" + rk + ".txt"
-	fname2 := path2 + "/tag_" + rk + ".txt"
 
 	f, err := os.Create(fname)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	f1, err := os.Create(fname2)
 	if err != nil {
 		log.Error(err)
 		return
@@ -397,14 +418,15 @@ func (this *JSPut) savePutData() {
 	log.Info(len(ads))
 	log.Info("总ad数", len(ads))
 	for _, ad := range ads {
-		//f.WriteString(ad + "\n")
-		f1.WriteString(ad + "\n")
+		if v, ok := this.areaMap[ad]; ok {
+			f.WriteString(ad + "," + v + "\n")
+		}
+
 	}
 	f.Close()
-	f1.Close()
 
 	//提交ftp
-	cmd := exec.Command(ftp, "tag_"+rk+".txt")
+	cmd := exec.Command(ftp, rk+".txt")
 	str, err := cmd.Output()
 	log.Info(string(str), err)
 }
@@ -443,6 +465,7 @@ func (this *JSPut) Do(c *cli.Context) {
 	)
 
 	this.initBlackMenu()
+	this.initAreaMap()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
 	this.tagMap3 = this.getTagsAdverts("TAGS_3_*")
 	this.tagMap5 = this.getTagsAdverts("TAGS_5_*")
