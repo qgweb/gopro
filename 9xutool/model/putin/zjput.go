@@ -292,7 +292,6 @@ func (this *ZJPut) PutAdvertToRedis() {
 	}
 	log.Info(count, time.Now().Sub(bt).Seconds())
 	this.rc_put.Flush()
-	this.rc_put.Receive()
 	log.Info(count, hour)
 
 }
@@ -310,7 +309,6 @@ func (this *ZJPut) PutAdsToDxSystem() {
 		this.rc_dx_put.Send("SET", ad, "34")
 	}
 	this.rc_dx_put.Flush()
-	this.rc_dx_put.Receive()
 	log.Info(len(ads), time.Now().Sub(bt).Seconds())
 
 }

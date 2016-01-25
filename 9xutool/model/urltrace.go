@@ -102,7 +102,7 @@ func (this *URLTrace) ReadData() {
 	query.DbName = db
 	query.ColName = table
 	query.ChanSize = 1
-	query.Query = bson.M{"timestamp": bson.M{"$lte": bgTime, "$gte": edTime}}
+	query.Query = bson.M{"timestamp": bson.M{"$lte": bgTime, "$gt": edTime}}
 	query.Fun = func(info map[string]interface{}) {
 		ad := info["ad"].(string)
 		ua := "ua"

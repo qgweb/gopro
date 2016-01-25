@@ -153,8 +153,9 @@ func (this *JSPut) initAreaMap() {
 			continue
 		}
 
-		this.areaMap[info[0]] = info[1]
+		this.areaMap[info[0]] = strings.TrimSpace(info[1])
 	}
+	log.Info(len(this.areaMap))
 }
 
 // 判断key是否存在
@@ -253,6 +254,7 @@ func (this *JSPut) PutAdvertToCache(ad string, ua string, advert string) {
 	if strings.ToLower(ua) != "ua" {
 		key = encrypt.DefaultMd5.Encode(ad + "_" + ua)
 	}
+
 	this.mux.Lock()
 	this.ldb.HSet(this.keyprefix+key, hashkey, advert)
 	this.mux.Unlock()
@@ -282,7 +284,6 @@ func (this *JSPut) PutAdvertToRedis() {
 	}
 	log.Info(count, time.Now().Sub(bt).Seconds())
 	this.rc_put.Flush()
-	this.rc_put.Receive()
 	log.Info(count, hour)
 	this.rc_put.Do("SELECT", "0")
 }
@@ -331,7 +332,6 @@ func (this *JSPut) Other(query bson.M) {
 				tagId := vm["tagId"].(string)
 				piadverts := this.merageAdverts(tagId)
 				this.filterAdvert(ad+ua, piadverts)
-
 				if len(piadverts) > 0 {
 					this.PutAdToCache(ad)
 				}
@@ -400,15 +400,22 @@ func (this *JSPut) saveTjData() {
 	}
 }
 
-// 保存投放ad到文件
-func (this *JSPut) savePutData() {
-	var path = this.iniFile.Section("default").Key("put_path2").String()
+/**
+var path = this.iniFile.Section("default").Key("put_path").String()
+	var path2 = this.iniFile.Section("default").Key("put_path2").String()
 	var ftp = this.iniFile.Section("default").Key("ftp_bash").String()
 
-	rk := time.Now().Add(-time.Hour).Format("200601021504")
+	rk := time.Now().Add(-time.Hour).Format("2006010215")
 	fname := path + "/" + rk + ".txt"
+	fname2 := path2 + "/tag_" + rk + ".txt"
 
 	f, err := os.Create(fname)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	f1, err := os.Create(fname2)
 	if err != nil {
 		log.Error(err)
 		return
@@ -418,16 +425,61 @@ func (this *JSPut) savePutData() {
 	log.Info(len(ads))
 	log.Info("总ad数", len(ads))
 	for _, ad := range ads {
-		if v, ok := this.areaMap[ad]; ok {
-			f.WriteString(ad + "," + v + "\n")
-		}
-
+		//f.WriteString(ad + "\n")
+		f1.WriteString(ad + "\n")
 	}
 	f.Close()
+	f1.Close()
 
 	//提交ftp
-	cmd := exec.Command(ftp, rk+".txt")
+	cmd := exec.Command(ftp, "tag_"+rk+".txt")
 	str, err := cmd.Output()
+	log.Info(string(str), err)
+*/
+
+// 保存投放ad到文件
+func (this *JSPut) savePutData() {
+	var path1 = this.iniFile.Section("default").Key("put_path2").String()
+	var path2 = this.iniFile.Section("default").Key("put_path3").String()
+	var ftp1 = this.iniFile.Section("default").Key("ftp_bash1").String()
+	var ftp2 = this.iniFile.Section("default").Key("ftp_bash2").String()
+
+	rk1 := time.Now().Add(-time.Hour).Format("2006010215")
+	rk2 := "account.10046.sha1." + time.Now().Add(-time.Hour).Format("200601021504")
+
+	fname1 := path1 + "/tag_" + rk1 + ".txt"
+	fname2 := path2 + "/" + rk2 + ".txt"
+
+	f1, err := os.Create(fname1)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	f2, err := os.Create(fname2)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	ads := this.ldb.HGetAllKeys(this.keyprefix + "sad")
+	log.Info(len(ads))
+	log.Info("总ad数", len(ads))
+	for _, ad := range ads {
+		f1.WriteString(ad + "\n")
+		if v, ok := this.areaMap[ad]; ok {
+			f2.WriteString(ad + "," + v + "\n")
+		}
+	}
+	f1.Close()
+	f2.Close()
+
+	//提交ftp
+	cmd := exec.Command(ftp1, "tag_"+rk1+".txt")
+	str, err := cmd.Output()
+	log.Info(string(str), err)
+	log.Info(ftp2)
+	cmd = exec.Command(ftp2, rk2+".txt")
+	str, err = cmd.Output()
 	log.Info(string(str), err)
 }
 
@@ -463,7 +515,7 @@ func (this *JSPut) Do(c *cli.Context) {
 		eghour = common.GetHourTimestamp(-1)
 		bghour = common.GetHourTimestamp(-2)
 	)
-
+	log.Info(this.keyprefix)
 	this.initBlackMenu()
 	this.initAreaMap()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
@@ -473,7 +525,7 @@ func (this *JSPut) Do(c *cli.Context) {
 
 	this.Other(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
 	this.Domain(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}})
-	this.GetClickWhiteMenu()
+	//this.GetClickWhiteMenu()
 	this.PutAdvertToRedis()
 	this.saveTjData()
 	this.savePutData()
