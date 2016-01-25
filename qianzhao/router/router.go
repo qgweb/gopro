@@ -57,7 +57,7 @@ func Router(e *echo.Echo) {
 	e.Get("/version/update", (&controller.Index{}).Update)
 
 	//// 统计
-	e.Get("/download", (&controller.Statistics{}).Download)
+	e.Get("/app", (&controller.Statistics{}).Download)
 	e.Post("/stats/day", (&controller.Statistics{}).DayActivity)
 	e.Post("/stats/sidbar", (&controller.Statistics{}).SideBar)
 

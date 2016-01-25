@@ -127,8 +127,14 @@ func main() {
 			log.Println(err)
 		}
 
+
 		log.Println(string(buf[0:n]))
 		log.Println(len(buf[0:n]))
+
+		var res,_  =UnRespond(ProtocolUnPack(buf[0:n]))
+		if res.Action == "ping" {
+			conn.Write([]byte("ok"))
+		}
 	}
 
 }

@@ -32,12 +32,15 @@ func (this *Statistics) Download(ctx *echo.Context) error {
 
 	//解码
 	if q, err = this.decode(q); err != nil || q == "" {
+		fmt.Println(1,err,q)
 		return ctx.String(404, "")
 	}
 	if v, err = this.decode(v); err != nil || v == "" {
+		fmt.Println(2)
 		return ctx.String(404, "")
 	}
 	if t, err = this.decode(t); err != nil || t == "" {
+		fmt.Println(3)
 		return ctx.String(404, "")
 	}
 
@@ -52,7 +55,7 @@ func (this *Statistics) Download(ctx *echo.Context) error {
 		dlmodel.AddRecord(dlmodel)
 	}()
 
-	durl := fmt.Sprintf("%s/qzbrower_%s_%s.exe", config.GetDefault().Key("download").String(), v, t)
+	durl := fmt.Sprintf("%s/qzbrower_%s_%s.exe", config.GetDefault().Key("download").String(), t, v)
 	return ctx.Redirect(302, durl)
 }
 

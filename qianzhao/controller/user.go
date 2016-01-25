@@ -62,10 +62,12 @@ func (this *User) Login(ctx *echo.Context) error {
 		sess.Set(global.SESSION_USER_INFO, uinfo) //存入session
 
 		return ctx.JSON(http.StatusOK, map[string]string{
-			"code":   global.CONTROLLER_CODE_SUCCESS,
-			"msg":    global.CONTROLLER_USER_LOGIN_SUCCESS,
-			"avatar": avatar,
-			"sid":    sid,
+			"code":     global.CONTROLLER_CODE_SUCCESS,
+			"msg":      global.CONTROLLER_USER_LOGIN_SUCCESS,
+			"avatar":   avatar,
+			"sid":      sid,
+			"username": userName,
+			"phone":    uinfo.Phone,
 		})
 	} else {
 		return ctx.JSON(http.StatusOK, map[string]string{

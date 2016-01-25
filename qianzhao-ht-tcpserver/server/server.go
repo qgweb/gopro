@@ -148,7 +148,7 @@ func (s *Server) handleConn(conn *net.TCPConn) {
 			break
 		}
 
-		//s.logger.Println(buffer[0:n])
+		s.logger.Println(buffer[0:n])
 
 		r, err := UmRequest(ProtocolUnPack(buffer[0:n]))
 		if err != nil {

@@ -7,154 +7,163 @@
     <link rel="stylesheet" type="text/css" href="./css/layout.css">
 </head>
 <body>
-    <div id="header">
-        <ul>
-            <li>
-                <a href="#" title="" class="logo"></a>
-            </li>
-            <li>|</li>
-            <li>
-                <span>个人中心</span>
-            </li>
-            <li class="logout">
-               <!--  <a href="/Api/v0.1/user/logout" title="">退出</a> -->
-            </li>
-        </ul>
-    </div>
-    <div id="banner">
-        <div class="avatar_all">
-            <img src="{{if .Avatar }} {{.Avatar}} {{else}} ./img/avatar.jpg {{end}} " alt="" title="" class="avatar"/>
-            <div class="bg_avatar">
-                <a href="#" title="" class="modify_avatar">修改头像</a>
-            </div>
-            <div class="account">
-                <h6>{{.Name}}</h6>
-                <p>用户等级：<label>初级</label></p>
-            </div>
+<div id="header">
+    <ul>
+        <li>
+            <a href="#" title="" class="logo"></a>
+        </li>
+        <li>|</li>
+        <li>
+            <span>个人中心</span>
+        </li>
+        <li class="logout">
+            <!--  <a href="/Api/v0.1/user/logout" title="">退出</a> -->
+        </li>
+    </ul>
+</div>
+<div id="banner">
+    <div class="avatar_all">
+        <img src="{{if .Avatar }}{{.Avatar}}{{else}}./img/avatar.jpg {{end}} " alt="" title="" class="avatar"/>
+        <div class="bg_avatar">
+            <a href="#" title="" class="modify_avatar">修改头像</a>
+        </div>
+        <div class="account">
+            <h6>{{.Name}}</h6>
+            <p>用户等级：<label>初级</label></p>
         </div>
     </div>
-    <div id="personal_center">
-        <div class="pc_left">
-            <h4><i class="ico_person"></i>个人中心</h4>
-        </div>
-        <div class="pc_right">
-            <h4><i class="ico_bperson"></i>个人资料</h4>
-            <div class="info">
-                <p>
-                    <span>宽带账号名：</span>
-                    <label>-</label>
-                </p>
-                <p>
-                    <span>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span>
-                    <label>{{.Email}}</label>
-                    <a href="#" title="" class="change_email">修改邮箱</a>
-                </p>
-                <p>
-                    <span>用&nbsp;&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;&nbsp;名：</span>
-                    <label>{{.Name}}</label>
-                    <a href="#" title="" class="change_name">修改用户名</a>
-                </p>
-                <p>
-                    <span>手&nbsp;&nbsp;&nbsp;&nbsp;机&nbsp;&nbsp;&nbsp;&nbsp;号：</span>
-                    <label class="phone_num">{{.Phone}}</label>
-                    <a href="#" title="" class="change_phone">修改手机</a>
-                </p>
-                <p>
-                    <span>宽&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;带：</span>
-                    <label>-</label>
-                </p>
-                <p>
-                    <span>上&nbsp;传&nbsp;&nbsp;速&nbsp;率：</span>
-                    <label>-</label>
-                </p>
-                <p>
-                    <span>下&nbsp;载&nbsp;&nbsp;速&nbsp;率：</span>
-                    <label>-</label>
-                </p>
-            </div>
-            <p class="hline"></p>
-            <h4><i class="ico_speed"></i>提速记录</h4>
-            <div class="speed_record">
-                <p>
-                    <span>暂无提速记录</span>
-                </p>
-            </div>
-        </div>
+</div>
+<div id="personal_center">
+    <div class="pc_left">
+        <h4><i class="ico_person"></i>个人中心</h4>
     </div>
-    <!-- 修改头像 -->
-    <div class="change_avatar" style="display:none">
-        <div class="popup_bg"></div>
-        <div class="change_avatar_c">
-            <i class="ico_close"></i>
-            <h4>修改头像</h4>
-            <div class="ca_cleft" style="position:relative">
-                <div class="upload_img">
-                    <input type="button" class="upload_avatar" value="本地照片" id='picBtn'/>
-                    选择一张本地图片编辑后上传为头像<br/>仅支持JPG,PNG格式,文件小于150KB
-                </div>
-                <!-- <p class="head_direction">
-                    <a href="#" title="" class="turn_left"><i class="ico_left"></i>向左转</a>
-                    <a href="#" title="" class="turn_right">向右转<i class="ico_right"></i></a>
-                </p> -->
-                <p class="upload_btn">
-                    <input type="button" value="确定" class="make_sure" />
-                    <input type="button" value="取消" class="upload_cancel"/>
-<!--                     <label class="upload_success"><i class="ico_success"></i>上传成功</label>
-                    <label class="upload_failed"><i class="ico_failed"></i>上传失败</label> -->
-                </p>
-            </div>
-            <div class="ca_cright">
-                <div class="old_avatar">
-                    <img src="{{if .Avatar }} {{.Avatar}} {{else}} ./img/avatar.jpg {{end}}" alt="">
-                    <div class="bg_eavatar">
-                        <h6>原头像</h6>
-                    </div>
-                </div>
-                <div class="new_avatar" style="display: none">
-                    <img src="./img/avatar.jpg" alt="">
-                    <div class="bg_eavatar">
-                        <h6>新头像</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- <div class="change_phone_box" style="display:none">
-        <div class="popup_bg"></div>
-        <div class="change_avatar_c">
+    <div class="pc_right">
+        <h4><i class="ico_bperson"></i>个人资料</h4>
+        <div class="info">
             <p>
-                <span>手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机：</span>
+                <span>宽带账号名：</span>
+                <label>-</label>
+            </p>
+            <p>
+                <span>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span>
+                <label class="info_c" style="width: 156px;">{{.Email}}</label>
+                <a href="#" title="" class="change_email">修改</a>
+            </p>
+            <p>
+                <span>用&nbsp;&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;&nbsp;名：</span>
+                <label class="info_c" style="width: 156px;">{{.Name}}</label>
+                <a href="#" title="" class="change_name">修改</a>
+            </p>
+            <p>
+                <span>手&nbsp;&nbsp;&nbsp;&nbsp;机&nbsp;&nbsp;&nbsp;&nbsp;号：</span>
+                <label class="phone_num" style="width: 156px;">{{.Phone}}</label>
+                <a href="#" title="" class="change_phone">修改</a>
+            </p>
+            <p>
+                <span>宽&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;带：</span>
+                <label>-</label>
+            </p>
+            <p>
+                <span>上&nbsp;传&nbsp;&nbsp;速&nbsp;率：</span>
+                <label>-</label>
+            </p>
+            <p>
+                <span>下&nbsp;载&nbsp;&nbsp;速&nbsp;率：</span>
+                <label>-</label>
+            </p>
+        </div>
+        <p class="hline"></p>
+        <h4><i class="ico_speed"></i>提速记录</h4>
+        <div class="speed_record">
+            <p>
+                <span>暂无提速记录</span>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- 修改头像 -->
+<div class="change_avatar" style="display:none">
+    <div class="popup_bg"></div>
+    <div class="change_avatar_c">
+        <i class="ico_close"></i>
+        <h4>修改头像</h4>
+        <div class="ca_cleft" style="position:relative">
+            <div class="upload_img">
+                <input type="button" class="upload_avatar" value="本地照片" id='picBtn'/>
+                选择一张本地图片编辑后上传为头像<br/>仅支持JPG,PNG格式,文件小于150KB
+            </div>
+            <!-- <p class="head_direction">
+                <a href="#" title="" class="turn_left"><i class="ico_left"></i>向左转</a>
+                <a href="#" title="" class="turn_right">向右转<i class="ico_right"></i></a>
+            </p> -->
+            <p class="upload_btn">
+                <input type="button" value="确定" class="make_sure"/>
+                <input type="button" value="取消" class="upload_cancel"/>
+                <!--                     <label class="upload_success"><i class="ico_success"></i>上传成功</label>
+                                    <label class="upload_failed"><i class="ico_failed"></i>上传失败</label> -->
+            </p>
+        </div>
+        <div class="ca_cright">
+            <div class="old_avatar">
+                <img src="{{if .Avatar }} {{.Avatar}} {{else}} ./img/avatar.jpg {{end}}" alt="">
+                <div class="bg_eavatar">
+                    <h6>原头像</h6>
+                </div>
+            </div>
+            <div class="new_avatar" style="display: none">
+                <img src="./img/avatar.jpg" alt="">
+                <div class="bg_eavatar">
+                    <h6>新头像</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="change_phone_box" style="display:none;">-->
+    <!--<div class="popup_bg"></div>-->
+    <!--<div class="change_phone_c" style="display:none">-->
+        <!--<i class="ico_close"></i>-->
+        <!--<h4>修改手机</h4>-->
+        <!--<p>-->
+            <!--<span>手&nbsp;&nbsp;机：</span>-->
+            <!--<input type="text" class="new_phone">-->
+        <!--</p>-->
+        <!--<p>-->
+            <!--<span>验证码：</span>-->
+            <!--<input type="text" class="code_val">-->
+            <!--<input type="button" class="getCode" value="获取验证码">-->
+        <!--</p>-->
+        <!--<p class="popup_btn">-->
+            <!--<input type="button" value="确定" class="phone_sure">-->
+            <!--<input type="button" value="取消" class="phone_cancel">-->
+        <!--</p>-->
+    <!--</div>-->
+<!--</div>-->
+
+<div class="change_phone_box" style="display:none">
+    <div class="popup_bg"></div>
+    <div class="change_phone_c">
+        <i class="ico_close"></i>
+        <h4>修改手机</h4>
+        <form>
+            <p>
+                <span>手&nbsp;机：</span>
                 <input type="text" class="new_phone" >
+            </p>
+            <p>
+                <span>验证码：</span>
+                <input type="text" class="code_val">
                 <input type="button" class="getCode" value="获取验证码">
             </p>
-            <p>
-                <span>验&nbsp;&nbsp;&nbsp;&nbsp;证&nbsp;&nbsp;&nbsp;&nbsp;码：</span>
-                <input type="text" class="code_val">
-            </p>
-            <p class="upload_btn">
+            <p class="popup_btn">
+                <span>&nbsp;</span>
                 <input type="button" value="确定" class="phone_sure" />
                 <input type="button" value="取消" class="phone_cancel"/>
             </p>
-        </div>
-    </div> -->
-
-    <div class="change_phone_c" style="display:none">
-        <i class="ico_close"></i>
-        <h4>修改手机</h4>
-        <p>
-            <span>手&nbsp;&nbsp;机：</span>
-            <input type="text" class="new_phone">
-        </p>
-        <p>
-            <span>验证码：</span>
-            <input type="text" class="code_val">
-            <input type="button" class="getCode" value="获取验证码">
-        </p>
-        <p class="popup_btn">
-            <input type="button" value="确定" class="phone_sure">
-            <input type="button" value="取消" class="phone_cancel">
-        </p>
+        </form>
     </div>
+</div>
+
 
 </body>
 <script src="http://libs.baidu.com/jquery/1.10.0/jquery.min.js"></script>
@@ -167,9 +176,11 @@
         myLoadFile.cbk = cbk;
         myLoadFile.callBackName = cbn
         var btnId = typeof bnd == 'string' ? $('#' + bnd) : $(bnd);
+
         function isIEAll() {
             return !!window.ActiveXObject;
         }
+
         myLoadFile.appendFormDiv = function () {
             $('.formContent').remove();
             $('body').append('<div class="formContent" style="position: absolute;width: 1px;height: 1px;right: 0;top: 0;overflow: hidden"><form action="' + myLoadFile.upFileAction + '" method="post" enctype="multipart/form-data" target="myHideIframe" id="uploadForm"><input class="upload" type="file" ' + (ismany ? 'multiple="multiple"' : '') + ' name="' + myLoadFile.upFileName + '"/><input name="' + myLoadFile.cbk + '" value="' + myLoadFile.callBackName + '"/><input type="submit" value="提交"/></form><iframe name="myHideIframe"></iframe></div>')
@@ -202,194 +213,195 @@
             }
         })
     }
-    $(function(){
-        $('body').on('click','a[href="#"]',function(){
+    $(function () {
+        $('body').on('click', 'a[href="#"]', function () {
             return false;
         })
-        $('.change_avatar .ico_close,.upload_cancel,.change_avatar .popup_bg').on('click',function(){
+        $('.change_avatar .ico_close,.upload_cancel,.change_avatar .popup_bg').on('click', function () {
             $('.change_avatar').hide();
         })
-        $('.modify_avatar').on('click',function(){
+        $('.modify_avatar').on('click', function () {
             $('.change_avatar').show();
         })
-        
+
         //修改用户名
-        $('.change_name').on('click',function(){
-            var $t=$(this);
-            var label=$t.parent().find('label');
-            var name=$('.new_name').val();
-            if($('.new_name').length){
-                if(name==label.html()){
+        $('.change_name').on('click', function () {
+            var $t = $(this);
+            var label = $t.parent().find('label');
+            var name = $('.new_name').val();
+            if ($('.new_name').length) {
+                if (name == label.html()) {
                     $('.new_name').remove();
                     label.show();
-                }else if(!name){
-                    layer.msg('请填写用户名',2,5);
-                }else{
+                } else if (!name) {
+                    layer.msg('请填写用户名', 2, 5);
+                } else {
                     $.ajax({
-                        url:'/user/editname',
-                        type:'post',
-                        data:{username:name},
-                        dataType:'json',
-                        success:function(d){
-                            if(d.code==200){
-                                layer.msg('修改成功',2,1);
+                        url: '/user/editname',
+                        type: 'post',
+                        data: {username: name},
+                        dataType: 'json',
+                        success: function (d) {
+                            if (d.code == 200) {
+                                layer.msg('修改成功', 2, 1);
                                 label.html(name);
                                 $('.new_name').remove();
                                 label.show();
-                            }else{
-                                layer.msg(d.msg,2,5);
+                            } else {
+                                layer.msg(d.msg, 2, 5);
                             }
                         }
                     })
                 }
-            }else{
+            } else {
                 label.hide();
-                $t.before('<input type="text" class="new_name" value="'+label.html()+'">')
+                $t.before('<input type="text" class="new_name" value="' + label.html() + '">')
             }
         })
         //修改邮箱
-        $('.change_email').on('click',function(){
-            var $t=$(this);
-            var label=$t.parent().find('label');
-            var email=/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
-            var email_val=$('.new_email').val();
-            if($('.new_email').length){
-                if(email_val==label.html()){
+        $('.change_email').on('click', function () {
+            var $t = $(this);
+            var label = $t.parent().find('label');
+            var email = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+            var email_val = $('.new_email').val();
+            if ($('.new_email').length) {
+                if (email_val == label.html()) {
                     $('.new_email').remove();
                     label.show();
-                }else if(!email_val || !email.test(email_val)){
-                    layer.msg('请填写正确的邮箱',2,5);
-                }else{
+                } else if (!email_val || !email.test(email_val)) {
+                    layer.msg('请填写正确的邮箱', 2, 5);
+                } else {
                     $.ajax({
-                        url:'/user/editemail',
-                        type:'post',
-                        data:{email:email_val},
-                        dataType:'json',
-                        success:function(d){
-                            if(d.code==200){
-                                layer.msg('修改成功',2,1);
+                        url: '/user/editemail',
+                        type: 'post',
+                        data: {email: email_val},
+                        dataType: 'json',
+                        success: function (d) {
+                            if (d.code == 200) {
+                                layer.msg('修改成功', 2, 1);
                                 label.html(email_val);
                                 $('.new_email').remove();
                                 label.show();
-                            }else{
-                                layer.msg(d.msg,2,5);
+                            } else {
+                                layer.msg(d.msg, 2, 5);
                             }
                         }
                     })
                 }
-            }else{
+            } else {
                 label.hide();
-                $t.before('<input type="text" class="new_email" value="'+label.html()+'">')
+                $t.before('<input type="text" class="new_email" value="' + label.html() + '">')
             }
         })
         //修改手机
-        $('.change_phone_c .ico_close,.phone_cancel').on('click',function(){
-            $('.change_phone_c').hide();
+        $('.change_phone_c .ico_close,.phone_cancel').on('click', function () {
+            $('.change_phone_box').hide();
         })
-        $('.change_phone').on('click',function(){
-            $('.change_phone_c').show();
+        $('.change_phone').on('click', function () {
+            $('.change_phone_box').show();
         })
-        function count(){
-            n=60;
-            var timer=setInterval(function(){
+        function count() {
+            n = 60;
+            var timer = setInterval(function () {
                 n--
-                if(n!=0){
-                    $('.getCode').prop('disabled',true).val(''+n+'秒');
-                }else{
-                    $('.getCode').prop('disabled',false).val('获取验证码');
+                if (n != 0) {
+                    $('.getCode').prop('disabled', true).val('' + n + '秒');
+                } else {
+                    $('.getCode').prop('disabled', false).val('获取验证码');
                     clearInterval(timer);
                 }
-            },1000)
+            }, 1000)
         }
-        $('.getCode').on('click',function(){
-            var phone=$('.new_phone').val();
-            if(phone && /^\d{11}$/.test(phone)){
+
+        $('.getCode').on('click', function () {
+            var phone = $('.new_phone').val();
+            if (phone && /^\d{11}$/.test(phone)) {
                 $.ajax({
-                    url:'/user/getcode',
-                    type:'post',
-                    data:{phone:phone},
-                    dataType:'json',
-                    success:function(d){
+                    url: '/user/getcode',
+                    type: 'post',
+                    data: {phone: phone},
+                    dataType: 'json',
+                    success: function (d) {
                         if (d.code == "200") {
-                            layer.msg('发送成功',2,1);
-                            count();    
+                            layer.msg('发送成功', 2, 1);
+                            count();
                         } else {
-                            layer.msg(d.msg,2,5);
+                            layer.msg(d.msg, 2, 5);
                         }
-                        
+
                     }
                 })
-            }else{
-                 layer.msg('请填写正确的手机号码',2,5);
+            } else {
+                layer.msg('请填写正确的手机号码', 2, 5);
             }
         })
-        $('.phone_sure').on('click',function(){
-            var phone=$('.new_phone').val();
-            var code=$('.code_val').val();
-            if(phone && /^\d{11}$/.test(phone) && code){
+        $('.phone_sure').on('click', function () {
+            var phone = $('.new_phone').val();
+            var code = $('.code_val').val();
+            if (phone && /^\d{11}$/.test(phone) && code) {
                 $.ajax({
-                    url:'/user/editphone',
-                    type:'post',
-                    data:{phone:phone,code:code},
-                    dataType:'json',
-                    success:function(d){
-                        if(d.code==200){
-                            layer.msg('修改成功',2,1);
-                            $('.change_phone_c').hide();
+                    url: '/user/editphone',
+                    type: 'post',
+                    data: {phone: phone, code: code},
+                    dataType: 'json',
+                    success: function (d) {
+                        if (d.code == 200) {
+                            layer.msg('修改成功', 2, 1);
+                            $('.change_phone_box').hide();
                             $('.phone_num').html(phone);
-                        }else{
-                            layer.msg(d.msg,2,1);
+                        } else {
+                            layer.msg(d.msg, 2, 1);
                         }
                     }
                 })
-            }else{
-                var err=[]
-                if(!phone || !/^\d{11}$/.test(phone)){
+            } else {
+                var err = []
+                if (!phone || !/^\d{11}$/.test(phone)) {
                     err.push('请填写正确的手机号码')
-                } 
-                if(!code){
+                }
+                if (!code) {
                     err.push('请填写验证码')
                 }
-                layer.msg(err.join('<br>'),2,5)
+                layer.msg(err.join('<br>'), 2, 5)
             }
         })
     })
     //上传头像
-    
+
     // $('#picBtn').on('click',function(){
     //     uploadImage('/user/uploadpic',"qgpic[]", 'callBack', 'callBackPics', 'upPicsMany');
     // })
-    uploadImage('/user/uploadpic',"qpic", 'callback','callBackPics', 'picBtn');
+    uploadImage('/user/uploadpic', "qpic", 'callback', 'callBackPics', 'picBtn');
     window.callBackPics = function (_jsn) {
         // showUploadFrm(_jsn.msg);
         $('.show_img').remove();
-        $('.upload_img').append('<img src="'+_jsn.msg+'" class="show_img" width="340" height="340">');
+        $('.upload_img').append('<img src="' + _jsn.msg + '" class="show_img" width="340" height="340">');
         $('.show_img').css({
-            position:'absolute',
-            left:'1px',
-            top:'1px'
+            position: 'absolute',
+            left: '1px',
+            top: '1px'
         })
-        $('.new_avatar').show().find('img').attr('src',_jsn.msg);
+        $('.new_avatar').show().find('img').attr('src', _jsn.msg);
     }
-    $('body').on('click','.show_img',function(){
+    $('body').on('click', '.show_img', function () {
         $('#picBtn').click();
     })
-    $('.make_sure').on('click',function(){
-        if($('.show_img').length){
-            var src=$('.show_img').attr('src');
+    $('.make_sure').on('click', function () {
+        if ($('.show_img').length) {
+            var src = $('.show_img').attr('src');
             $.ajax({
-                url:'/user/editpic',
-                type:'post',
-                data:{pic:src},
-                dataType:'json',
-                success:function(d){
-                    if(d.code==200){
-                        layer.msg('修改成功',2,1);
+                url: '/user/editpic',
+                type: 'post',
+                data: {pic: src},
+                dataType: 'json',
+                success: function (d) {
+                    if (d.code == 200) {
+                        layer.msg('修改成功', 2, 1);
                         $('.change_avatar').hide();
-                        $('.avatar').attr('src',src);
+                        $('.avatar').attr('src', src);
                         $('.show_img').remove();
-                    }else{
-                        layer.msg(d.msg,2,1);
+                    } else {
+                        layer.msg(d.msg, 2, 1);
                     }
                 }
             })

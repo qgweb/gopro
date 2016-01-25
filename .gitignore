@@ -15,6 +15,9 @@ monitor/monitor
 monitoradmin/monitoradmin
 mtags/mtags
 qianzhao/qianzhao
+qianzhao/public/download/
+qianzhao/public/upload/feedback
+qianzhao/public/upload/photo
 qianzhao-dz-tcpserver/qianzhao-dz-tcpserver
 qianzhao-ht-tcpserver/qianzhao-ht-tcpserver
 qianzhao-tcpserver/qianzhao-tcpserver

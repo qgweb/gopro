@@ -27,6 +27,7 @@ type ZJPut struct {
 	iniFile         *ini.File
 	mp              *common.MgoPool
 	mp_tj           *common.MgoPool
+	mp_precise      *common.MgoPool
 	rc_put          redis.Conn
 	rc_dx_put       redis.Conn
 	prefix          string
@@ -115,6 +116,7 @@ func NewZheJiangPutCli() cli.Command {
 			ur.iniFile = getConfig("zp.conf")
 			ur.mp = getMongoObj(ur.iniFile, "mongo")
 			ur.mp_tj = getMongoObj(ur.iniFile, "mongo-tj")
+			ur.mp_precise = getMongoObj(ur.iniFile, "mongo-precise")
 			ur.rc_put = getRedisObj("redis_put", ur.iniFile)
 			ur.rc_dx_put = getRedisObj("redis_dx_put", ur.iniFile)
 			ur.prefix = bson.NewObjectId().Hex() + "_"
@@ -496,9 +498,10 @@ func (this *ZJPut) GetPutShopInfo() (list []ShopInfo) {
 func (this *ZJPut) GetShopAdUaInfo() {
 	var (
 		list      = this.GetPutShopInfo()
-		sess      = this.mp_tj.Get()
+		sess      = this.mp_precise.Get()
 		tableName = "zhejiang_ad_tags_shop"
 		dbName    = "xu_precise"
+		count     = 0
 	)
 
 	defer sess.Close()
@@ -513,7 +516,8 @@ func (this *ZJPut) GetShopAdUaInfo() {
 				if !iter.Next(&info) {
 					break
 				}
-				log.Info(info)
+				count++
+				log.Info(count)
 				ad := info["ad"].(string)
 				ua := encrypt.DefaultBase64.Decode(info["ua"].(string))
 				this.PutAdToCache(ad)
@@ -528,14 +532,14 @@ func (this *ZJPut) GetShopAdUaInfo() {
 
 func (this *ZJPut) GetVisitorInfos() {
 	var (
-		sess = this.mp.Get()
-		db = "data_source"
+		sess  = this.mp.Get()
+		db    = "data_source"
 		table = "zhejiang_visitor"
 	)
 
 	defer sess.Close()
 
-	iter :=sess.DB(db).C(table).Find(nil).Iter()
+	iter := sess.DB(db).C(table).Find(nil).Iter()
 	for {
 		var info map[string]interface{}
 		if !iter.Next(&info) {
@@ -548,7 +552,7 @@ func (this *ZJPut) GetVisitorInfos() {
 
 		this.PutAdToCache(ad)
 
-		for _,aid := range aids.([]interface{}) {
+		for _, aid := range aids.([]interface{}) {
 			this.PutAdvertToCache(ad, ua, convert.ToString(aid))
 			this.pushAdToAdvert(ad, ua, convert.ToString(aid))
 		}

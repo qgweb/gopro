@@ -116,7 +116,7 @@ func (this *Event) Stop(conn *net.TCPConn, req *Request) {
 	nreq.Content = ""
 	data, _ := MRequest(nreq)
 	conn.Write(ProtocolPack(data))
-
+	conn.Close()
 	accountManager.Del(account)
 	connManager.Del(account)
 }

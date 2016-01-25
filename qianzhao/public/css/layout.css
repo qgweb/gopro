@@ -188,7 +188,7 @@ a{
 	line-height:55px;
 	color:#fff;
 	font-weight:400;
-	background-color:#0a8cd2; 
+	background-color:#0a8cd2;
 }
 .pc_left h4 i{
 	top:18px;
@@ -219,7 +219,9 @@ a{
 	color:#999;
 }
 .info p label{
-	padding-right:20px;
+	display:inline-block;
+	/*width:170px;*/
+	padding-right:10px;
 }
 .info p a{
 	color:#0a8cd2;
@@ -387,8 +389,9 @@ input.new_phone,input.code_val{
 }
 input.new_phone{
 	width:180px;
-	margin-top:15px;
-	margin-bottom:12px;
+
+	/*margin-top:15px;
+	margin-bottom:12px;*/
 }
 input.code_val{
 	width:100px;
@@ -396,7 +399,8 @@ input.code_val{
 input.getCode{
 	width:72px;
 	height:34px;
-	margin-right:14px;
+	margin-left:8px;
+	/*margin-right:14px;*/
 	line-height:34px;
 	font-size:12px;
 	color:#555;
@@ -408,13 +412,31 @@ input.getCode:hover{
 	color:#333;
 	border-color:#bbb;
 }
+.change_phone_box .change_phone_c p{
+	height:34px;
+	line-height:34px;
+ /* text-align: justify;
+  text-justify: distribute-all-lines;
+  text-align-last: justify;
+  -moz-text-align-last: justify;
+  -webkit-text-align-last: justify;*/
+}
+.change_phone_box .change_phone_c form p:first-child{
+margin-bottom:12px;
+}
 .change_phone_box .popup_btn{
 	margin-top:30px;
-	margin-left:62px;
+	/*margin-left:62px;*/
 }
 .change_phone_box .popup_btn input{
 	margin-right:30px;
 }
 .change_phone_box p span{
+	float:left;
+	display:block;
+	width:56px;
 	font-size:14px;
+}
+.change_phone_box p input{
+	float:left;
 }

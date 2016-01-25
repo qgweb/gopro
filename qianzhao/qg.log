@@ -3755,3 +3755,442 @@
 2016/01/11 10:24:06 user.go:45: [info] zb214 
 2016/01/11 10:24:06 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.913455ms 113
 2016/01/11 10:24:13 logger.go:38: [info] GET /Api/v0.1/user/is_login [32m200[0m 70.197µs 56
+2016/01/19 10:25:40 feedback.go:34: [error] id 
+2016/01/19 10:25:40 feedback.go:34: [error] type 
+2016/01/19 10:25:40 feedback.go:34: [error] qtype 
+2016/01/19 10:25:40 feedback.go:34: [error] qdescribe 
+2016/01/19 10:25:40 feedback.go:34: [error] qpic 
+2016/01/19 10:25:40 feedback.go:34: [error] contact 
+2016/01/19 10:25:40 feedback.go:34: [error] tcontact 
+2016/01/19 10:25:40 feedback.go:34: [error] status 
+2016/01/19 10:25:40 feedback.go:34: [error] time 
+2016/01/19 10:25:40 logger.go:38: [info] GET /feedback [32m200[0m 15.972869ms 4948
+2016/01/19 10:25:40 logger.go:38: [info] GET /feedback/pic [32m200[0m 3.294765ms 1076
+2016/01/19 10:25:41 logger.go:38: [info] GET /css/main/layout.css [32m200[0m 103.474148ms 4629
+2016/01/19 10:25:41 logger.go:38: [info] GET /img/main/logo.gif [32m200[0m 21.251908ms 2370
+2016/01/19 10:25:41 logger.go:38: [info] GET /img/main/logo.ico [32m200[0m 7.167992ms 1150
+2016/01/19 11:13:39 logger.go:38: [info] GET /download [33m404[0m 32.748µs 0
+2016/01/19 11:14:55 logger.go:38: [info] GET /download [33m404[0m 52.289µs 0
+2016/01/19 11:14:55 logger.go:38: [info] GET /favicon.ico [32m200[0m 2.922041ms 0
+2016/01/19 11:14:56 logger.go:38: [info] GET /download [33m404[0m 16.61µs 0
+2016/01/19 11:14:57 logger.go:38: [info] GET /favicon.ico [32m200[0m 121.6µs 0
+2016/01/19 11:15:01 logger.go:38: [info] GET /download [33m404[0m 30.016µs 0
+2016/01/19 11:15:01 logger.go:38: [info] GET /favicon.ico [32m200[0m 106.392µs 0
+2016/01/19 11:15:22 logger.go:38: [info] GET /download [33m404[0m 41.897µs 0
+2016/01/19 11:15:22 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.962612ms 0
+2016/01/19 11:15:27 logger.go:38: [info] GET /download [33m404[0m 17.09µs 0
+2016/01/19 11:15:27 logger.go:38: [info] GET /favicon.ico [32m200[0m 71.349µs 0
+2016/01/19 11:17:05 logger.go:38: [info] GET /download [33m404[0m 95.955µs 0
+2016/01/19 11:17:05 logger.go:38: [info] GET /favicon.ico [32m200[0m 4.985488ms 0
+2016/01/19 11:17:20 logger.go:38: [info] GET /download [33m404[0m 146.269µs 0
+2016/01/19 11:17:21 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.04952ms 0
+2016/01/19 11:17:53 logger.go:38: [info] GET /download [33m404[0m 88.467µs 0
+2016/01/19 11:17:53 logger.go:38: [info] GET /favicon.ico [32m200[0m 2.865392ms 0
+2016/01/19 11:18:20 logger.go:38: [info] GET /download [33m404[0m 101.019µs 0
+2016/01/19 11:18:20 logger.go:38: [info] GET /favicon.ico [32m200[0m 2.75593ms 0
+2016/01/19 11:18:22 logger.go:38: [info] GET /download [33m404[0m 52.89µs 0
+2016/01/19 11:18:22 logger.go:38: [info] GET /favicon.ico [32m200[0m 74.289µs 0
+2016/01/19 11:18:48 logger.go:38: [info] GET /download [33m404[0m 87.842µs 0
+2016/01/19 11:18:49 logger.go:38: [info] GET /favicon.ico [32m200[0m 4.06515ms 0
+2016/01/19 11:19:02 logger.go:38: [info] GET /download [33m404[0m 150.108µs 0
+2016/01/19 11:19:02 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.884887ms 0
+2016/01/19 11:19:03 logger.go:38: [info] GET /download [33m404[0m 83.339µs 0
+2016/01/19 11:19:03 logger.go:38: [info] GET /favicon.ico [32m200[0m 77.888µs 0
+2016/01/19 11:19:54 logger.go:38: [info] GET /download [36m302[0m 476.03µs 75
+2016/01/19 11:19:54 logger.go:38: [info] GET /download//qzbrower_1.0.0_1.exe [33m404[0m 514.383µs 10
+2016/01/19 11:19:54 broadband.go:124: [info] -998|| 
+2016/01/19 11:19:54 statistics.go:136: [warning] &{5000 程序发生异常} 
+2016/01/19 11:20:13 logger.go:38: [info] GET /download/qzbrower_1.0.0_1.exe [33m404[0m 1.073552ms 10
+2016/01/19 11:23:20 logger.go:38: [info] GET /download [36m302[0m 2.022955ms 74
+2016/01/19 11:23:20 logger.go:38: [info] GET /download/qzbrower_1_1.0.0.exe [33m404[0m 48.927µs 10
+2016/01/19 11:23:21 broadband.go:124: [info] -998|| 
+2016/01/19 11:23:21 statistics.go:136: [warning] &{5000 程序发生异常} 
+2016/01/19 11:23:29 logger.go:38: [info] GET /download/qzbrower_1_1.0.0.exe [33m404[0m 57.759µs 10
+2016/01/19 11:23:53 logger.go:38: [info] GET /css/layout.css [32m200[0m 41.800251ms 7133
+2016/01/19 11:26:48 logger.go:38: [info] GET /download/1.css [33m404[0m 94.127µs 10
+2016/01/19 11:26:49 logger.go:38: [info] GET /download/1.css [33m404[0m 244.969µs 10
+2016/01/19 11:26:49 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.841302ms 0
+2016/01/19 11:26:50 logger.go:38: [info] GET /download/1.css [33m404[0m 304.272µs 10
+2016/01/19 11:26:50 logger.go:38: [info] GET /favicon.ico [32m200[0m 104.09µs 0
+2016/01/19 11:27:00 logger.go:38: [info] GET /download/1.css [33m404[0m 77.195µs 10
+2016/01/19 11:27:00 logger.go:38: [info] GET /favicon.ico [32m200[0m 67.995µs 0
+2016/01/19 11:27:04 logger.go:38: [info] GET /public/download/1.css [33m404[0m 71.212µs 10
+2016/01/19 11:27:05 logger.go:38: [info] GET /favicon.ico [32m200[0m 71.531µs 0
+2016/01/19 11:27:08 logger.go:38: [info] GET /download/1.css [33m404[0m 71.159µs 10
+2016/01/19 11:27:09 logger.go:38: [info] GET /favicon.ico [32m200[0m 77.307µs 0
+2016/01/19 11:27:58 logger.go:38: [info] GET /download/1.css [32m200[0m 4.502853ms 3
+2016/01/19 11:27:59 logger.go:38: [info] GET /favicon.ico [32m200[0m 114.964µs 0
+2016/01/19 11:28:24 logger.go:38: [info] GET /app [36m302[0m 120.253µs 74
+2016/01/19 11:28:25 broadband.go:124: [info] -998|| 
+2016/01/19 11:28:25 statistics.go:136: [warning] &{5000 程序发生异常} 
+2016/01/19 11:28:25 logger.go:38: [info] GET /download/qzbrower_1_1.0.0.exe [32m200[0m 418.061519ms 41617419
+2016/01/19 11:28:26 logger.go:38: [info] GET /app [36m302[0m 62.374µs 74
+2016/01/19 11:28:26 broadband.go:124: [info] -998|| 
+2016/01/19 11:28:26 statistics.go:136: [warning] &{5000 程序发生异常} 
+2016/01/19 11:28:26 logger.go:38: [info] GET /download/qzbrower_2_1.0.0.exe [32m200[0m 369.189204ms 40675530
+2016/01/19 11:46:41 user.go:45: [info] 15158117079 
+2016/01/19 11:46:41 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 29.654929ms 71
+2016/01/19 11:47:25 user.go:45: [info] zb214 
+2016/01/19 11:47:25 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 107.175395ms 37
+2016/01/19 11:47:31 user.go:45: [info] zb214 
+2016/01/19 11:47:31 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 107.505523ms 113
+2016/01/19 11:48:08 logger.go:38: [info] GET /user [32m200[0m 501.54µs 37
+2016/01/19 11:48:15 user.go:45: [info] zb214 
+2016/01/19 11:48:15 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 113.483087ms 113
+2016/01/19 11:48:17 user.go:434: [error]  
+2016/01/19 11:48:17 logger.go:38: [info] GET /user [32m200[0m 3.924986ms 14753
+2016/01/19 11:48:17 logger.go:38: [info] GET /css/layout.css [36m304[0m 50.477µs 0
+2016/01/19 11:48:17 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 24.632261ms 5170
+2016/01/19 11:48:17 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 12.34106ms 19185
+2016/01/19 11:48:17 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 360.744µs 8544
+2016/01/19 11:48:17 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 1.489556ms 129448
+2016/01/19 11:48:17 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 2.562357ms 304363
+2016/01/19 11:48:17 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 332.521µs 5704
+2016/01/19 11:48:18 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 22.905281ms 5759
+2016/01/19 11:48:18 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 12.653714ms 32954
+2016/01/19 11:48:18 logger.go:38: [info] GET /favicon.ico [32m200[0m 80.271µs 0
+2016/01/19 11:48:21 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 35.054613ms 1253
+2016/01/19 11:50:22 logger.go:38: [info] GET /user [32m200[0m 435.85µs 37
+2016/01/19 11:50:22 logger.go:38: [info] GET /user [32m200[0m 36.502µs 37
+2016/01/19 11:50:22 logger.go:38: [info] GET /user [32m200[0m 42.919µs 37
+2016/01/19 11:50:22 logger.go:38: [info] GET /user [32m200[0m 39.013µs 37
+2016/01/19 11:50:22 logger.go:38: [info] GET /user [32m200[0m 43.036µs 37
+2016/01/19 11:50:22 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.826608ms 0
+2016/01/19 11:50:22 logger.go:38: [info] GET /favicon.ico [32m200[0m 77.805µs 0
+2016/01/19 11:50:22 logger.go:38: [info] GET /favicon.ico [32m200[0m 78.806µs 0
+2016/01/19 11:50:22 logger.go:38: [info] GET /favicon.ico [32m200[0m 57.207µs 0
+2016/01/19 11:50:23 logger.go:38: [info] GET /user [32m200[0m 40.904µs 37
+2016/01/19 11:50:23 logger.go:38: [info] GET /user [32m200[0m 43.69µs 37
+2016/01/19 11:50:23 logger.go:38: [info] GET /favicon.ico [32m200[0m 78.605µs 0
+2016/01/19 11:50:23 logger.go:38: [info] GET /favicon.ico [32m200[0m 57.023µs 0
+2016/01/19 11:50:24 logger.go:38: [info] GET /favicon.ico [32m200[0m 89.355µs 0
+2016/01/19 11:50:24 logger.go:38: [info] GET /user [32m200[0m 63.393µs 37
+2016/01/19 11:50:24 logger.go:38: [info] GET /favicon.ico [32m200[0m 77.756µs 0
+2016/01/19 11:50:28 user.go:45: [info] zb214 
+2016/01/19 11:50:28 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 124.259394ms 113
+2016/01/19 11:50:29 user.go:434: [error]  
+2016/01/19 11:50:29 logger.go:38: [info] GET /user [32m200[0m 2.959669ms 14753
+2016/01/19 11:50:30 logger.go:38: [info] GET /css/layout.css [32m200[0m 125.136µs 7620
+2016/01/19 11:50:30 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 132.145µs 5170
+2016/01/19 11:50:30 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 172.717µs 19185
+2016/01/19 11:50:30 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 158.876µs 8544
+2016/01/19 11:50:30 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 397.122µs 304363
+2016/01/19 11:50:30 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 229.005µs 129448
+2016/01/19 11:50:30 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 152.236µs 5704
+2016/01/19 11:50:30 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 129.835µs 5759
+2016/01/19 11:50:30 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 162.364µs 32954
+2016/01/19 11:50:30 logger.go:38: [info] GET /favicon.ico [32m200[0m 77.241µs 0
+2016/01/19 11:52:01 logger.go:38: [info] GET /download/qzbrower_1.0.0_1.exe [33m404[0m 153.395µs 10
+2016/01/19 11:52:02 logger.go:38: [info] GET /favicon.ico [32m200[0m 2.825536ms 0
+2016/01/19 11:52:04 logger.go:38: [info] GET /user [32m200[0m 1.127679ms 37
+2016/01/19 11:52:05 logger.go:38: [info] GET /favicon.ico [32m200[0m 80.073µs 0
+2016/01/19 11:52:07 user.go:45: [info] zb214 
+2016/01/19 11:52:07 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 118.60619ms 113
+2016/01/19 11:52:08 user.go:434: [error]  
+2016/01/19 11:52:08 logger.go:38: [info] GET /user [32m200[0m 3.733385ms 14864
+2016/01/19 11:52:08 logger.go:38: [info] GET /css/layout.css [36m304[0m 46.498µs 0
+2016/01/19 11:52:08 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 55.342µs 0
+2016/01/19 11:52:08 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 33.067µs 0
+2016/01/19 11:52:08 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 45.541µs 0
+2016/01/19 11:52:08 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 34.122µs 0
+2016/01/19 11:52:08 logger.go:38: [info] GET /favicon.ico [32m200[0m 69.899µs 0
+2016/01/19 11:52:59 user.go:45: [info] zb214 
+2016/01/19 11:52:59 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.40312ms 113
+2016/01/19 11:53:02 user.go:434: [error]  
+2016/01/19 11:53:02 logger.go:38: [info] GET /user [32m200[0m 3.067707ms 14856
+2016/01/19 11:53:02 logger.go:38: [info] GET /css/layout.css [32m200[0m 3.982537ms 7620
+2016/01/19 11:53:02 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 206.136µs 5170
+2016/01/19 11:53:02 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 140.253µs 19185
+2016/01/19 11:53:02 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 121.257µs 8544
+2016/01/19 11:53:02 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 187.932µs 129448
+2016/01/19 11:53:02 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 397.192µs 304363
+2016/01/19 11:53:02 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 800.413µs 5704
+2016/01/19 11:53:03 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 165.466µs 5759
+2016/01/19 11:53:03 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 160.469µs 32954
+2016/01/19 11:53:03 logger.go:38: [info] GET /favicon.ico [32m200[0m 85.351µs 0
+2016/01/19 11:53:07 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 99.723µs 1253
+2016/01/19 11:53:07 logger.go:38: [info] GET /img/bg_eavatar.png [32m200[0m 34.555836ms 4681
+2016/01/19 11:59:14 user.go:45: [info] zb214 
+2016/01/19 11:59:14 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.541424ms 113
+2016/01/19 11:59:16 logger.go:38: [info] GET /download/1.css [33m404[0m 74.045µs 10
+2016/01/19 11:59:17 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.819111ms 0
+2016/01/19 11:59:18 user.go:434: [error]  
+2016/01/19 11:59:18 logger.go:38: [info] GET /user [32m200[0m 3.484227ms 14725
+2016/01/19 11:59:18 logger.go:38: [info] GET /css/layout.css [36m304[0m 47.936µs 0
+2016/01/19 11:59:18 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 78.782µs 0
+2016/01/19 11:59:18 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 43.87µs 0
+2016/01/19 11:59:22 user.go:434: [error]  
+2016/01/19 11:59:22 logger.go:38: [info] GET /user [32m200[0m 2.237468ms 14725
+2016/01/19 11:59:23 logger.go:38: [info] GET /css/layout.css [36m304[0m 43.393µs 0
+2016/01/19 11:59:23 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 74.899µs 0
+2016/01/19 11:59:23 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 60.296µs 0
+2016/01/19 11:59:23 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 37.246µs 0
+2016/01/19 11:59:23 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 35.899µs 0
+2016/01/19 11:59:23 logger.go:38: [info] GET /favicon.ico [32m200[0m 91.748µs 0
+2016/01/19 12:01:10 user.go:434: [error]  
+2016/01/19 12:01:10 logger.go:38: [info] GET /user [32m200[0m 3.396816ms 14725
+2016/01/19 12:01:11 logger.go:38: [info] GET /css/layout.css [32m200[0m 131.164µs 7620
+2016/01/19 12:01:11 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 123.198µs 19185
+2016/01/19 12:01:11 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 81.983µs 5170
+2016/01/19 12:01:11 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 195.427µs 8544
+2016/01/19 12:01:11 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 218.366µs 129448
+2016/01/19 12:01:11 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 103.446µs 5704
+2016/01/19 12:01:11 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 878.944µs 304363
+2016/01/19 12:01:12 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 128.297µs 5759
+2016/01/19 12:01:12 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 165.547µs 32954
+2016/01/19 12:01:12 logger.go:38: [info] GET /favicon.ico [32m200[0m 106.51µs 0
+2016/01/19 12:01:26 user.go:45: [info] zb214 
+2016/01/19 12:01:26 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 112.192489ms 113
+2016/01/19 12:01:28 user.go:434: [error]  
+2016/01/19 12:01:28 logger.go:38: [info] GET /user [32m200[0m 3.772084ms 14725
+2016/01/19 12:01:28 logger.go:38: [info] GET /css/layout.css [32m200[0m 4.193785ms 7620
+2016/01/19 12:01:28 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 4.236815ms 5170
+2016/01/19 12:01:28 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 4.259581ms 19185
+2016/01/19 12:01:29 user.go:434: [error]  
+2016/01/19 12:01:29 logger.go:38: [info] GET /user [32m200[0m 2.125291ms 14725
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 396.067µs 304363
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 237.163µs 129448
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 96.487µs 8544
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 277.13µs 5704
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 136.767µs 5170
+2016/01/19 12:01:29 logger.go:38: [info] GET /css/layout.css [32m200[0m 76.498µs 7620
+2016/01/19 12:01:29 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 116.958µs 19185
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 129.038µs 8544
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 389.867µs 304363
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 313.857µs 129448
+2016/01/19 12:01:29 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 110.185µs 5704
+2016/01/19 12:01:30 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 203.741µs 5759
+2016/01/19 12:01:30 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 280.221µs 32954
+2016/01/19 12:01:30 logger.go:38: [info] GET /favicon.ico [32m200[0m 111.529µs 0
+2016/01/19 12:02:07 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 99.63µs 1253
+2016/01/19 13:11:55 user.go:45: [info] zb214 
+2016/01/19 13:11:56 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 118.218157ms 113
+2016/01/19 13:11:57 user.go:434: [error]  
+2016/01/19 13:11:57 logger.go:38: [info] GET /user [32m200[0m 3.65311ms 15521
+2016/01/19 13:11:58 logger.go:38: [info] GET /css/layout.css [32m200[0m 2.914368ms 7620
+2016/01/19 13:11:58 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 2.778761ms 5170
+2016/01/19 13:11:58 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 219.41µs 19185
+2016/01/19 13:11:58 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 215.091µs 8544
+2016/01/19 13:11:58 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 217.739µs 129448
+2016/01/19 13:11:58 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 347.847µs 304363
+2016/01/19 13:11:58 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 112.656µs 5704
+2016/01/19 13:11:58 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 83.789µs 1253
+2016/01/19 13:11:58 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 173.656µs 5759
+2016/01/19 13:11:58 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 148.421µs 32954
+2016/01/19 13:11:58 logger.go:38: [info] GET /favicon.ico [32m200[0m 105.533µs 0
+2016/01/19 13:12:52 user.go:45: [info] zb214 
+2016/01/19 13:12:53 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 119.925523ms 113
+2016/01/19 13:12:54 user.go:434: [error]  
+2016/01/19 13:12:54 logger.go:38: [info] GET /user [32m200[0m 4.161175ms 15523
+2016/01/19 13:12:54 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 4.11931ms 5170
+2016/01/19 13:12:54 logger.go:38: [info] GET /css/layout.css [32m200[0m 3.503811ms 7620
+2016/01/19 13:12:54 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 3.573447ms 19185
+2016/01/19 13:12:54 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 327.522µs 8544
+2016/01/19 13:12:54 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 220.07µs 129448
+2016/01/19 13:12:54 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 371.165µs 304363
+2016/01/19 13:12:54 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 103.311µs 1253
+2016/01/19 13:12:54 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 70.672µs 5704
+2016/01/19 13:12:54 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 249.2µs 5759
+2016/01/19 13:12:54 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 222.197µs 32954
+2016/01/19 13:12:55 logger.go:38: [info] GET /favicon.ico [32m200[0m 76.247µs 0
+2016/01/19 13:13:35 logger.go:38: [info] GET /user [32m200[0m 451.908µs 37
+2016/01/19 13:13:36 logger.go:38: [info] GET /favicon.ico [32m200[0m 5.32757ms 0
+2016/01/19 13:13:38 user.go:45: [info] zb214 
+2016/01/19 13:13:38 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 115.132531ms 113
+2016/01/19 13:13:40 logger.go:38: [info] GET /download/1.css [33m404[0m 73.245µs 10
+2016/01/19 13:13:41 logger.go:38: [info] GET /favicon.ico [32m200[0m 64.87µs 0
+2016/01/19 13:13:43 user.go:434: [error]  
+2016/01/19 13:13:43 logger.go:38: [info] GET /user [32m200[0m 3.261ms 15527
+2016/01/19 13:13:43 logger.go:38: [info] GET /css/layout.css [32m200[0m 130.64µs 7620
+2016/01/19 13:13:43 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 110.019µs 5170
+2016/01/19 13:13:43 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 102.705µs 19185
+2016/01/19 13:13:43 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 136.199µs 8544
+2016/01/19 13:13:43 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 207.958µs 129448
+2016/01/19 13:13:43 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 331.419µs 304363
+2016/01/19 13:13:43 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 178.302µs 5704
+2016/01/19 13:13:43 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 80.813µs 1253
+2016/01/19 13:13:44 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 151.562µs 5759
+2016/01/19 13:13:44 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 181.424µs 32954
+2016/01/19 13:13:44 logger.go:38: [info] GET /favicon.ico [32m200[0m 76.64µs 0
+2016/01/19 13:16:31 user.go:45: [info] zb214 
+2016/01/19 13:16:31 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 117.070261ms 113
+2016/01/19 13:16:33 user.go:434: [error]  
+2016/01/19 13:16:33 logger.go:38: [info] GET /user [32m200[0m 3.043665ms 14996
+2016/01/19 13:16:33 logger.go:38: [info] GET /css/layout.css [32m200[0m 3.891551ms 7620
+2016/01/19 13:16:33 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 153.929µs 5170
+2016/01/19 13:16:33 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 168.706µs 19185
+2016/01/19 13:16:33 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 140.047µs 8544
+2016/01/19 13:16:33 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 256.332µs 129448
+2016/01/19 13:16:33 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 340.911µs 304363
+2016/01/19 13:16:33 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 106.211µs 5704
+2016/01/19 13:16:33 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 102.743µs 1253
+2016/01/19 13:16:33 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 143.545µs 5759
+2016/01/19 13:16:33 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 151.859µs 32954
+2016/01/19 13:16:34 logger.go:38: [info] GET /favicon.ico [32m200[0m 89.211µs 0
+2016/01/19 13:16:36 user.go:434: [error]  
+2016/01/19 13:16:36 logger.go:38: [info] GET /user [32m200[0m 2.445285ms 14996
+2016/01/19 13:16:36 logger.go:38: [info] GET /css/layout.css [32m200[0m 153.785µs 7620
+2016/01/19 13:16:36 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 124.164µs 5170
+2016/01/19 13:16:36 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 147.239µs 19185
+2016/01/19 13:16:36 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 141.195µs 8544
+2016/01/19 13:16:36 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 238.29µs 129448
+2016/01/19 13:16:36 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 402.658µs 304363
+2016/01/19 13:16:36 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 180.97µs 5704
+2016/01/19 13:16:36 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 154.837µs 1253
+2016/01/19 13:16:36 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 138.427µs 5759
+2016/01/19 13:16:36 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 178.002µs 32954
+2016/01/19 13:16:36 logger.go:38: [info] GET /favicon.ico [32m200[0m 64.618µs 0
+2016/01/19 13:16:41 logger.go:38: [info] POST /user/getcode [32m200[0m 1.578273ms 48
+2016/01/19 13:16:55 user.go:434: [error]  
+2016/01/19 13:16:55 logger.go:38: [info] GET /user [32m200[0m 2.364151ms 14996
+2016/01/19 13:16:55 logger.go:38: [info] GET /css/layout.css [32m200[0m 164.162µs 7620
+2016/01/19 13:16:55 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 160.447µs 5170
+2016/01/19 13:16:55 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 276.329µs 19185
+2016/01/19 13:16:55 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 154.437µs 8544
+2016/01/19 13:16:55 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 356.868µs 129448
+2016/01/19 13:16:55 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 501.296µs 304363
+2016/01/19 13:16:55 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 136.289µs 5704
+2016/01/19 13:16:55 logger.go:38: [info] GET /img/bg_btn.jpg [32m200[0m 218.73µs 1253
+2016/01/19 13:16:55 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 107.649µs 32954
+2016/01/19 13:16:55 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 125.364µs 5759
+2016/01/19 13:16:55 logger.go:38: [info] GET /favicon.ico [32m200[0m 87.203µs 0
+2016/01/19 13:17:00 logger.go:38: [info] POST /user/getcode [32m200[0m 1.626496ms 48
+2016/01/19 13:18:17 logger.go:38: [info] POST /user/getcode [32m200[0m 1m0.003177961s 24
+2016/01/19 13:20:27 logger.go:38: [info] POST /user/getcode [32m200[0m 1m0.001796835s 24
+2016/01/19 13:21:47 logger.go:38: [info] POST /user/uploadpic [32m200[0m 833.941µs 93
+2016/01/19 13:21:47 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [32m200[0m 225.268µs 87192
+2016/01/19 13:21:49 user.go:231: [error] <nil> 
+2016/01/19 13:21:49 logger.go:38: [info] POST /user/editpic [32m200[0m 26.846527ms 36
+2016/01/19 13:21:53 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:21:53 logger.go:38: [info] GET /user [32m200[0m 2.365473ms 15028
+2016/01/19 13:21:54 logger.go:38: [info] GET /css/layout.css [36m304[0m 51.06µs 0
+2016/01/19 13:21:54 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [32m200[0m 153.017µs 8381
+2016/01/19 13:21:54 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 60.926µs 0
+2016/01/19 13:21:54 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 57.827µs 0
+2016/01/19 13:21:54 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 81.841µs 0
+2016/01/19 13:21:54 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 37.051µs 0
+2016/01/19 13:21:54 logger.go:38: [info] GET /favicon.ico [32m200[0m 121.528µs 0
+2016/01/19 13:22:12 user.go:45: [info] zb214 
+2016/01/19 13:22:12 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.285136ms 127
+2016/01/19 13:22:14 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:22:14 logger.go:38: [info] GET /user [32m200[0m 3.130578ms 15040
+2016/01/19 13:22:14 logger.go:38: [info] GET /css/layout.css [36m304[0m 56.583µs 0
+2016/01/19 13:22:14 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 77.58µs 0
+2016/01/19 13:22:14 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 51.206µs 0
+2016/01/19 13:22:14 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 43.205µs 0
+2016/01/19 13:22:14 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 47.023µs 0
+2016/01/19 13:22:14 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 44.38µs 0
+2016/01/19 13:22:14 logger.go:38: [info] GET /favicon.ico [32m200[0m 3.925501ms 0
+2016/01/19 13:22:16 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:22:16 logger.go:38: [info] GET /user [32m200[0m 2.429817ms 15040
+2016/01/19 13:22:16 logger.go:38: [info] GET /css/layout.css [36m304[0m 45.486µs 0
+2016/01/19 13:22:16 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 50.212µs 0
+2016/01/19 13:22:16 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 37.536µs 0
+2016/01/19 13:22:16 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 44.685µs 0
+2016/01/19 13:22:16 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 44.635µs 0
+2016/01/19 13:22:16 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 40.041µs 0
+2016/01/19 13:22:16 logger.go:38: [info] GET /favicon.ico [32m200[0m 97.113µs 0
+2016/01/19 13:22:19 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:22:19 logger.go:38: [info] GET /user [32m200[0m 2.283589ms 15040
+2016/01/19 13:22:19 logger.go:38: [info] GET /css/layout.css [36m304[0m 47.125µs 0
+2016/01/19 13:22:19 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 23.263µs 0
+2016/01/19 13:22:19 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 75.751µs 0
+2016/01/19 13:22:19 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 66.562µs 0
+2016/01/19 13:22:19 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 58.553µs 0
+2016/01/19 13:22:19 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 45.034µs 0
+2016/01/19 13:22:19 logger.go:38: [info] GET /favicon.ico [32m200[0m 79.575µs 0
+2016/01/19 13:22:21 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:22:21 logger.go:38: [info] GET /user [32m200[0m 2.680025ms 15040
+2016/01/19 13:22:21 logger.go:38: [info] GET /css/layout.css [36m304[0m 56.437µs 0
+2016/01/19 13:22:21 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 67.777µs 0
+2016/01/19 13:22:21 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 54.618µs 0
+2016/01/19 13:22:21 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 43.702µs 0
+2016/01/19 13:22:21 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 45.57µs 0
+2016/01/19 13:22:21 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 48.802µs 0
+2016/01/19 13:22:21 logger.go:38: [info] GET /favicon.ico [32m200[0m 74.69µs 0
+2016/01/19 13:22:36 logger.go:38: [info] GET / /upload/photo/20160119112147.jpg [33m404[0m 88.683µs 10
+2016/01/19 13:22:40 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 37.229µs 0
+2016/01/19 13:23:00 user.go:45: [info] zb214 
+2016/01/19 13:23:00 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.221825ms 127
+2016/01/19 13:23:02 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:02 logger.go:38: [info] GET /user [32m200[0m 2.96539ms 15038
+2016/01/19 13:23:02 logger.go:38: [info] GET /css/layout.css [32m200[0m 3.82352ms 7620
+2016/01/19 13:23:02 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [32m200[0m 1.294733ms 8381
+2016/01/19 13:23:02 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 1.334617ms 19185
+2016/01/19 13:23:02 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 124.167µs 5170
+2016/01/19 13:23:02 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 128.997µs 8544
+2016/01/19 13:23:02 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 229.325µs 129448
+2016/01/19 13:23:02 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 512.052µs 304363
+2016/01/19 13:23:02 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 98.363µs 5704
+2016/01/19 13:23:02 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 133.142µs 5759
+2016/01/19 13:23:02 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 141.531µs 32954
+2016/01/19 13:23:03 logger.go:38: [info] GET /favicon.ico [32m200[0m 122.166µs 0
+2016/01/19 13:23:09 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:09 logger.go:38: [info] GET /user [32m200[0m 2.494645ms 15038
+2016/01/19 13:23:09 logger.go:38: [info] GET /css/layout.css [32m200[0m 145.457µs 7620
+2016/01/19 13:23:09 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [32m200[0m 178.202µs 8381
+2016/01/19 13:23:09 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 241.668µs 19185
+2016/01/19 13:23:09 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 104.292µs 5170
+2016/01/19 13:23:09 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 141.116µs 8544
+2016/01/19 13:23:09 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 217.886µs 129448
+2016/01/19 13:23:09 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 330.936µs 304363
+2016/01/19 13:23:09 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 139.446µs 5704
+2016/01/19 13:23:09 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 136.624µs 5759
+2016/01/19 13:23:09 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 163.376µs 32954
+2016/01/19 13:23:10 logger.go:38: [info] GET /favicon.ico [32m200[0m 73.89µs 0
+2016/01/19 13:23:15 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:15 logger.go:38: [info] GET /user [32m200[0m 202.602829ms 15038
+2016/01/19 13:23:15 logger.go:38: [info] GET /css/layout.css [36m304[0m 55.532µs 0
+2016/01/19 13:23:15 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 45.416µs 0
+2016/01/19 13:23:15 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 46.893µs 0
+2016/01/19 13:23:15 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 45.703µs 0
+2016/01/19 13:23:15 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 47.391µs 0
+2016/01/19 13:23:15 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 51.26µs 0
+2016/01/19 13:23:16 logger.go:38: [info] GET /favicon.ico [32m200[0m 68.796µs 0
+2016/01/19 13:23:16 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:16 logger.go:38: [info] GET /user [32m200[0m 2.336708ms 15038
+2016/01/19 13:23:16 logger.go:38: [info] GET /css/layout.css [36m304[0m 44.165µs 0
+2016/01/19 13:23:16 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 19.082µs 0
+2016/01/19 13:23:16 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 41.657µs 0
+2016/01/19 13:23:16 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 45.522µs 0
+2016/01/19 13:23:16 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 43.893µs 0
+2016/01/19 13:23:16 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 43.953µs 0
+2016/01/19 13:23:16 logger.go:38: [info] GET /favicon.ico [32m200[0m 71.015µs 0
+2016/01/19 13:23:17 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:17 logger.go:38: [info] GET /user [32m200[0m 2.934366ms 15038
+2016/01/19 13:23:17 logger.go:38: [info] GET /css/layout.css [36m304[0m 54.581µs 0
+2016/01/19 13:23:17 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 43.085µs 0
+2016/01/19 13:23:17 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 25.797µs 0
+2016/01/19 13:23:17 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 43.217µs 0
+2016/01/19 13:23:17 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 60.96µs 0
+2016/01/19 13:23:17 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 28.436µs 0
+2016/01/19 13:23:17 logger.go:38: [info] GET /favicon.ico [32m200[0m 115.708µs 0
+2016/01/19 13:23:18 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:18 logger.go:38: [info] GET /user [32m200[0m 2.639781ms 15038
+2016/01/19 13:23:18 logger.go:38: [info] GET /css/layout.css [36m304[0m 42.564µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 46.907µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 18.951µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 16.126µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 44.558µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 17.102µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /favicon.ico [32m200[0m 80.151µs 0
+2016/01/19 13:23:18 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:18 logger.go:38: [info] GET /user [32m200[0m 2.505811ms 15038
+2016/01/19 13:23:18 logger.go:38: [info] GET /css/layout.css [36m304[0m 52.842µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 34.31µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 46.381µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 52.566µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 45.48µs 0
+2016/01/19 13:23:18 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 39.895µs 0
+2016/01/19 13:23:19 logger.go:38: [info] GET /favicon.ico [32m200[0m 114.14µs 0
+2016/01/19 13:23:19 user.go:434: [error] /upload/photo/20160119112147.jpg 
+2016/01/19 13:23:19 logger.go:38: [info] GET /user [32m200[0m 2.754666ms 15038
+2016/01/19 13:23:19 logger.go:38: [info] GET /css/layout.css [36m304[0m 48.304µs 0
+2016/01/19 13:23:19 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 27.892µs 0
+2016/01/19 13:23:19 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 40.908µs 0
+2016/01/19 13:23:19 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 46.56µs 0
+2016/01/19 13:23:19 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 46.38µs 0
+2016/01/19 13:23:19 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 35.58µs 0
+2016/01/19 13:23:19 logger.go:38: [info] GET /favicon.ico [32m200[0m 86.117µs 0
+2016/01/19 13:37:46 logger.go:38: [info] GET /upload/photo/20160119112147.jpg [36m304[0m 80.845µs 0
+2016/01/19 13:37:46 logger.go:38: [info] GET /favicon.ico [32m200[0m 73.946µs 0
