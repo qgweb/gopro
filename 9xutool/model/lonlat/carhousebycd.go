@@ -15,13 +15,15 @@ import (
 )
 
 type CarHouse struct {
-	iniFile *ini.File
-	mp      *common.MgoPool
-	mysql   *orm.QGORM
-	debug   string
+	iniFile     *ini.File
+	industry_mp *common.MgoPool
+	lonlat_mp   *common.MgoPool
+	mysql       *orm.QGORM
+	debug       string
 }
 
 type CarHouseData struct {
+	ad       string
 	lon      string //经度
 	lat      string //纬度
 	province string
@@ -57,13 +59,22 @@ func NewCarHouseCli() cli.Command {
 			ch.iniFile, _ = ini.Load(f)
 
 			// mgo 配置文件
-			mconf := &common.MgoConfig{}
-			mconf.DBName = ch.iniFile.Section("mongo-industry").Key("db").String()
-			mconf.Host = ch.iniFile.Section("mongo-industry").Key("host").String()
-			mconf.Port = ch.iniFile.Section("mongo-industry").Key("port").String()
-			mconf.UserName = ch.iniFile.Section("mongo-industry").Key("user").String()
-			mconf.UserPwd = ch.iniFile.Section("mongo-industry").Key("pwd").String()
-			ch.mp = common.NewMgoPool(mconf)
+			industry_mconf := &common.MgoConfig{}
+			industry_mconf.DBName = ch.iniFile.Section("mongo-industry").Key("db").String()
+			industry_mconf.Host = ch.iniFile.Section("mongo-industry").Key("host").String()
+			industry_mconf.Port = ch.iniFile.Section("mongo-industry").Key("port").String()
+			industry_mconf.UserName = ch.iniFile.Section("mongo-industry").Key("user").String()
+			industry_mconf.UserPwd = ch.iniFile.Section("mongo-industry").Key("pwd").String()
+
+			lonlat_mconf := &common.MgoConfig{}
+			lonlat_mconf.DBName = ch.iniFile.Section("mongo-lonlat_data").Key("db").String()
+			lonlat_mconf.Host = ch.iniFile.Section("mongo-lonlat_data").Key("host").String()
+			lonlat_mconf.Port = ch.iniFile.Section("mongo-lonlat_data").Key("port").String()
+			lonlat_mconf.UserName = ch.iniFile.Section("mongo-lonlat_data").Key("user").String()
+			lonlat_mconf.UserPwd = ch.iniFile.Section("mongo-lonlat_data").Key("pwd").String()
+
+			ch.industry_mp = common.NewMgoPool(industry_mconf)
+			ch.lonlat_mp = common.NewMgoPool(lonlat_mconf)
 			//mysql 配置文件
 			ch.mysql = orm.NewORM()
 			//debug
@@ -76,16 +87,18 @@ func NewCarHouseCli() cli.Command {
 
 func (this *CarHouse) Do(c *cli.Context) {
 	var (
-		industry_db = this.iniFile.Section("mongo-industry").Key("db").String()
-		lonlat_db   = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
-		collection  = getIndustryCollectionName()
-		sess        = this.mp.Get()
-		time        = common.GetDayTimestamp(-1)
+		industry_db   = this.iniFile.Section("mongo-industry").Key("db").String()
+		lonlat_db     = this.iniFile.Section("mongo-lonlat_data").Key("db").String()
+		collection    = getIndustryCollectionName()
+		industry_sess = this.industry_mp.Get()
+		lonlat_sess   = this.lonlat_mp.Get()
+		time          = common.GetDayTimestamp(-1)
 	)
-	defer sess.Close()
+	defer industry_sess.Close()
+	defer lonlat_sess.Close()
 
-	iter := sess.DB(industry_db).C(collection).Find(bson.M{"timestamp": "1453305600"}).Limit(100).Iter()
-	// iter := sess.DB(industry_db).C(collection).Find(bson.M{"timestamp": time}).Iter()
+	// iter := industry_sess.DB(industry_db).C(collection).Find(bson.M{"timestamp": "1453305600"}).Limit(100).Iter()
+	iter := industry_sess.DB(industry_db).C(collection).Find(bson.M{"timestamp": time}).Iter()
 	var result map[string]interface{}
 	var longlatData map[string]interface{}
 	var CarHouseData_Map = make(map[string]*CarHouseData)
@@ -101,7 +114,7 @@ func (this *CarHouse) Do(c *cli.Context) {
 		i++
 		ad := result["ad"].(string)
 
-		err := sess.DB(lonlat_db).C("tbl_map").Find(bson.M{"ad": ad}).One(&longlatData)
+		err := lonlat_sess.DB(lonlat_db).C("tbl_map").Find(bson.M{"ad": ad}).One(&longlatData)
 		if err != nil && err != mgo.ErrNotFound { //如果有错误
 			log.Fatal(err)
 			continue
@@ -123,6 +136,7 @@ func (this *CarHouse) Do(c *cli.Context) {
 		}
 
 		r := &CarHouseData{
+			ad:       longlatData["ad"].(string),
 			lon:      longlatData["lon"].(string),
 			lat:      longlatData["lat"].(string),
 			province: longlatData["province"].(string),
@@ -134,14 +148,14 @@ func (this *CarHouse) Do(c *cli.Context) {
 		}
 		CarHouseData_Map[result["ad"].(string)] = r
 	}
-	fmt.Println("数据处理完毕，开始入库...")
 
 	if len(CarHouseData_Map) > 0 {
+		fmt.Println("数据处理完毕，开始入库...")
 		this.getMysqlConnect()
 		j := 1
 		for _, v := range CarHouseData_Map {
-			this.mysql.BSQL().Insert("car_house_report_jw").Values("lon", "lat", "tag_id", "num", "province", "city", "district", "time")
-			_, err := this.mysql.Insert(v.lon, v.lat, v.category, v.num, v.province, v.city, v.district, v.time)
+			this.mysql.BSQL().Insert("car_house_report_jw").Values("ad", "lon", "lat", "tag_id", "num", "province", "city", "district", "time")
+			_, err := this.mysql.Insert(v.ad, v.lon, v.lat, v.category, v.num, v.province, v.city, v.district, v.time)
 			if err != nil {
 				log.Warn("插入失败 ", err)
 			}

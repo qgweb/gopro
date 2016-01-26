@@ -60,6 +60,7 @@ func main() {
 	service.AddMethods(TaoCatData{})
 	service.AddMethods(UserCookieData{})
 	service.AddMethods(SearchWord{})
+	service.AddMethods(Putin{})
 
 	//服务开启
 	http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), service)
