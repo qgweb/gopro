@@ -18,14 +18,16 @@ import (
 )
 
 type UserTrace struct {
-	mp      *mongodb.DialContext
-	mcp     *mongodb.DialContext
-	mtcp    *mongodb.DialContext
-	ldb     *rediscache.MemCache
-	rc      redis.Conn
-	iniFile *ini.File
-	prefix  string
-	mux     sync.Mutex
+	mp         *mongodb.DialContext
+	mcp        *mongodb.DialContext
+	mtcp       *mongodb.DialContext
+	ldb        *rediscache.MemCache
+	rc         redis.Conn
+	iniFile    *ini.File
+	prefix     string
+	mux        sync.Mutex
+	cacheData1 []interface{}
+	cacheData2 []interface{}
 }
 
 func NewUserTraceCli() cli.Command {
@@ -65,6 +67,8 @@ func NewUserTraceCli() cli.Command {
 			}
 			// leveldb cache
 			ur.prefix = bson.NewObjectId().Hex() + "_"
+			ur.cacheData1 = make([]interface{}, 0, 10000)
+			ur.cacheData2 = make([]interface{}, 0, 10000)
 			ur.initLevelDb()
 			ur.Do(c)
 			ur.mp.Close()
@@ -205,6 +209,37 @@ func (this *UserTrace) getBigCat() map[string]string {
 	return nil
 }
 
+func (this *UserTrace) mulPut(sess *mongodb.Session, data bson.M, table string, t int) {
+	var db = this.iniFile.Section("mongo").Key("db").String()
+	if t == 1 {
+		this.cacheData1 = append(this.cacheData1, data)
+		if len(this.cacheData1) >= 10000 {
+			sess.DB(db).C(table).Insert(this.cacheData1...)
+			this.cacheData1 = make([]interface{}, 0, 10000)
+		}
+	}
+	if t == 2 {
+		this.cacheData2 = append(this.cacheData2, data)
+		if len(this.cacheData2) >= 10000 {
+			sess.DB(db).C(table).Insert(this.cacheData2...)
+			this.cacheData2 = make([]interface{}, 0, 10000)
+		}
+	}
+
+}
+
+func (this *UserTrace) flushMulput(sess *mongodb.Session, table string, t int) {
+	var db = this.iniFile.Section("mongo").Key("db").String()
+	if t == 1 {
+		sess.DB(db).C(table).Insert(this.cacheData1...)
+		this.cacheData1 = make([]interface{}, 0, 10000)
+	}
+	if t == 2 {
+		sess.DB(db).C(table).Insert(this.cacheData2...)
+		this.cacheData2 = make([]interface{}, 0, 10000)
+	}
+}
+
 func (this *UserTrace) saveData() {
 	var (
 		sess          = this.mp.Ref()
@@ -212,6 +247,7 @@ func (this *UserTrace) saveData() {
 		table_put     = "useraction_put"
 		table_put_big = "useraction_put_big"
 		taoCategory   map[string]string
+		count         = 0
 	)
 
 	defer this.mp.UnRef(sess)
@@ -219,8 +255,19 @@ func (this *UserTrace) saveData() {
 	//初始化淘宝分类
 	taoCategory = this.getBigCat()
 	keys := this.ldb.Keys(this.prefix + "*")
-	list := make([]interface{}, 0, len(keys))
-	list_put := make([]interface{}, 0, len(keys))
+
+	//加索引
+	sess.DB(db).C(table_put).DropCollection()
+	sess.DB(db).C(table_put_big).DropCollection()
+	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
+	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put).EnsureIndexKey("adua")
+	sess.DB(db).C(table_put).EnsureIndexKey("AD")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
+	sess.DB(db).C(table_put_big).EnsureIndexKey("AD")
+
 	for _, key := range keys {
 		tags := this.ldb.HGetAllKeys(key)
 		tagsmap := make([]bson.M, 0, len(tags))
@@ -235,47 +282,37 @@ func (this *UserTrace) saveData() {
 			if bt, ok := taoCategory[tag]; ok {
 				taginfo_put["tagId"] = bt
 			}
+			count++
 			tagsmap = append(tagsmap, taginfo)
 			tagsmap_put = append(tagsmap_put, taginfo_put)
 		}
 
 		adua := strings.Split(strings.TrimPrefix(key, this.prefix), "_")
-		list = append(list, bson.M{
+		this.mulPut(sess, bson.M{
 			"AD":   adua[0],
 			"UA":   adua[1],
 			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
 			"tag":  tagsmap,
-		})
-		list_put = append(list_put, bson.M{
+		}, table_put, 1)
+		this.mulPut(sess, bson.M{
 			"AD":   adua[0],
 			"UA":   adua[1],
 			"adua": encrypt.DefaultMd5.Encode(adua[0] + adua[1]),
-			"tag":  tagsmap_put,
-		})
+			"tag":  tagsmap_put}, table_put_big, 2)
 	}
 
-	log.Debug("共计:", len(list), "条")
-	//加索引
-	sess.DB(db).C(table_put).DropCollection()
-	sess.DB(db).C(table_put_big).DropCollection()
-	sess.DB(db).C(table_put).Create(&mgo.CollectionInfo{})
-	sess.DB(db).C(table_put_big).Create(&mgo.CollectionInfo{})
-	sess.DB(db).C(table_put).EnsureIndexKey("tag.tagId")
-	sess.DB(db).C(table_put).EnsureIndexKey("adua")
-	sess.DB(db).C(table_put).EnsureIndexKey("AD")
-	sess.DB(db).C(table_put_big).EnsureIndexKey("tag.tagId")
-	sess.DB(db).C(table_put_big).EnsureIndexKey("adua")
-	sess.DB(db).C(table_put_big).EnsureIndexKey("AD")
-	this.mp.Insert(mongodb.MulQueryParam{db, table_put, nil, 0, nil, 1}, list)
-	this.mp.Insert(mongodb.MulQueryParam{db, table_put_big, nil, 0, nil, 1}, list_put)
+	log.Debug("共计:", count, "条")
+
+	this.flushMulput(sess, table_put, 1)
+	this.flushMulput(sess, table_put_big, 2)
 }
 
 func (this *UserTrace) Do(c *cli.Context) {
 	var (
 		eghour = common.GetHourTimestamp(-1)
-		bghour = common.GetHourTimestamp(-2)
+		bghour = common.GetHourTimestamp(-2000)
 		egdate = common.GetHourTimestamp(-1)
-		bgdate = common.GetHourTimestamp(-73)
+		bgdate = common.GetHourTimestamp(-7300)
 	)
 	this.mp.Debug()
 	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}})
