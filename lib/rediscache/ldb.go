@@ -84,6 +84,13 @@ func (this *MemCache) Keys(key string) []string {
 	return make([]string, 0)
 }
 
+func (this *MemCache) Smembers(key string) []string {
+	if res, err := redis.Strings(this.db.Do("SMEMBERS", key)); err == nil {
+		return res
+	}
+	return make([]string, 0)
+}
+
 func (this *MemCache) SelectDb(db string) {
 	this.db.Do("SELECT", db)
 }

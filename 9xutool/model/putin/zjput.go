@@ -559,6 +559,23 @@ func (this *ZJPut) GetVisitorInfos() {
 	iter.Close()
 }
 
+func (this *ZJPut) MapPut() {
+	this.ldb.SelectDb(10)
+	mapkeys := this.ldb.Keys("advert_map*")
+	for _, k := range mapkeys {
+		ad := strings.TrimPrefix(k, "advert_map_")
+		advertId := this.ldb.Smembers(k)
+		if len(advertId) > 0 {
+			this.PutAdToCache(ad)
+			for _, id := range advertId {
+				this.PutAdvertToCache(ad, "ua", id)
+				this.pushAdToAdvert(ad, "ua", id)
+			}
+		}
+	}
+	this.ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
+}
+
 func (this *ZJPut) Do(c *cli.Context) {
 	this.initBlackMenu()
 	this.tagMap0 = this.getTagsAdverts("TAGS_0_*")
@@ -571,6 +588,7 @@ func (this *ZJPut) Do(c *cli.Context) {
 	this.GetClickWhiteMenu()
 	this.GetShopAdUaInfo()
 	this.GetVisitorInfos()
+	this.MapPut()
 	this.PutAdvertToRedis()
 	this.flushDb()
 	this.PutAdsToDxSystem()
