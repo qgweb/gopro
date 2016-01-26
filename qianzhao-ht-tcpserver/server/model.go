@@ -28,7 +28,7 @@ const (
 	CARD_APPLY_URL      = "http://221.228.17.114:58886/iherbhelper/services/ApplicationCard"
 	CARD_CHECK_URL      = "http://221.228.17.114:58886/iherbhelper/services/CheckCard"
 	CARD_QUERY_TEST_URL = "http://202.102.13.98:7001/services/LcimsForUserInfo"
-	CARD_QUERY_URL      = "http://202.102.13.123:7001/services/LcimsForUserInfo"
+	CARD_QUERY_URL      = "http://202.102.13.123:17001/services/LcimsForUserInfo"
 	FREE_CARD           = 0
 	UNFREE_CARD         = 1
 )

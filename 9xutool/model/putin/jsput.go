@@ -448,7 +448,7 @@ func (this *JSPut) savePutData() {
 	rk2 := "account.10046.sha1." + time.Now().Add(-time.Hour).Format("200601021504")
 
 	fname1 := path1 + "/tag_" + rk1 + ".txt"
-	fname2 := path2 + "/" + rk2 + ".txt"
+	fname2 := path2 + "/" + rk2
 
 	f1, err := os.Create(fname1)
 	if err != nil {
@@ -477,8 +477,8 @@ func (this *JSPut) savePutData() {
 	cmd := exec.Command(ftp1, "tag_"+rk1+".txt")
 	str, err := cmd.Output()
 	log.Info(string(str), err)
-	log.Info(ftp2)
-	cmd = exec.Command(ftp2, rk2+".txt")
+	log.Info(ftp2, rk2)
+	cmd = exec.Command(ftp2, rk2)
 	str, err = cmd.Output()
 	log.Info(string(str), err)
 }
