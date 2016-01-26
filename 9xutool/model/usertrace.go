@@ -310,9 +310,9 @@ func (this *UserTrace) saveData() {
 func (this *UserTrace) Do(c *cli.Context) {
 	var (
 		eghour = common.GetHourTimestamp(-1)
-		bghour = common.GetHourTimestamp(-2000)
+		bghour = common.GetHourTimestamp(-2)
 		egdate = common.GetHourTimestamp(-1)
-		bgdate = common.GetHourTimestamp(-7300)
+		bgdate = common.GetHourTimestamp(-73)
 	)
 	this.mp.Debug()
 	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}})
