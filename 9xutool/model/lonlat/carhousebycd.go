@@ -154,7 +154,7 @@ func (this *CarHouse) Do(c *cli.Context) {
 		this.getMysqlConnect()
 		j := 1
 		for _, v := range CarHouseData_Map {
-			this.mysql.BSQL().Insert("car_house_report_jw").Values("ad", "lon", "lat", "tag_id", "num", "province", "city", "district", "time")
+			this.mysql.BSQL().Insert("tags_car_house_report_jw").Values("ad", "lon", "lat", "tag_id", "num", "province", "city", "district", "time")
 			_, err := this.mysql.Insert(v.ad, v.lon, v.lat, v.category, v.num, v.province, v.city, v.district, v.time)
 			if err != nil {
 				log.Warn("插入失败 ", err)
