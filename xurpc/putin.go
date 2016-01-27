@@ -13,34 +13,36 @@ import (
 	"github.com/qgweb/new/lib/timestamp"
 	"goclass/orm"
 	"strings"
+	"sync"
 	"time"
 )
 
 type Putin struct {
 }
 type Order interface {
-	Handler() error
-	Check() error
+	Handler()
+	Check()
+	GetPutStatus() string
 }
 type Advert struct {
-	id     string
-	status string
-	errors []string
+	id          string
+	status      string
+	put_status  string
+	strategy_id string
 }
 type Strategy struct {
-	id     string
-	status string
-	errors []string
+	id         string
+	status     string
+	put_status string
+	advert_ids []string //计划下的创意id
 }
 
 var (
 	mysqlsession *orm.QGORM
+	mux1         sync.Mutex
 	iniFile      config.ConfigContainer
 	err          error
 	info         = map[string]string{
-		"1000": "没有推广计划",
-		"1001": "没有投放创意",
-		"1002": "审核未通过可投放创意",
 		"1003": "无可投放创意",
 		"1004": "上层计划未打开",
 		"1005": "未通过审核",
@@ -48,9 +50,20 @@ var (
 		"2001": "日限额不足",
 		"3000": "不在投放周期",
 		"3001": "不在投放时段",
-		"4444": "数据更新失败",
 		"9999": "正在投放",
 		"1111": "未投放",
+	}
+
+	put_status = map[string]string{
+		"6": "无可投放创意",
+		"7": "上层计划未打开",
+		"8": "未通过审核",
+		"2": "余额不足",
+		"3": "日限额不足",
+		"4": "不在投放周期",
+		"5": "不在投放时段",
+		"1": "正在投放",
+		"0": "未投放",
 	}
 
 	table_advert         = "nxu_advert"
@@ -60,6 +73,7 @@ var (
 
 func (this Putin) StatusHandler(id, category, status string) []byte {
 	var order Order
+	fmt.Println(id, category, status)
 	if id == "" || category == "" || status == "" {
 		return jsonReturn("", errors.New("参数不能为空"))
 	}
@@ -72,56 +86,53 @@ func (this Putin) StatusHandler(id, category, status string) []byte {
 		jsonReturn("", errors.New("类型错误"))
 	}
 	getMysqlSession()
-	err := handleData(order)
-	if err != nil {
-		return jsonReturn("", err)
-	}
-	return jsonReturn("", err)
+	handleData(order)
+	msg := put_status[order.GetPutStatus()]
+	return jsonReturn(msg, nil)
 }
 
 /**
  * 处理计划或者创意
  */
-func handleData(order Order) error {
-	err := order.Check()
-	if err != nil {
-		return err
-	}
-	err = order.Handler()
-	if err != nil {
-		return err
-	}
-	return nil
+func handleData(order Order) {
+	order.Check()
+	order.Handler()
 }
 
 /**
  * 检查创意
  */
-func (this *Advert) Check() error {
+func (this *Advert) Check() {
+	if this.status == "0" {
+		this.put_status = "0"
+		return
+	}
+	this.put_status = "1"
 	today := timestamp.GetDayTimestamp(0)
 	AdvertInfo, err := GetAdvertInfo(this.id)
 	if err != nil {
 		log.Error(err)
-		return err
+		return
 	}
+	this.strategy_id = AdvertInfo["strategy_id"]
 	//检查用户余额
 	money := convert.ToFloat64(getUserMoney(AdvertInfo["user_id"]))
 	if money <= 0 {
-		return errors.New("2000") //余额不足
+		this.put_status = "2"
 	}
 	//检查日限额
 	StrategyInfo, err := GetStrategyInfo(AdvertInfo["strategy_id"])
 	if err != nil {
 		log.Error(err)
-		return err
+		return
 	}
 	dayMoney := GetDayCostMoney(StrategyInfo["id"], today)
 	if dayMoney >= convert.ToFloat64(StrategyInfo["day_limit"]) {
-		return errors.New("2001") //日限额不足
+		this.put_status = "3"
 	}
 	//检查投放周期
 	if today < StrategyInfo["begin_time"] || today > StrategyInfo["end_time"] {
-		return errors.New("3000") //不在投放周期
+		this.put_status = "4"
 	}
 	//检查时间段
 	t := time.Unix(convert.ToInt64(today), 0)
@@ -129,50 +140,57 @@ func (this *Advert) Check() error {
 	hour := convert.ToInt64(t.Hour())
 	interval := strings.Split(StrategyInfo["time_interval"], "|")
 	if !CheckIntervel(interval, int(week), int(hour)) {
-		return errors.New("3001") //当前时间段不投
+		this.put_status = "5"
 	}
 	//检查是否审核通过
 	if !this.isReview() {
-		return errors.New("1003") //审核未通过
+		this.put_status = "8"
+		return //审核没过直接不走下去了
 	}
 	//检查上层计划是否开启
 	if StrategyInfo["status"] == "0" {
-		return errors.New("1004") //上级计划未打开
+		this.put_status = "7"
 	}
-	return nil
 }
 
 /**
  * 检查通过后更新数据库
  * 入队列
  */
-func (this *Advert) Handler() error {
+func (this *Advert) Handler() {
 	mysqlsession.BSQL().Update(table_advert).Set("status", "put_status").Where("id=" + this.id)
-	fmt.Println(mysqlsession.LastSql())
-	affectRows, err := mysqlsession.Update(1, 1)
+	_, err := mysqlsession.Update(this.status, this.put_status)
 	if err != nil {
 		log.Error(err)
-		return err
+		return
 	}
-	if affectRows == 0 {
-		log.Error("修改", this.id, "的创意开关状态失败")
-		return err
-	}
-
-	sqs, _ := GetSqs()
-	queue := iniFile.String("httpsqs::queue")
-	sqs.SetQueue(queue)
-	params := map[string]string{
-		"id":     this.id,
-		"type":   "advert",
-		"status": this.status,
-	}
-	err = sqs.Put(params)
+	advertinfo, err := GetAdvertInfo(this.id)
 	if err != nil {
 		log.Error(err)
+		return
 	}
-	fmt.Println(sqs.GetLastUrl())
-	return nil
+	this.strategy_id = advertinfo["strategy_id"]
+	if this.status == "0" { //检测本计划下是否还有创意开启，没有的话修改计划的文字状态
+		if !this.hasOtherAdvert() {
+			mysqlsession.BSQL().Update(table_strategy).Set("put_status").Where("id=" + this.strategy_id)
+			_, err := mysqlsession.Update(6)
+			if err != nil {
+				log.Error(err)
+				return
+			}
+		}
+		this.PutQueue()
+	} else {
+		if this.isStrategyOpen() && this.put_status == "1" {
+			mysqlsession.BSQL().Update(table_strategy).Set("put_status").Where("id=" + this.strategy_id)
+			_, err := mysqlsession.Update(1)
+			if err != nil {
+				log.Error(err)
+				return
+			}
+			this.PutQueue() //上层计划开启才会入队列
+		}
+	}
 }
 
 /**
@@ -186,6 +204,75 @@ func (this *Advert) isReview() bool {
 		return false
 	}
 	if len(result) == 0 {
+		return false
+	}
+	return true
+}
+
+/**
+ * 入队列
+ */
+func (this *Advert) PutQueue() {
+	sqs, _ := GetSqs()
+	queue := iniFile.String("httpsqs::queue")
+	sqs.SetQueue(queue)
+	params := map[string]string{
+		"id":     this.id,
+		"type":   "advert",
+		"status": this.status,
+	}
+	err = sqs.Put(params)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+}
+
+func (this *Strategy) PutQueue() {
+	sqs, _ := GetSqs()
+	queue := iniFile.String("httpsqs::queue")
+	sqs.SetQueue(queue)
+	params := map[string]string{
+		"id":     this.id,
+		"type":   "strategy",
+		"status": this.status,
+	}
+	err = sqs.Put(params)
+	fmt.Println(sqs.GetLastUrl())
+	if err != nil {
+		log.Error(err)
+		return
+	}
+}
+
+/**
+ * 检查是否还有同级的
+ */
+func (this *Advert) hasOtherAdvert() bool {
+	mysqlsession.BSQL().Select("id").From(table_advert).Where("review_status=1").And("isdel=0").And("strategy_id=" + this.strategy_id).And("id !=" + this.id).And("status = 1")
+	result, err := mysqlsession.Query()
+	if err != nil {
+		log.Error(err)
+		return false
+	}
+	if len(result) == 0 {
+		return false
+	}
+	return true
+}
+
+func (this *Advert) isStrategyOpen() bool {
+	mysqlsession.BSQL().Select("status").From(table_strategy).Where("id = " + this.strategy_id)
+	result, err := mysqlsession.Query()
+	if err != nil {
+		log.Error(err)
+		return false
+	}
+	status, ok := result[0]["status"]
+	if !ok {
+		return false
+	}
+	if status == "0" {
 		return false
 	}
 	return true
@@ -243,43 +330,133 @@ func GetDayCostMoney(id, date string) float64 {
 /**
  * 检查计划
  */
-func (this *Strategy) Check() error {
-	// var a = make([]map[string]string, 0)
-	return nil
+func (this *Strategy) Check() {
+	if this.status == "0" {
+		this.put_status = "0"
+		return
+	}
+	this.put_status = "1"
+	today := timestamp.GetDayTimestamp(0)
+	StrategyInfo, err := GetStrategyInfo(this.id)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	//检查用户余额
+	money := convert.ToFloat64(getUserMoney(StrategyInfo["user_id"]))
+	if money <= 0 {
+		this.put_status = "2"
+	}
+	dayMoney := GetDayCostMoney(StrategyInfo["id"], today)
+	if dayMoney >= convert.ToFloat64(StrategyInfo["day_limit"]) {
+		this.put_status = "3"
+	}
+	//检查投放周期
+	if today < StrategyInfo["begin_time"] || today > StrategyInfo["end_time"] {
+		this.put_status = "4"
+	}
+	//检查时间段
+	t := time.Unix(convert.ToInt64(today), 0)
+	week := convert.ToInt64(t.Weekday())
+	hour := convert.ToInt64(t.Hour())
+	interval := strings.Split(StrategyInfo["time_interval"], "|")
+	if !CheckIntervel(interval, int(week), int(hour)) {
+		this.put_status = "5"
+	}
+	//检查是否有符合条件的创意
+	advert_ids := this.GetChildAdvert()
+	if len(advert_ids) == 0 {
+		this.put_status = "6"
+	} else {
+		this.advert_ids = advert_ids
+	}
 }
 
-func (this *Strategy) Handler() error {
-	return nil
+func (this *Strategy) Handler() {
+	//修改自身状态
+	mysqlsession.BSQL().Update(table_strategy).Set("status", "put_status").Where("id=" + this.id)
+	_, err := mysqlsession.Update(this.status, this.put_status)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	if this.status == "1" {
+		if this.put_status == "1" {
+			for _, advert := range this.advert_ids {
+				mysqlsession.BSQL().Update(table_advert).Set("status", "put_status").Where("id=" + advert)
+				_, err := mysqlsession.Update(this.status, this.status)
+				if err != nil {
+					log.Error(err)
+					return
+				}
+			}
+		}
+	} else { //关闭的话开启的创意状态要改成上层未开启
+		this.advert_ids = this.GetChildAdvert()
+		for _, advert := range this.advert_ids {
+			mysqlsession.BSQL().Update(table_advert).Set("put_status").Where("status=1").And("id=" + advert)
+			_, err := mysqlsession.Update(7)
+			if err != nil {
+				log.Error(err)
+				return
+			}
+		}
+	}
+
+	this.PutQueue()
+}
+
+func (this *Strategy) GetChildAdvert() []string {
+	advert_ids := make([]string, 0, 20)
+	mysqlsession.BSQL().Select("id").From(table_advert).Where("review_status=1").And("isdel=0").And("strategy_id=" + this.id)
+	result, err := mysqlsession.Query()
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
+	for _, value := range result {
+		advert_ids = append(advert_ids, value["id"])
+	}
+	return advert_ids
+}
+
+func (this *Strategy) GetPutStatus() string {
+	return this.put_status
+}
+
+func (this *Advert) GetPutStatus() string {
+	return this.put_status
 }
 
 /**
  * 获取mysql实例
  */
 func getMysqlSession() {
-	if mysqlsession != nil {
-		return
+	mux1.Lock()
+	defer mux1.Unlock()
+	if mysqlsession == nil {
+		mysqlsession = orm.NewORM()
+		iniFile, err = config.NewConfig("ini", *conf)
+		if err != nil {
+			log.Error("open configfile error:", err)
+			return
+		}
+		var (
+			host    = iniFile.String("mysql-9xu::host")
+			port    = iniFile.String("mysql-9xu::port")
+			user    = iniFile.String("mysql-9xu::user")
+			pwd     = iniFile.String("mysql-9xu::pwd")
+			db      = iniFile.String("mysql-9xu::db")
+			charset = "utf8"
+		)
+		err = mysqlsession.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", user, pwd, host, port, db, charset))
+		if err != nil {
+			log.Error("db connect error:", err)
+			return
+		}
+		mysqlsession.SetMaxIdleConns(50)
+		mysqlsession.SetMaxOpenConns(50)
 	}
-	mysqlsession = orm.NewORM()
-	iniFile, err = config.NewConfig("ini", *conf)
-	if err != nil {
-		log.Error("open configfile error:", err)
-		return
-	}
-	var (
-		host    = iniFile.String("mysql-9xu::host")
-		port    = iniFile.String("mysql-9xu::port")
-		user    = iniFile.String("mysql-9xu::user")
-		pwd     = iniFile.String("mysql-9xu::pwd")
-		db      = iniFile.String("mysql-9xu::db")
-		charset = "utf8"
-	)
-	err = mysqlsession.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", user, pwd, host, port, db, charset))
-	if err != nil {
-		log.Error("db connect error:", err)
-		return
-	}
-	mysqlsession.SetMaxIdleConns(50)
-	mysqlsession.SetMaxOpenConns(50)
 }
 
 /**
