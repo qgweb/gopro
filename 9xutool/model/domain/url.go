@@ -71,7 +71,7 @@ func NewURLTraceCli() cli.Command {
 func (this *UrlTrace) getWriter() *mongodb.MongodbBufferWriter {
 	qconf := mongodb.MongodbQueryConf{}
 	qconf.Db = "data_source"
-	qconf.Table = "urltrack_put"
+	qconf.Table = "urltrack_put_hbase"
 	return mongodb.NewMongodbBufferWriter(this.mdb, qconf)
 }
 
@@ -86,8 +86,9 @@ func (this *UrlTrace) Read(saveFun func(*hbase.ResultRow)) {
 		tableName = "zhejiang_urltrack_" + time.Now().Format("200601")
 		beginTime = timestamp.GetHourTimestamp(-2) + "_"
 		endTime   = timestamp.GetHourTimestamp(0) + "_"
+		count     = 0
 	)
-
+	log.Info(tableName, beginTime, endTime)
 	scn := hbase.NewScan([]byte(tableName), 50000, this.hobj)
 	scn.StartRow = []byte(beginTime)
 	scn.StopRow = []byte(endTime)
@@ -96,6 +97,10 @@ func (this *UrlTrace) Read(saveFun func(*hbase.ResultRow)) {
 		row := scn.Next()
 		if row == nil {
 			break
+		}
+		count++
+		if count%10000 == 0 {
+			log.Info(count)
 		}
 
 		saveFun(row)
@@ -129,7 +134,7 @@ func (this *UrlTrace) FlushWriter() {
 func (this *UrlTrace) InitMongo() {
 	qconf := mongodb.MongodbQueryConf{}
 	qconf.Db = "data_source"
-	qconf.Table = "urltrack_put"
+	qconf.Table = "urltrack_put_hbase"
 	qconf.Index = []string{"cids.id"}
 	this.mdb.Drop(qconf)
 	this.mdb.Create(qconf)

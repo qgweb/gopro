@@ -86,7 +86,7 @@ func main() {
 	if *server == "1" {
 		host = "qianzhao.221su.com"
 	}
-	addr, _ := net.ResolveTCPAddr("tcp4", host+":9093")
+	addr, err := net.ResolveTCPAddr("tcp4", host+":9093")
 	conn, err := net.DialTCP("tcp4", nil, addr)
 	if err != nil {
 		log.Fatalln("fuck")
@@ -105,7 +105,7 @@ func main() {
 		r.Content = "56000005038843|zta3t7M0"
 	case "3":
 		r.Action = "link"
-		r.Content = "36|56000005040361|SRgZTmDu|1449817500610|7194"
+		r.Content = "410|56000005040361|SRgZTmDu|1449817500610|30"
 	case "4":
 		r.Action = "info"
 		r.Content = ""
@@ -129,7 +129,6 @@ func main() {
 
 
 		log.Println(string(buf[0:n]))
-		log.Println(len(buf[0:n]))
 
 		var res,_  =UnRespond(ProtocolUnPack(buf[0:n]))
 		if res.Action == "ping" {
