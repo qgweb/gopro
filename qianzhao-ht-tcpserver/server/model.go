@@ -95,6 +95,10 @@ func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err 
 		hrmodel = model.HtCardRecord{}
 		date   = function.GetDateUnix()
 	)
+	if h :=hmodel.GetInfoByPhone(phone, date, 0, 3) ;h.Id > 0{
+		return h, errors.New("用户免费体验时间已到")
+	}
+
 	ht := hmodel.GetInfoByPhone(phone, date, 0, 1)
 	if ht.Id == 0 {
 		//申请卡

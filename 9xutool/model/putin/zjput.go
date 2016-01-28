@@ -24,12 +24,13 @@ import (
 
 // 浙江投放数据生成
 type ZJPut struct {
-	iniFile         *ini.File
-	mp              *common.MgoPool
-	mp_tj           *common.MgoPool
-	mp_precise      *common.MgoPool
-	rc_put          redis.Conn
-	rc_dx_put       redis.Conn
+	iniFile    *ini.File
+	mp         *common.MgoPool
+	mp_tj      *common.MgoPool
+	mp_precise *common.MgoPool
+	rc_put     redis.Conn
+	rc_dx_put  redis.Conn
+
 	prefix          string
 	proprefix       string                    // 浙江省对应的广告前缀
 	tagMap0         map[string]map[string]int // cpc
@@ -41,6 +42,7 @@ type ZJPut struct {
 	blackFileName   string                    //黑名单文件
 	blackMenus      map[string]int            // 黑名单
 	ldb             *rediscache.MemCache      //ldb缓存类
+	ldb_map         *rediscache.MemCache      //mapredis
 	mux             sync.Mutex
 }
 
@@ -124,7 +126,8 @@ func NewZheJiangPutCli() cli.Command {
 			ur.blackFileName = ur.iniFile.Section("default").Key("black_data_file").String()
 			ur.advertADS = make(map[string]map[string]int)
 			ur.tjprefix = "advert_tj_zj_" + time.Now().Format("2006010215") + "_"
-			ur.initLevelDb()
+			ur.ldb = ur.initRedisCache("redis_cache")
+			ur.ldb_map = ur.initRedisCache("redis_map")
 			ur.Do(c)
 			ur.ldb.Clean(ur.prefix)
 			ur.ldb.Clean(ur.prefix)
@@ -135,17 +138,19 @@ func NewZheJiangPutCli() cli.Command {
 	}
 }
 
-func (this *ZJPut) initLevelDb() {
-	var err error
+func (this *ZJPut) initRedisCache(section string) *rediscache.MemCache {
 	config := rediscache.MemConfig{}
-	config.Host = this.iniFile.Section("redis_cache").Key("host").String()
-	config.Port = this.iniFile.Section("redis_cache").Key("port").String()
+	config.Host = this.iniFile.Section(section).Key("host").String()
+	config.Port = this.iniFile.Section(section).Key("port").String()
 
-	if this.ldb, err = rediscache.New(config); err != nil {
+	if ldb, err := rediscache.New(config); err != nil {
 		log.Fatal(err)
-		return
+		return nil
+	} else {
+		ldb.SelectDb(this.iniFile.Section(section).Key("db").String())
+		return ldb
 	}
-	this.ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
+	return nil
 }
 
 // 初始化黑名单
@@ -310,7 +315,6 @@ func (this *ZJPut) PutAdsToDxSystem() {
 	}
 	this.rc_dx_put.Flush()
 	log.Info(len(ads), time.Now().Sub(bt).Seconds())
-
 }
 
 // 把ad放入对应的广告集合里去
@@ -560,11 +564,11 @@ func (this *ZJPut) GetVisitorInfos() {
 }
 
 func (this *ZJPut) MapPut() {
-	this.ldb.SelectDb(10)
-	mapkeys := this.ldb.Keys("advert_map*")
+	mapkeys := this.ldb_map.Keys("advert_map*")
 	for _, k := range mapkeys {
 		ad := strings.TrimPrefix(k, "advert_map_")
-		advertId := this.ldb.Smembers(k)
+		log.Info(ad)
+		advertId := this.ldb_map.Smembers(k)
 		if len(advertId) > 0 {
 			this.PutAdToCache(ad)
 			for _, id := range advertId {
@@ -573,7 +577,7 @@ func (this *ZJPut) MapPut() {
 			}
 		}
 	}
-	this.ldb.SelectDb(this.iniFile.Section("redis_cache").Key("db").String())
+	this.ldb_map.Flush()
 }
 
 func (this *ZJPut) Do(c *cli.Context) {
@@ -583,11 +587,11 @@ func (this *ZJPut) Do(c *cli.Context) {
 	this.tagMap5 = this.getTagsAdverts("TAGS_5_*")
 	this.provinceAdverts = this.getProAdverts()
 
-	this.Other()
-	this.Domain()
-	this.GetClickWhiteMenu()
-	this.GetShopAdUaInfo()
-	this.GetVisitorInfos()
+	//this.Other()
+	//this.Domain()
+	//this.GetClickWhiteMenu()
+	///this.GetShopAdUaInfo()
+	//this.GetVisitorInfos()
 	this.MapPut()
 	this.PutAdvertToRedis()
 	this.flushDb()
