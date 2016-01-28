@@ -1,13 +1,16 @@
-package main
+package putin
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/bitly/go-simplejson"
+	"github.com/garyburd/redigo/redis"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/http"
 	"github.com/qgweb/gopro/lib/httpsqs"
+	"github.com/qgweb/gopro/xurpc/common"
+	"github.com/qgweb/gopro/xurpc/lib"
 	"github.com/qgweb/new/lib/config"
 	"github.com/qgweb/new/lib/convert"
 	"github.com/qgweb/new/lib/timestamp"
@@ -19,17 +22,21 @@ import (
 
 type Putin struct {
 }
+
 type Order interface {
 	Handler()
 	Check()
 	GetPutStatus() string
+	SaveAdvert() error
 }
+
 type Advert struct {
 	id          string
 	status      string
 	put_status  string
 	strategy_id string
 }
+
 type Strategy struct {
 	id         string
 	status     string
@@ -69,13 +76,47 @@ var (
 	table_advert         = "nxu_advert"
 	table_strategy       = "nxu_strategy"
 	table_report_day_tmp = "nxu_report_ad_day_tmp"
+	rc_pool              *redis.Pool
 )
+
+func init() {
+	if err := initConfig(); err != nil {
+		log.Fatal(err)
+		return
+	}
+	if err := initRedisPool(); err != nil {
+		log.Fatal(err)
+		return
+	}
+}
+
+func initConfig() error {
+	iniFile, err = common.GetBeegoIniObject()
+	return err
+}
+
+func initRedisPool() error {
+	var (
+		host = iniFile.String("redis-put::host")
+		port = iniFile.String("redis-put::port")
+		db   = iniFile.String("redis-put::db")
+	)
+
+	if host == "" || port == "" || db == "" {
+		return errors.New("redis-put配置文件缺失")
+	}
+
+	rc_pool = lib.GetRedisPool(host, port)
+	conn := rc_pool.Get()
+	_, err := conn.Do("SELECT", db)
+	return err
+}
 
 func (this Putin) StatusHandler(id, category, status string) []byte {
 	var order Order
 	fmt.Println(id, category, status)
 	if id == "" || category == "" || status == "" {
-		return jsonReturn("", errors.New("参数不能为空"))
+		return lib.JsonReturn("", errors.New("参数不能为空"))
 	}
 	switch category {
 	case "advert":
@@ -83,12 +124,12 @@ func (this Putin) StatusHandler(id, category, status string) []byte {
 	case "strategy":
 		order = &Strategy{id: id, status: status}
 	default:
-		jsonReturn("", errors.New("类型错误"))
+		lib.JsonReturn("", errors.New("类型错误"))
 	}
 	getMysqlSession()
 	handleData(order)
 	msg := put_status[order.GetPutStatus()]
-	return jsonReturn(msg, nil)
+	return lib.JsonReturn(msg, nil)
 }
 
 /**
@@ -96,6 +137,7 @@ func (this Putin) StatusHandler(id, category, status string) []byte {
  */
 func handleData(order Order) {
 	order.Check()
+	order.SaveAdvert()
 	order.Handler()
 }
 
@@ -151,6 +193,27 @@ func (this *Advert) Check() {
 	if StrategyInfo["status"] == "0" {
 		this.put_status = "7"
 	}
+}
+
+func (this *Advert) SaveAdvert() error {
+	conn := rc_pool.Get()
+	defer conn.Close()
+
+	if this.status == "0" {
+		conn.Do("DEL", "advert_info:"+this.id)
+	} else {
+		advertInfo, err := GetAdvertInfo(this.id)
+		if err != nil {
+			return err
+		}
+		advertjson, err := json.Marshal(advertInfo)
+		if err != nil {
+			return err
+		}
+
+		conn.Do("SET", "advert_info:"+this.id, advertjson)
+	}
+	return nil
 }
 
 /**
@@ -372,6 +435,33 @@ func (this *Strategy) Check() {
 	}
 }
 
+func (this *Strategy) SaveAdvert() error {
+	conn := rc_pool.Get()
+	defer conn.Close()
+
+	advert_ids := this.GetChildAdvert()
+
+	if this.status == "0" {
+		for _, id := range advert_ids {
+			conn.Do("DEL", "advert_info:"+id)
+		}
+	} else {
+		for _, id := range advert_ids {
+			advertInfo, err := GetAdvertInfo(id)
+			if err != nil {
+				return err
+			}
+			advertjson, err := json.Marshal(advertInfo)
+			if err != nil {
+				return err
+			}
+
+			conn.Do("SET", "advert_info:"+id, advertjson)
+		}
+	}
+	return nil
+}
+
 func (this *Strategy) Handler() {
 	//修改自身状态
 	mysqlsession.BSQL().Update(table_strategy).Set("status", "put_status").Where("id=" + this.id)
@@ -436,11 +526,7 @@ func getMysqlSession() {
 	defer mux1.Unlock()
 	if mysqlsession == nil {
 		mysqlsession = orm.NewORM()
-		iniFile, err = config.NewConfig("ini", *conf)
-		if err != nil {
-			log.Error("open configfile error:", err)
-			return
-		}
+
 		var (
 			host    = iniFile.String("mysql-9xu::host")
 			port    = iniFile.String("mysql-9xu::port")

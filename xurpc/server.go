@@ -1,33 +1,28 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/hprose/hprose-go/hprose"
 	"github.com/wangbin/jiebago/analyse"
 	"gopkg.in/ini.v1"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"github.com/qgweb/gopro/xurpc/putin"
+	_"github.com/qgweb/gopro/xurpc/common"
+	"github.com/qgweb/gopro/xurpc/common"
 )
 
 var (
-	conf    = flag.String("conf", "db.ini", "配置文件")
 	IniFile *ini.File
 	seg     analyse.TagExtracter //结巴分词
 )
 
 func init() {
-	flag.Parse()
-	//解析配置文件
 	var err error
-	source, err := ioutil.ReadFile(*conf)
-	if err != nil {
+	IniFile,err = common.GetIniObject()
+	if err !=nil{
 		log.Fatalln(err)
-	}
-	IniFile, err = ini.Load(source)
-	if err != nil {
-		log.Fatalln(err)
+		return
 	}
 	loadDic()
 }
@@ -60,7 +55,7 @@ func main() {
 	service.AddMethods(TaoCatData{})
 	service.AddMethods(UserCookieData{})
 	service.AddMethods(SearchWord{})
-	service.AddMethods(Putin{})
+	service.AddMethods(putin.Putin{})
 
 	//服务开启
 	http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), service)

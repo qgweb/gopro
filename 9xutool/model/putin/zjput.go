@@ -567,7 +567,6 @@ func (this *ZJPut) MapPut() {
 	mapkeys := this.ldb_map.Keys("advert_map*")
 	for _, k := range mapkeys {
 		ad := strings.TrimPrefix(k, "advert_map_")
-		log.Info(ad)
 		advertId := this.ldb_map.Smembers(k)
 		if len(advertId) > 0 {
 			this.PutAdToCache(ad)
