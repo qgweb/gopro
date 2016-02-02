@@ -3,9 +3,9 @@ package common
 import (
 	"bufio"
 	"github.com/ngaut/log"
+	"github.com/qgweb/new/lib/convert"
 	"io"
 	"os"
-	//	"os/exec"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -33,7 +33,6 @@ import (
 //	dw.CloseReadChan()
 //	dw.Wait()
 //	fmt.Println(dw.WC())
-
 
 type advert struct {
 	ad string
@@ -154,4 +153,236 @@ func (this *DispathWriter) WC() (mp map[string]int) {
 		mp[strings.TrimSuffix(filepath.Base(w.fname), ".txt")] = this.flen(w.fname)
 	}
 	return
+}
+
+// ===========================================================
+//  内容之间用\t分割
+//	kf := common.NewKVFile("./xxx.txt")
+//	kf.AddFun(func(out chan interface{}, in chan int8) {
+//	out <- fmt.Sprintf("%s\t%s\t%s", "ad1", "ua1", "1,2,3")
+//	out <- fmt.Sprintf("%s\t%s\t%s", "ad1", "ua1", "4")
+//	out <- fmt.Sprintf("%s\t%s\t%s", "ad2", "ua2", "4")
+//	in <- 1
+//	})
+//	kf.AddFun(func(out chan interface{}, in chan int8) {
+//	out <- fmt.Sprintf("%s\t%s\t%s", "ad3", "ua3", "1,2,3")
+//	out <- fmt.Sprintf("%s\t%s\t%s", "ad4", "ua4", "4")
+//	out <- fmt.Sprintf("%s\t%s\t%s", "ad3", "ua3", "4,3")
+//	in <- 1
+//	})
+//	fmt.Println(kf.WriteFile())
+//
+//	kf.AdSet(func(as string) {
+//		fmt.Println("ad", as)
+//	})
+//
+//	kf.AdUaIdsSet(func(ad string, ua string, aid map[string]int8) {
+//	fmt.Println("adua", ad, ua, aid)
+//	})
+//
+//	kf.IDAdUaSet("advert_2016_", func(m map[string]int) {
+//	fmt.Println(m)
+//	})
+
+// 第一个参数输出， 第二个完成时写入值
+type ReadFun func(chan interface{}, chan int8)
+type AdFun func(string)
+type AdUaIdsFun func(string, string, map[string]int8)
+
+type AdUaAdverts struct {
+	Ad  string
+	UA  string
+	AId map[string]int8
+}
+
+type KVFile struct {
+	fname    string
+	rchan    chan interface{}
+	overChan chan int8
+	funAry   []ReadFun
+}
+
+func NewKVFile(fname string) *KVFile {
+	return &KVFile{
+		fname:    fname,
+		rchan:    make(chan interface{}, 2),
+		overChan: make(chan int8),
+		funAry:   make([]ReadFun, 0),
+	}
+}
+
+func (this *KVFile) AddFun(rf ReadFun) {
+	this.funAry = append(this.funAry, rf)
+}
+
+func (this *KVFile) Clean() {
+	os.Remove(this.fname)
+}
+
+func (this *KVFile) WriteFile() error {
+	wf, err := this.createFile()
+	if err != nil {
+		return err
+	}
+	defer wf.Close()
+
+	this.overChan = make(chan int8, len(this.funAry))
+	tmpOverChan := make(chan int8)
+	for _, f := range this.funAry {
+		go func(fn ReadFun) {
+			fn(this.rchan, this.overChan)
+		}(f)
+	}
+
+	go func() {
+		for {
+			v, ok := <-this.rchan
+			if !ok {
+				tmpOverChan <- 1
+				break
+			}
+			wf.WriteString(convert.ToString(v) + "\n")
+		}
+	}()
+
+	for i := 0; i < cap(this.overChan); i++ {
+		<-this.overChan
+	}
+	close(this.rchan)
+	<-tmpOverChan
+	this.sortuniq()
+	return nil
+}
+
+func (this *KVFile) createFile() (*os.File, error) {
+	f, err := os.Create(this.fname)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+func (this *KVFile) sortuniq() {
+	fn := this.fname
+	if _, err := os.Stat(fn); !(err == nil || os.IsExist(err)) {
+		return
+	}
+	generator := exec.Command("sort", fn)
+	consumer := exec.Command("uniq")
+
+	p, _ := generator.StdoutPipe()
+	generator.Start()
+	consumer.Stdin = p
+	pp, _ := consumer.StdoutPipe()
+	consumer.Start()
+	f, _ := os.Create(fn + ".bak")
+	io.Copy(f, pp)
+	f.Close()
+	os.Rename(fn+".bak", fn)
+}
+
+// 返回ad集合
+func (this *KVFile) AdSet(fun AdFun) error {
+	f, err := os.Open(this.fname)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	bi := bufio.NewReader(f)
+	ad := ""
+	for {
+		line, err := bi.ReadString('\n')
+		if err == io.EOF || err != nil {
+			fun(ad)
+			break
+		}
+
+		line = strings.TrimSpace(line)
+		infos := strings.Split(line, "\t")
+
+		if len(infos) < 3 {
+			continue
+		}
+
+		if infos[0] != ad && ad != "" {
+			fun(ad)
+		}
+		ad = infos[0]
+	}
+	return nil
+}
+
+func (this *KVFile) AdUaIdsSet(fun AdUaIdsFun) error {
+	f, err := os.Open(this.fname)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	bi := bufio.NewReader(f)
+	ad := AdUaAdverts{AId: make(map[string]int8)}
+	for {
+		line, err := bi.ReadString('\n')
+		if err == io.EOF || err != nil {
+			fun(ad.Ad, ad.UA, ad.AId)
+			break
+		}
+
+		line = strings.TrimSpace(line)
+		infos := strings.Split(line, "\t")
+
+		if len(infos) < 3 {
+			continue
+		}
+
+		if (ad.Ad != infos[0] && ad.UA != infos[1]) && (ad.Ad != "" && ad.UA != "") {
+			fun(ad.Ad, ad.UA, ad.AId)
+			ad.AId = make(map[string]int8)
+			ad.Ad = ""
+			ad.UA = ""
+		}
+
+		ad.Ad = infos[0]
+		ad.UA = infos[1]
+		for _, id := range strings.Split(infos[2], ",") {
+			ad.AId[id] = 1
+		}
+	}
+	return nil
+}
+
+func (this *KVFile) IDAdUaSet(prifix string, fun func(map[string]int)) error {
+	dw := NewDispathWriter()
+	dw.ReStart()
+	dw.Dispath(prifix)
+
+	f, err := os.Open(this.fname)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	bi := bufio.NewReader(f)
+	for {
+		line, err := bi.ReadString('\n')
+		if err == io.EOF || err != nil {
+			break
+		}
+
+		line = strings.TrimSpace(line)
+		infos := strings.Split(line, "\t")
+
+		if len(infos) < 3 {
+			continue
+		}
+
+		for _, v := range strings.Split(infos[2], ",") {
+			dw.Push(infos[0], infos[1], v)
+		}
+	}
+	dw.CloseReadChan()
+	dw.Wait()
+	fun(dw.WC())
+	return nil
 }
