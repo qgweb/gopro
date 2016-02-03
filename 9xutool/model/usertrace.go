@@ -225,7 +225,6 @@ func (this *UserTrace) mulPut(sess *mongodb.Session, data bson.M, table string, 
 			this.cacheData2 = make([]interface{}, 0, 10000)
 		}
 	}
-
 }
 
 func (this *UserTrace) flushMulput(sess *mongodb.Session, table string, t int) {
@@ -315,8 +314,10 @@ func (this *UserTrace) Do(c *cli.Context) {
 		bgdate = common.GetHourTimestamp(-73)
 	)
 	this.mp.Debug()
-	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}})
-	this.ReadData(bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate}, "domainId": "0"})
+	_ = bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}}
+	_ = bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate}, "domainId": "0"}
+	this.ReadData(nil)
+	this.ReadData(nil)
 	//this.WhiteCookie()
 	this.saveData()
 }

@@ -330,8 +330,8 @@ func (this *JSPutHbase) Other() {
 			break
 		}
 
-		ad := info.Columns["base:ad"].Value
-		ua := info.Columns["base:ua"].Value
+		ad := string(info.Columns["base:ad"].Value)
+		ua := string(info.Columns["base:ua"].Value)
 
 		for _, v := range info.Columns {
 			if string(v.Family) == "cids" {
@@ -371,8 +371,8 @@ func (this *JSPutHbase) Domain() {
 			break
 		}
 
-		ad := info.Columns["base:ad"].Value
-		ua := info.Columns["base:ua"].Value
+		ad := string(info.Columns["base:ad"].Value)
+		ua := string(info.Columns["base:ua"].Value)
 
 		for _, v := range info.Columns {
 			if string(v.Family) == "cids" {
