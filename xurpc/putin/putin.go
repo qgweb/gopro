@@ -300,7 +300,6 @@ func (this *Strategy) PutQueue() {
 		"status": this.status,
 	}
 	err = sqs.Put(params)
-	fmt.Println(sqs.GetLastUrl())
 	if err != nil {
 		log.Error(err)
 		return
@@ -418,11 +417,11 @@ func (this *Strategy) Check() {
 		this.put_status = "4"
 	}
 	//检查时间段
-	t := time.Unix(convert.ToInt64(today), 0)
-	week := convert.ToInt64(t.Weekday())
-	hour := convert.ToInt64(t.Hour())
+	t := time.Now()
+	week := t.Weekday()
+	hour := t.Hour()
 	interval := strings.Split(StrategyInfo["time_interval"], "|")
-	if !CheckIntervel(interval, int(week), int(hour)) {
+	if !CheckIntervel(interval, int(week), hour) {
 		this.put_status = "5"
 	}
 	//检查是否有符合条件的创意
@@ -473,10 +472,21 @@ func (this *Strategy) Handler() {
 		if this.put_status == "1" {
 			for _, advert := range this.advert_ids {
 				mysqlsession.BSQL().Update(table_advert).Set("status", "put_status").Where("id=" + advert)
-				_, err := mysqlsession.Update(this.status, this.status)
+				_, err := mysqlsession.Update(this.status, this.put_status)
 				if err != nil {
 					log.Error(err)
 					return
+				}
+			}
+		} else {
+			if this.put_status != "6" {
+				for _, advert := range this.advert_ids {
+					mysqlsession.BSQL().Update(table_advert).Set("put_status").Where("id=" + advert)
+					_, err := mysqlsession.Update(this.put_status)
+					if err != nil {
+						log.Error(err)
+						return
+					}
 				}
 			}
 		}
