@@ -382,7 +382,6 @@ func MonitorLoop() {
 			if err == nil {
 				http.Post(url, "application/json", ioutil.NopCloser(bytes.NewReader(by)))
 			}
-
 		}
 	}
 }

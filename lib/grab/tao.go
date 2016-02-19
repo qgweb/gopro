@@ -14,9 +14,6 @@ import (
 	"unicode/utf8"
 
 	"golang.org/x/net/html/charset"
-
-	//"github.com/opesun/goquery"
-	//"github.com/opesun/goquery/exp/html"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/henrylee2cn/surfer/agent"
 	"github.com/ngaut/log"
