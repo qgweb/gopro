@@ -114,7 +114,6 @@ func initRedisPool() error {
 
 func (this Putin) StatusHandler(id, category, status string) []byte {
 	var order Order
-	fmt.Println(id, category, status)
 	if id == "" || category == "" || status == "" {
 		return lib.JsonReturn("", errors.New("参数不能为空"))
 	}
@@ -177,11 +176,11 @@ func (this *Advert) Check() {
 		this.put_status = "4"
 	}
 	//检查时间段
-	t := time.Unix(convert.ToInt64(today), 0)
-	week := convert.ToInt64(t.Weekday())
-	hour := convert.ToInt64(t.Hour())
+	t := time.Now()
+	week := t.Weekday()
+	hour := t.Hour()
 	interval := strings.Split(StrategyInfo["time_interval"], "|")
-	if !CheckIntervel(interval, int(week), int(hour)) {
+	if !CheckIntervel(interval, int(week), hour) {
 		this.put_status = "5"
 	}
 	//检查是否审核通过
