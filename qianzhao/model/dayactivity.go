@@ -19,16 +19,16 @@ type DayActivity struct {
 
 func (this *DayActivity) AddRecord(dl *DayActivity) bool {
 	//查找是否存在
-	myorm.BSQL().Select("id", "count").From(TABLE_NAME_DAYACTIVITY).Where("version=? and type=? and date=?")
-	list, err := myorm.Query(dl.Version, dl.Type, dl.Date)
+	sql := myorm.BSQL().Select("id", "count").From(TABLE_NAME_DAYACTIVITY).Where("version=? and type=? and date=?").GetSQL()
+	list, err := myorm.Query(sql, dl.Version, dl.Type, dl.Date)
 	if err != nil {
 		log.Error(err)
 		return false
 	}
 
 	if len(list) > 0 {
-		myorm.BSQL().Update(TABLE_NAME_DAYACTIVITY).Set("count").Where("id=?")
-		n, err := myorm.Update(convert.ToInt(list[0]["count"])+1, list[0]["id"])
+		sql = myorm.BSQL().Update(TABLE_NAME_DAYACTIVITY).Set("count").Where("id=?").GetSQL()
+		n, err := myorm.Update(sql, convert.ToInt(list[0]["count"])+1, list[0]["id"])
 		if err != nil {
 			log.Error(err)
 			return false
@@ -39,10 +39,10 @@ func (this *DayActivity) AddRecord(dl *DayActivity) bool {
 		return false
 
 	} else {
-		myorm.BSQL().Insert(TABLE_NAME_DAYACTIVITY).Values("version", "count", "type",
-			"date")
+		sql := myorm.BSQL().Insert(TABLE_NAME_DAYACTIVITY).Values("version", "count", "type",
+			"date").GetSQL()
 
-		n, err := myorm.Insert(dl.Version, 1, dl.Type, dl.Date)
+		n, err := myorm.Insert(sql, dl.Version, 1, dl.Type, dl.Date)
 		if err != nil {
 			log.Error(err)
 			return false

@@ -19,7 +19,10 @@ font-size: 100%;
 margin:0;
 }
 img{border:none;display:block;}
-.contents_all{width:100%;height:100%;overflow:hidden;}
+.contents_all{position:absolute;top:auto;left:0;width:100%;height:100%;overflow:hidden;}
+.banner{width:100%;}
+.banner_big{display:block;width:100%;height:650px;background:url(../img/banner_big.jpg) center no-repeat;}
+.banner_small{display:block;width:100%;height:0;background:url(../img/banner_small.jpg) center no-repeat;}
 .top_search{position: absolute; top: 0; left: 0; width: 100%; z-index: 1;}
 .search_all{margin:90px auto 80px auto;width:640px;_width:650px;}
 .baidu_search_logo{background:url(../image/baidu_search.jpg) no-repeat;width:126px;height:47px;float:left;display:block;}

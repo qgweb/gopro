@@ -68,6 +68,12 @@ func Router(e *echo.Echo) {
 
 	/////手机验证码
 	e.Get("/getcode", ((&controller.User{}).GetPhoneCode))
+
+	//// 转盘
+	e.Get("/club",((&controller.Club{}).Index))
+	e.Get("/club/turntable", ((&controller.Club{}).Turntable))
+	e.Get("/club/winlist", (&controller.Club{}).Winlist)
+	e.Get("/club/mywin",((&controller.Club{}).Mylist))
 }
 
 //// 秒速浏览器用户注册

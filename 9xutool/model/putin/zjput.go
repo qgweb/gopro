@@ -302,8 +302,10 @@ func (this *ZJPut) PutAdvertToRedis() {
 }
 
 // 把AD放入缓存中
-func (this *ZJPut) PutAdToCache(ad string) {
-	this.ldb.HSet(this.prefix+"sad", ad, "1")
+func (this *ZJPut) PutAdToCache(ad string, ua string) {
+	ua = encrypt.DefaultBase64.Decode(ua)
+	var key = ad + "|" + encrypt.DefaultMd5.Encode(ua)
+	this.ldb.HSet(this.prefix+"sad", key, "1")
 }
 
 // 把ad数据放入电信系统
@@ -358,7 +360,7 @@ func (this *ZJPut) Other() {
 				piadverts := this.merageAdverts(tagId)
 				this.filterAdvert(ad+ua, piadverts)
 				if len(piadverts) > 0 {
-					this.PutAdToCache(ad)
+					this.PutAdToCache(ad, ua)
 				}
 				for aid, _ := range piadverts {
 					//log.Warn(ad, aid)
@@ -402,7 +404,7 @@ func (this *ZJPut) Domain() {
 				piadverts := this.merageAdverts2(tagId)
 				this.filterAdvert(ad+ua, piadverts)
 				if len(piadverts) > 0 {
-					this.PutAdToCache(ad)
+					this.PutAdToCache(ad, ua)
 				}
 				for aid, _ := range piadverts {
 					//log.Warn(ad, aid)
@@ -457,7 +459,7 @@ func (this *ZJPut) GetClickWhiteMenu() {
 		}
 		this.PutAdvertToCache(info["ad"].(string), info["ua"].(string), info["aid"].(string))
 		this.pushAdToAdvert(info["ad"].(string), info["ua"].(string), info["aid"].(string))
-		this.PutAdToCache(info["ad"].(string))
+		this.PutAdToCache(info["ad"].(string), info["ua"].(string))
 
 	}
 	iter.Close()
@@ -521,8 +523,8 @@ func (this *ZJPut) GetShopAdUaInfo() {
 				count++
 				log.Info(count)
 				ad := info["ad"].(string)
-				ua := encrypt.DefaultBase64.Decode(info["ua"].(string))
-				this.PutAdToCache(ad)
+				ua := encrypt.DefaultBase64.Encode(info["ua"].(string))
+				this.PutAdToCache(ad, ua)
 				this.PutAdvertToCache(ad, ua, adids.AdvertId)
 				this.pushAdToAdvert(ad, ua, adids.AdvertId)
 			}
@@ -552,7 +554,7 @@ func (this *ZJPut) GetVisitorInfos() {
 		ua := convert.ToString(info["ua"])
 		aids := info["aids"]
 
-		this.PutAdToCache(ad)
+		this.PutAdToCache(ad, ua)
 
 		for _, aid := range aids.([]interface{}) {
 			this.PutAdvertToCache(ad, ua, convert.ToString(aid))
@@ -569,7 +571,7 @@ func (this *ZJPut) MapPut() {
 		ad := strings.TrimPrefix(k, "advert_map_")
 		advertId := this.ldb_map.Smembers(k)
 		if len(advertId) > 0 {
-			this.PutAdToCache(ad)
+			this.PutAdToCache(ad, "ua")
 			for _, id := range advertId {
 				this.PutAdvertToCache(ad, "ua", id)
 				this.pushAdToAdvert(ad, "ua", id)
@@ -591,7 +593,7 @@ func (this *ZJPut) Do(c *cli.Context) {
 	this.GetClickWhiteMenu()
 	this.GetShopAdUaInfo()
 	this.GetVisitorInfos()
-	this.MapPut()
+	//this.MapPut()
 	this.PutAdvertToRedis()
 	this.flushDb()
 	this.PutAdsToDxSystem()

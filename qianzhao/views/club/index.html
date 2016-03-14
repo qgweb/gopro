@@ -1,0 +1,121 @@
+{{define "club"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>抽奖</title>
+    <link rel="stylesheet" href="./css/lottery.css">
+</head>
+<body>
+<div id="main" class="clearfix">
+    <div class="lottery">
+        <div class="arrow">
+        </div>
+        <!-- 已登录 -->
+        <a href="#" class="text already clickRotate" >立即抽奖</a>
+        <!-- 未登录 -->
+        <!-- <a href="#" class="text">登录抽奖</a> -->
+    </div>
+    <div class="main_right">
+        <div class="winning_record">
+            <div class="record">
+                <h4>获奖记录</h4>
+                <p class="record_tit">
+                    <span>用户名</span>
+                    <span>奖品名称</span>
+                    <span>获奖时间</span>
+                </p>
+                <div class="record_c">
+                    <ul>
+                    </ul>
+                </div>
+                <p class="link">
+                    <a href="http://js.189.cn/pay/recharge.action" target="_blank">立即充值<i></i></a>
+                    <a href="#" class="myWin">我的中奖纪录<i></i></a>
+                </p>
+            </div>
+        </div>
+        <div class="rule">
+            <h4>活动规则</h4>
+            <ol>
+                <li>本活动仅限江苏省内校园宽带用户参加</li>
+                <li>本活动时间为2016年3月15日至2016年3月30日</li>
+                <li>自活动开始之日起，凡在千兆浏览器校园版注册的用户均可获得抽奖机会，抽奖奖品为全业务充值卡。</li>
+                <li>同一账号每天只能参与一次“千兆浏览器，校园特惠季”抽奖活动。</li>
+                <li>获得兑奖资格的用户名单定期于活动专题页面公布。</li>
+                <li>本活动奖品总额共1万元全业务充值卡，按用户参与先到先得，赠完为止。</li>
+                <li>本活动最终解释权归江苏省公用信息有限公司所有</li>
+                <li>如您对本活动有任何问题，请联系我们，qq群：175366269</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="popup" style="display:none;">
+    <p class="popup_bg" style="display:none;"></p>
+    <!-- 提示 -->
+    <div class="popup_c prompt" style="display:none;">
+        <p class="popupc_bg"></p>
+        <div class="content">
+            <h4>抽奖提示</h4>
+            <p class="c_text">您今天已经参与过抽奖，请明天再来！</p>
+            <!-- <p>谢谢参与~明天还可以抽哦~</p> -->
+            <a href="#" class="btn btn_close">关闭</a>
+        </div>
+    </div>
+    <!-- 提示登录 -->
+    <div class="popup_c login_prompt" style="display:none;">
+        <p class="popupc_bg"></p>
+        <div class="content">
+            <p class="login_img"></p>
+            <a href="#" class="btn btn_close">关闭</a>
+        </div>
+    </div>
+    <!-- 抽中 -->
+    <div class="popup_c win_lottery" style="display:none;">
+        <p class="popupc_bg"></p>
+        <div class="content">
+            <h4>抽奖提示</h4>
+            <p class="c_text">恭喜你！抽中<span>10元话费充值卡</span>！</p>
+            <div class="pwd">
+                <p>卡密</p>
+                <p>adffsfewe45332d2</p>
+            </div>
+            <p class="plink">
+                <a href="http://js.189.cn/pay/recharge.action" target="_blank" class="btn_link">立即充值<i></i></a>
+            </p>
+            <a href="#" class="btn btn_close">关闭</a>
+        </div>
+    </div>
+    <!-- 中奖纪录 -->
+    <div class="popup_c my_record" style="display:none;">
+        <p class="popupc_bg"></p>
+        <div class="content">
+            <h4>我的中奖纪录</h4>
+            <div class="pwd">
+                <p>卡密</p>
+                <p class="myWinList">adffsfewe45332d2</p>
+                <p class="myWinList">adffsfewe45332d2</p>
+            </div>
+            <div class="plink">
+                <!--<p class="pagenum_list">-->
+                    <!--<span>|</span>-->
+                    <!--<a href="#">1</a>-->
+                    <!--<span>|</span>-->
+                    <!--<span class="current">2</span>-->
+                    <!--<span>|</span>-->
+                    <!--<a href="#">下一页</a>-->
+                    <!--<span>|</span>-->
+                <!--</p>-->
+                <a href="http://js.189.cn/pay/recharge.action" target="_blank" class="btn_link">立即充值<i></i></a>
+            </div>
+            <a href="#" class="btn btn_close">关闭</a>
+        </div>
+    </div>
+</div>
+</body>
+<script src="js/jquery-1.10.2.min.js"></script>
+<script src="js/rotate/jquery.easing.min.js"></script>
+<script src="js/rotate/jQueryRotate.2.2.js"></script>
+<script src="js/lottery.js"></script>
+</html>
+{{end}}

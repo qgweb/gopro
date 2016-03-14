@@ -32,8 +32,8 @@ type VersionExt struct {
 // -- btype   浏览器版本 1 校园版 2 大众版
 func (this *Version) Update(version string, btype string) VersionExt {
 	vs := VersionExt{}
-	myorm.BSQL().Select("*").From(VERSION_TABLE_NAME).Where("type=?").Order("date desc").Limit(1)
-	list, err := myorm.Query(btype)
+	sql := myorm.BSQL().Select("*").From(VERSION_TABLE_NAME).Where("type=?").Order("date desc").Limit(1).GetSQL()
+	list, err := myorm.Query(sql, btype)
 	if err != nil {
 		log.Warn("[version upload] 查询失败,", err)
 		return vs

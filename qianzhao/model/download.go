@@ -19,10 +19,10 @@ type Download struct {
 }
 
 func (this *Download) AddRecord(dl *Download) bool {
-	myorm.BSQL().Insert(TABLE_NAME_DOWNLOAD).Values("version", "channel", "type",
-		"account", "city", "date")
+	sql := myorm.BSQL().Insert(TABLE_NAME_DOWNLOAD).Values("version", "channel", "type",
+		"account", "city", "date").GetSQL()
 
-	n, err := myorm.Insert(dl.Version, dl.Channel, dl.Type, dl.Account,
+	n, err := myorm.Insert(sql, dl.Version, dl.Channel, dl.Type, dl.Account,
 		dl.City, dl.Date)
 	if err != nil {
 		log.Error(err)

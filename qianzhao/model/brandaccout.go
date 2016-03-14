@@ -28,9 +28,9 @@ type BrandAccount struct {
 
 // 添加白名单
 func (this *BrandAccount) AddBroadBand(ba BrandAccount) bool {
-	myorm.BSQL().Insert(BROAD_TABLE_NAME).Values("area", "account", "school_name",
-		"school_group", "broadband_up", "broadband_down", "total_time", "used_time", "try_count")
-	n, err := myorm.Insert(ba.Area, ba.Account, ba.SchoolName, ba.SchoolGroup,
+	sql := myorm.BSQL().Insert(BROAD_TABLE_NAME).Values("area", "account", "school_name",
+		"school_group", "broadband_up", "broadband_down", "total_time", "used_time", "try_count").GetSQL()
+	n, err := myorm.Insert(sql, ba.Area, ba.Account, ba.SchoolName, ba.SchoolGroup,
 		ba.UpBroadband, ba.DownBroadband, ba.TotalTime, ba.UsedTime, ba.TryCount)
 	if err != nil {
 		log.Warn("[brandaccount AddBroadBand] 添加白名单失败 ", err)
@@ -46,8 +46,8 @@ func (this *BrandAccount) AddBroadBand(ba BrandAccount) bool {
 
 // 判断账户是否存在
 func (this *BrandAccount) AccountExist(ba BrandAccount) bool {
-	myorm.BSQL().Select("id").From(BROAD_TABLE_NAME).Where("account=?")
-	list, err := myorm.Query(ba.Account)
+	sql := myorm.BSQL().Select("id").From(BROAD_TABLE_NAME).Where("account=?").GetSQL()
+	list, err := myorm.Query(sql, ba.Account)
 	if err != nil {
 		log.Warn("[brandaccount AccountExist] 查询失败，", err)
 		return false
@@ -62,9 +62,9 @@ func (this *BrandAccount) AccountExist(ba BrandAccount) bool {
 
 // 更新账户
 func (this *BrandAccount) EditAccount(ba BrandAccount) bool {
-	myorm.BSQL().Update(BROAD_TABLE_NAME).Set("area", "school_name", "school_group",
-		"broadband_up", "broadband_down", "used_time", "total_time", "used_time", "try_count").Where("account=?")
-	n, err := myorm.Update(ba.Area, ba.SchoolName, ba.SchoolGroup,
+	sql := myorm.BSQL().Update(BROAD_TABLE_NAME).Set("area", "school_name", "school_group",
+		"broadband_up", "broadband_down", "used_time", "total_time", "used_time", "try_count").Where("account=?").GetSQL()
+	n, err := myorm.Update(sql, ba.Area, ba.SchoolName, ba.SchoolGroup,
 		ba.UpBroadband, ba.DownBroadband, ba.UsedTime, ba.TotalTime,
 		ba.UsedTime, ba.TryCount, ba.Account)
 	if err != nil {
@@ -79,8 +79,8 @@ func (this *BrandAccount) EditAccount(ba BrandAccount) bool {
 
 // 获取用户信息
 func (this *BrandAccount) GetAccountInfo(account string) (BrandAccount, error) {
-	myorm.BSQL().Select("*").From(BROAD_TABLE_NAME).Where("account=?")
-	list, err := myorm.Query(account)
+	sql := myorm.BSQL().Select("*").From(BROAD_TABLE_NAME).Where("account=?").GetSQL()
+	list, err := myorm.Query(sql, account)
 	if err != nil {
 		log.Warn("[brandaccount GetAccountInfo] 查询失败，", err)
 		return BrandAccount{}, err
@@ -107,8 +107,8 @@ func (this *BrandAccount) GetAccountInfo(account string) (BrandAccount, error) {
 
 // reset user time
 func (this *BrandAccount) ResetTime() {
-	myorm.BSQL().Update(BROAD_TABLE_NAME).Set("total_time", "used_time")
-	_, err := myorm.Update("3600", "0")
+	sql := myorm.BSQL().Update(BROAD_TABLE_NAME).Set("total_time", "used_time").GetSQL()
+	_, err := myorm.Update(sql, "3600", "0")
 	if err != nil {
 		log.Warn("[brandaccount resettime] update faile", err)
 	}

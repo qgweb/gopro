@@ -134,7 +134,7 @@ func requestPrice(w http.ResponseWriter, r *http.Request) {
 		param[k] = v[0]
 	}
 
-	go recordAdUa(param)
+	//go recordAdUa(param)
 
 	//30%概率返回
 	rd := getRand([]int{30, 70})
@@ -168,7 +168,7 @@ func reponsePrice(param map[string]string) {
 
 	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
-		"04", "reBkYQmESMs=", "10")
+		"03", "reBkYQmESMs=", "10")
 
 	//	res, err := redis.Bytes(conn.Do("GET", "name"))
 	//	if err != nil {
@@ -183,12 +183,17 @@ func reponsePrice(param map[string]string) {
 	//resp, err := httpclient.Get(url)
 	resp, err := http.Get(url)
 
+	if resp != nil {
+		resp.Body.Close()
+	}
+
 	if err != nil {
 		log.Println("发送数据出错,错误信息为:", err)
 	}
 	if resp != nil && resp.StatusCode != 200 {
 		log.Println("返回数据出错,错误code为:", resp.StatusCode)
 	}
+
 	stotal++
 }
 

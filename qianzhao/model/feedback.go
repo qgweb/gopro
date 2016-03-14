@@ -26,8 +26,8 @@ const (
 
 // 添加记录
 func (this *FeedBack) AddRecord(fb *FeedBack) bool {
-	myorm.BSQL().Insert(TABLE_NAME_FEEDBACK).Values(getFields(FeedBack{})...)
-	n, err := myorm.Insert(fb.Btype, fb.Qtype, fb.QDescribe, fb.Qpic, fb.Contact, fb.Tcontact, 0, time.Now().Unix())
+	sql := myorm.BSQL().Insert(TABLE_NAME_FEEDBACK).Values(getFields(FeedBack{})...).GetSQL()
+	n, err := myorm.Insert(sql, fb.Btype, fb.Qtype, fb.QDescribe, fb.Qpic, fb.Contact, fb.Tcontact, 0, time.Now().Unix())
 	if err != nil {
 		log.Error(err)
 		return false

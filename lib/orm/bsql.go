@@ -75,7 +75,7 @@ func (this *BuildSQL) Set(fields ...string) *BuildSQL {
 }
 
 func (this *BuildSQL) Update(fields string) *BuildSQL {
-	this.sql += " UPDATE " + fields
+	this.sql += "UPDATE " + fields
 	return this
 }
 

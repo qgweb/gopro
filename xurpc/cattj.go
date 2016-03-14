@@ -3,9 +3,10 @@ package main
 
 import (
 	"fmt"
-
+	"github.com/ngaut/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/olivere/elastic.v3"
 )
 
 type TaoCatData struct {
@@ -61,6 +62,40 @@ func (this TaoCatData) GetDomainData(cid string) int {
 		return 0
 	}
 	return c
+}
+
+// 获取店铺数据量
+func (this TaoCatData) GetShopCount(shopid string, date string) int {
+	var hosts = IniFile.Section("es").Key("host").Strings(",")
+	client, err := elastic.NewClient(elastic.SetURL(hosts...))
+	if err != nil {
+		log.Error(err)
+		return 0
+	}
+
+	var body = `{
+		"query" : {
+			"filtered" : {
+				"filter" : {
+					"range" : {
+						"timestamp" : { "gte" : "` + date + `" }
+					}
+				},
+				"query" : {
+					"term" : {
+						"shop" : "` + shopid + `"
+					}
+				}
+			}
+		}
+	}`
+	num, err := client.Count().Index("zhejiang_tb_shop_trace").Type("shop").BodyJson(body).Do()
+
+	if err != nil {
+		log.Error(err)
+		return 0
+	}
+	return int(num)
 }
 
 //获取session

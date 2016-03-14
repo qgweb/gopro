@@ -11,11 +11,10 @@ type QGORM struct {
 	mutex sync.RWMutex
 	db    *sql.DB
 	debug bool
-	bs    *BuildSQL
 }
 
 func NewORM() *QGORM {
-	return &QGORM{bs: &BuildSQL{}}
+	return &QGORM{}
 }
 
 func (this *QGORM) Open(driveSql string) error {
@@ -45,12 +44,12 @@ func (this *QGORM) Debug(d bool) {
 	this.debug = d
 }
 
-func (this *QGORM) Query(data ...interface{}) ([]map[string]string, error) {
+func (this *QGORM) Query(osql string, data ...interface{}) ([]map[string]string, error) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 	var list = make([]map[string]string, 0)
 
-	rows, err := this.db.Query(this.bs.GetSQL(), data...)
+	rows, err := this.db.Query(osql, data...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,44 +79,45 @@ func (this *QGORM) Query(data ...interface{}) ([]map[string]string, error) {
 	return list, nil
 }
 
-func (this *QGORM) Update(data ...interface{}) (int64, error) {
+func (this *QGORM) Update(sql string, data ...interface{}) (int64, error) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
-	res, err := this.db.Exec(this.bs.GetSQL(), data...)
+	res, err := this.db.Exec(sql, data...)
 	if err != nil {
 		return 0, err
 	}
 	return res.RowsAffected()
 }
 
-func (this *QGORM) Insert(data ...interface{}) (int64, error) {
+func (this *QGORM) Insert(sql string, data ...interface{}) (int64, error) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
-	res, err := this.db.Exec(this.bs.GetSQL(), data...)
+	res, err := this.db.Exec(sql, data...)
 	if err != nil {
 		return 0, err
 	}
 	return res.LastInsertId()
 }
 
-func (this *QGORM) Delete(data ...interface{}) (int64, error) {
+func (this *QGORM) Delete(sql string, data ...interface{}) (int64, error) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
-	res, err := this.db.Exec(this.bs.GetSQL(), data...)
+	res, err := this.db.Exec(sql, data...)
 	if err != nil {
 		return 0, err
 	}
 	return res.RowsAffected()
 }
 
-func (this *QGORM) LastSql() string {
-	return this.bs.GetSQL()
-}
 
 func (this *QGORM) BSQL() *BuildSQL {
-	this.bs.Reset()
-	return this.bs
+	return &BuildSQL{}
 }
+
+func (this *QGORM) Begin() (*sql.Tx, error){
+	return this.db.Begin()
+}
+

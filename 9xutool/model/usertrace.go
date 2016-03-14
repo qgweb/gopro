@@ -314,10 +314,10 @@ func (this *UserTrace) Do(c *cli.Context) {
 		bgdate = common.GetHourTimestamp(-73)
 	)
 	this.mp.Debug()
-	_ = bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}}
-	_ = bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate}, "domainId": "0"}
-	this.ReadData(nil)
-	this.ReadData(nil)
+	m1 := bson.M{"timestamp": bson.M{"$gte": bghour, "$lte": eghour}, "domainId": bson.M{"$ne": "0"}}
+	m2 := bson.M{"timestamp": bson.M{"$gte": bgdate, "$lte": egdate}, "domainId": "0"}
+	this.ReadData(m1)
+	this.ReadData(m2)
 	//this.WhiteCookie()
 	this.saveData()
 }

@@ -18,7 +18,12 @@
 </head>
 
 <body>
+<div class="banner">
+    <a href="/club" title="参与抽奖，先到先得" class="banner_big"></a>
+    <a href="/club" title="参与抽奖，先到先得" class="banner_small"></a>
+</div>
 <div class="contents_all">
+
 <div class="top_search">
     <form action="http://www.baidu.com/baidu" target="_blank">
         <table bgcolor="#f5f5f5" class="search_all">
@@ -85,6 +90,49 @@
     </div>
 </div>
 </div>
+<script>
+var startMove=function (obj, json, options){
+    options=options || {};
+    options.time=options.time || 700;
+    if(obj!=undefined){
+        clearInterval(obj.timer);
+        var count=Math.floor(options.time/30);
+        var start={};
+        var dis={};
+        for(var name in json){
+            start[name]=parseInt($(obj).css(name));
+            dis[name]=json[name]-start[name];
+        }
+        var n=0;
+        obj.timer=setInterval(function(){
+            n++;
+            for(var name in json){
+                var a=1-n/count;
+                var cur=start[name]+dis[name]*(1-a*a*a);
+                obj.style[name]=cur+'px';
+            }
+            if(n==count){
+                clearInterval(obj.timer);
+                options.end && options.end();
+            }
+        },30);
+    }
+};
+$(function(){
+    setTimeout("showImage();",3000);
+});
+function showImage()
+{
+    startMove($(".banner_big")[0],{height:1},{time:1000,end:function(){
+        startMove($(".banner_small")[0],{height:100})
+        setTimeout(function(){
+            $(".banner_big").height(0);
+        },30)
+    }})
+
+}
+
+</script>
 <script src="./js/newTab.js" async="async"></script>
 </body>
 </html>
