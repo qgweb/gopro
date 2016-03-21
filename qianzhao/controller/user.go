@@ -79,12 +79,21 @@ func (this *User) Login(ctx *echo.Context) error {
 
 // 注册
 func (this *User) Register(ctx *echo.Context) error {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response())
+
 	var (
 		phone, _    = url.QueryUnescape(ctx.Form("phone"))
 		password, _ = url.QueryUnescape(ctx.Form("password"))
 		email, _    = url.QueryUnescape(ctx.Form("email"))
 		pwd, _      = url.QueryUnescape(ctx.Form("pwd"))
 		app_uid, _  = url.QueryUnescape(ctx.Form("app_uid"))
+		code, _     = url.QueryUnescape(ctx.Form("code"))
+		codekey     = "REG_CODE_" + phone
 		umodel      = model.User{}
 	)
 
@@ -124,6 +133,22 @@ func (this *User) Register(ctx *echo.Context) error {
 			"msg":  global.CONTROLLER_USER_EMAIL_EXIST_ERROR,
 		})
 	}
+
+	if code == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "验证码不能为空",
+		})
+	}
+
+	if convert.ToString(sess.Get(codekey)) != code {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "验证码错误",
+		})
+	}
+
+	sess.Delete(codekey)
 
 	// 存在app_uid 走关联,不存在,则走重新注册
 	if app_uid != "" {
@@ -470,6 +495,7 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 
 	Sms.SendMsg(phone, "【千兆浏览器】"+code+
 		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
+
 	sess.Set("USER_CODE", code)
 
 	return ctx.JSON(200, map[string]string{
@@ -480,6 +506,13 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 
 // 获取手机验证码
 func (this *User) GetPhoneCode(ctx *echo.Context) error {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response())
+
 	var phone = ctx.Query("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
 	var userModel = model.User{}
@@ -499,6 +532,8 @@ func (this *User) GetPhoneCode(ctx *echo.Context) error {
 
 	Sms.SendMsg(phone, "【千兆浏览器】"+code+
 		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
+
+	sess.Set("REG_CODE_"+phone, code)
 	return ctx.JSON(200, map[string]string{
 		"code": "200",
 		"msg":  code,

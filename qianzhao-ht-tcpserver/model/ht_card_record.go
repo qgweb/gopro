@@ -21,8 +21,8 @@ type HtCardRecord struct {
 }
 
 func (this *HtCardRecord) AddRecord(info HtCardRecord) bool {
-	myorm.BSQL().Insert(HT_CARD_RECORD_TABLE_NAME).Values("ht_id", "begin_time", "end_time", "date")
-	n, err := myorm.Insert(info.HtId, info.BeginTime, info.EndTime, info.Date)
+	sql := myorm.BSQL().Insert(HT_CARD_RECORD_TABLE_NAME).Values("ht_id", "begin_time", "end_time", "date").GetSQL()
+	n, err := myorm.Insert(sql, info.HtId, info.BeginTime, info.EndTime, info.Date)
 	if err != nil {
 		log.Error("[model HtCardRecord AddRecord] 插入记录失败 ", err)
 		return false
@@ -37,9 +37,9 @@ func (this *HtCardRecord) AddRecord(info HtCardRecord) bool {
 // 获取账号剩余时间
 func (this *HtCardRecord) GetAccountCanUserTime(HtId int, totalTime int) int {
 	date, _ := time.ParseInLocation("2006-01-02", time.Now().Format("2006-01-02"), time.Local)
-	myorm.BSQL().Select("sum(end_time - begin_time) as time").From(HT_CARD_RECORD_TABLE_NAME).
-		Where("date=? and ht_id=? and end_time <> 0")
-	list, err := myorm.Query(date.Unix(), HtId)
+	sql := myorm.BSQL().Select("sum(end_time - begin_time) as time").From(HT_CARD_RECORD_TABLE_NAME).
+		Where("date=? and ht_id=? and end_time <> 0").GetSQL()
+	list, err := myorm.Query(sql, date.Unix(), HtId)
 	if err != nil {
 		log.Error("[model HtCardRecord GetAccountCanUserTime] 查询失败,", err)
 		return 0

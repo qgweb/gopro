@@ -21,15 +21,16 @@ $(function () {
     }
 
     $('.clickRotate').on('click', function () {
+
         var ran = Math.random();
         $.ajax({
             url: '/club/turntable',
             type: 'get',
             dataType: 'json',
             success: function (d) {
-                if (d.code == 200) {
-                    if (bDown) {
-                        bDown = false;
+                if (bDown) {
+                    bDown = false;
+                    if (d.code == 200) {
                         var resl;
                         var html;
                         switch (d.num) {
@@ -72,26 +73,52 @@ $(function () {
                             $('.popup').show();
                             if (html == "谢谢参与") {
                                 $('.win_lottery .c_text').html('<p class="c_text"><span>' + html + '</span>！</p>')
+                                $('.win_lottery .pwd,.win_lottery .plink').hide();
+                                //alert('谢谢参与');
+                                $('.win_lottery .c_text').eq(0).css({
+                                    marginBottom: 10
+                                })
+                                $('.win_lottery .content').css({
+                                    height: 147
+                                })
+                                $('.win_lottery .popupc_bg').css({
+                                    height: 158
+                                })
                             } else {
+                                $('.win_lottery .c_text').eq(0).css({
+                                    marginBottom: 0
+                                })
+                                $('.win_lottery .content').css({
+                                    height: 226
+                                })
+                                $('.win_lottery .popupc_bg').css({
+                                    height: 237
+                                })
                                 $('.win_lottery .c_text').html('<p class="c_text">恭喜你！抽中<span>' + html + '</span>！</p>')
+                                $('.win_lottery .pwd,.win_lottery .plink').show();
+                                $('.win_lottery .pwd p').eq(1).html(d.rcode);
                             }
                             $('.win_lottery').show();
                         })
-                    }
-                } else if (d.code == 301) {
-                    if (d.msg == "您今天抽奖次数已经用完，请明天再来！") {
-                        $('.prompt').show()
+                    } else if (d.code == 301) {
+                        if (d.msg == "您今天抽奖次数已经用完，请明天再来！") {
+                            $('.prompt').show()
+                        } else {
+                            $('.login_prompt').show();
+                        }
+                        $('.popup_bg').show();
+                        $('.popup').show()
+                        bDown = true;
                     } else {
-                        $('.login_prompt').show();
+                        alert(d.msg);
+                        bDown = true;
                     }
-                    $('.popup_bg').show();
-                    $('.popup').show()
-                } else {
-                    alert(d.msg);
+                    //console.log(bDown);
+                    //bDown=true
                 }
             }
-        })
 
+        })
     })
     //获奖记录滚动
     var timer = null;

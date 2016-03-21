@@ -211,12 +211,12 @@ func (this *BDInterfaceManager) FreeCardApplyFor(phone string) (card Card) {
 	//{"Flag":"0","CardID":"56000005038843","CardPass":"zta3t7M0","Serviceid":"0001","Transactionid":"1449817500610"}
 	//{0 56000005039489 WhVgF3cR 0001 1449819617343}
 	///56000005040361|SRgZTmDu
-	card.Flag = "0"
-	card.CardID = "56000005040361"
-	card.CardPass = "SRgZTmDu"
-	card.Serviceid = "0001"
-	card.Transactionid = "1449817500610"
-	return card
+	//card.Flag = "0"
+	//card.CardID = "56000005040361"
+	//card.CardPass = "SRgZTmDu"
+	//card.Serviceid = "0001"
+	//card.Transactionid = "1449817500610"
+	//return card
 
 	//base64 (AES(JSON(Mobile ,Serviceid)))
 	//MD5（Mobile（未加密）+ ENCRYPT）.toUpperCase

@@ -25,10 +25,10 @@ type HTCard struct {
 
 // 添加记录
 func (this *HTCard) AddReocrd(info HTCard) int {
-	myorm.BSQL().Insert(HT_CARD_TABLE_NAME).Values("phone", "card_num",
+	sql := myorm.BSQL().Insert(HT_CARD_TABLE_NAME).Values("phone", "card_num",
 		"card_pwd", "card_token", "type", "total_time", "status", "date",
-		"remark")
-	n, err := myorm.Insert(info.Phone, info.CardNum, info.CardPwd, info.CardToken,
+		"remark").GetSQL()
+	n, err := myorm.Insert(sql, info.Phone, info.CardNum, info.CardPwd, info.CardToken,
 		info.CardType, info.TotalTime, info.Status, info.Date, info.Remark)
 	if err != nil {
 		log.Error(err)
@@ -78,8 +78,8 @@ func (this *HTCard) getCard(info map[string]string) (ht HTCard) {
 
 // 获取信息
 func (this *HTCard) GetInfo(id int) (ht HTCard) {
-	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("id=?")
-	list, err := myorm.Query(id)
+	sql := myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("id=?").GetSQL()
+	list, err := myorm.Query(sql, id)
 	if err != nil {
 		log.Error(err)
 		return ht
@@ -92,8 +92,8 @@ func (this *HTCard) GetInfo(id int) (ht HTCard) {
 
 // 获取信息
 func (this *HTCard) GetInfoByPhone(phone string, date string, ctype int, status int) (ht HTCard) {
-	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and date=? and type = ? and status=?")
-	list, err := myorm.Query(phone, date, ctype, status)
+	sql := myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and date=? and type = ? and status=?").GetSQL()
+	list, err := myorm.Query(sql, phone, date, ctype, status)
 	if err != nil {
 		log.Error(err)
 		return ht
@@ -106,9 +106,9 @@ func (this *HTCard) GetInfoByPhone(phone string, date string, ctype int, status 
 
 // 获取信息
 func (this *HTCard) GetInfoByCard(phone string, cardno string, status int) (ht HTCard) {
-	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=?  and card_num = ? and status=?").
-		Order("date desc").Limit(1)
-	list, err := myorm.Query(phone, cardno, status)
+	sql := myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=?  and card_num = ? and status=?").
+		Order("date desc").Limit(1).GetSQL()
+	list, err := myorm.Query(sql, phone, cardno, status)
 	if err != nil {
 		log.Error(err)
 		return ht
@@ -121,8 +121,8 @@ func (this *HTCard) GetInfoByCard(phone string, cardno string, status int) (ht H
 
 // 获取最近的卡信息
 func (this *HTCard) GetMoneyLastCard(phone string) (ht HTCard) {
-	myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and type=? and status=?").Order("date desc").Limit(1)
-	list, err := myorm.Query(phone, 1, 1)
+	sql := myorm.BSQL().Select("*").From(HT_CARD_TABLE_NAME).Where("phone=? and type=? and status=?").Order("date desc").Limit(1).GetSQL()
+	list, err := myorm.Query(sql, phone, 1, 1)
 	if err != nil {
 		log.Error(err)
 		return ht
@@ -135,10 +135,10 @@ func (this *HTCard) GetMoneyLastCard(phone string) (ht HTCard) {
 
 // 更新卡信息
 func (this *HTCard) UpdateCard(info HTCard) bool {
-	myorm.BSQL().Update(HT_CARD_TABLE_NAME).Set("phone", "card_num",
+	sql := myorm.BSQL().Update(HT_CARD_TABLE_NAME).Set("phone", "card_num",
 		"card_pwd", "card_token", "type", "total_time", "status", "date",
-		"remark").Where("id=?")
-	n, err := myorm.Update(info.Phone, info.CardNum, info.CardPwd, info.CardToken,
+		"remark").Where("id=?").GetSQL()
+	n, err := myorm.Update(sql, info.Phone, info.CardNum, info.CardPwd, info.CardToken,
 		info.CardType, info.TotalTime, info.Status, info.Date, info.Remark, info.Id)
 	if err != nil {
 		log.Error(err)

@@ -118,8 +118,8 @@ func requestPrice(w http.ResponseWriter, r *http.Request) {
 	rtotal++
 	//http://$ip:$port/uri/?ad=$ad&ua=$ua&url=$url&mid=$mid&showType=01|02|03|04|05
 	query := r.URL.Query()
-	//	ad := query.Get("ad")
-	//	ua := query.Get("ua")
+	//ad := query.Get("ad")
+	//ua := query.Get("ua")
 	//	url := query.Get("url")
 	mid := query.Get("mid")
 	//	showType := query.Get("showType")
@@ -149,8 +149,8 @@ func reponsePrice(param map[string]string) {
 	//	defer mux.Unlock()
 
 	//	//http://ip:port/uri?mid=$mid&prod=$prod&showType=$showType
-	//	conn := pool.Get()
-	//	defer conn.Close()
+	conn := pool.Get()
+	defer conn.Close()
 
 	var (
 		host  = IniFile.Section("dxhttp").Key("host").String()
@@ -163,24 +163,21 @@ func reponsePrice(param map[string]string) {
 	}
 
 	if _, ok := param["ad"]; ok {
-		adurl = adurl + "?cox=" + param["ad"]
+		adurl = adurl + "?sh_cox=" + param["ad"]
 	}
 
 	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
 		"03", "reBkYQmESMs=", "10")
 
-	//	res, err := redis.Bytes(conn.Do("GET", "name"))
-	//	if err != nil {
-	//		log.Println(err)
-	//		return
-	//	}
+	conn.Do("SELECT", "1")
 
-	//	if string(res) == "" {
-	//		fmt.Println(res)
-	//	}
+	key := encrypt.DefaultMd5.Encode(param["ad"] + "_" + param["ua"])
+	r, err := redis.Bool(conn.Do("EXISTS", key))
+	if err != nil || !r {
+		return
+	}
 
-	//resp, err := httpclient.Get(url)
 	resp, err := http.Get(url)
 
 	if resp != nil {
@@ -296,8 +293,8 @@ func GetRedisPool() *redis.Pool {
 	)
 
 	return &redis.Pool{
-		MaxIdle:   10240,
-		MaxActive: 10240, // max number of connections
+		MaxIdle:   100,
+		MaxActive: 100, // max number of connections
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", host+":"+port)
 			if err != nil {
