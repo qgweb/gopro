@@ -12,18 +12,23 @@ import (
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/qianzhao/common/function"
 	"github.com/qgweb/gopro/qianzhao/common/global"
+	"github.com/qgweb/gopro/qianzhao/common/redis"
 	"github.com/qgweb/gopro/qianzhao/common/session"
 	"github.com/qgweb/gopro/qianzhao/model"
 
 	"net/http"
 
+	oredis "github.com/garyburd/redigo/redis"
 	"github.com/labstack/echo"
+	"strings"
 )
-
-//
 
 type User struct {
 	Base
+}
+
+func (this *User) getIp(ctx *echo.Context) string {
+	return strings.Split(ctx.Request().RemoteAddr, ":")[0]
 }
 
 // 登录
@@ -95,7 +100,27 @@ func (this *User) Register(ctx *echo.Context) error {
 		code, _     = url.QueryUnescape(ctx.Form("code"))
 		codekey     = "REG_CODE_" + phone
 		umodel      = model.User{}
+		rdb         = redis.Get()
+		rkey        = "REGISTER_" + this.getIp(ctx)
+		vcount      = 5
 	)
+
+	defer rdb.Close()
+
+	vnum, err := oredis.Int(rdb.Do("GET", rkey))
+	if err != nil && err != oredis.ErrNil {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "系统发生错误,稍后重试",
+		})
+	}
+
+	if vnum >= vcount {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "注册访问次数过多,请明天再试",
+		})
+	}
 
 	if phone == "" {
 		return ctx.JSON(http.StatusOK, map[string]string{
@@ -174,6 +199,17 @@ func (this *User) Register(ctx *echo.Context) error {
 	} else {
 		res := umodel.UserRegister(phone, email, password)
 		if res {
+			// 记录访问次数
+			key := "REGISTER_" + this.getIp(ctx)
+			rdb.Do("INCR", key)
+			if vnum == 0 {
+				rdb.Do("EXPIRE", key, 86400)
+			}
+
+			if u := umodel.UserInfo(phone); u.Name != "" {
+				sess.Set(global.SESSION_USER_INFO, u) //存入session
+			}
+
 			return ctx.JSON(http.StatusOK, map[string]string{
 				"code": global.CONTROLLER_CODE_SUCCESS,
 				"msg":  global.CONTROLLER_USER_REGISTER_SUCCESS,
@@ -372,7 +408,7 @@ func (this *User) EditUserphone(ctx *echo.Context) error {
 		})
 	}
 
-	if code != sess.Get("USER_CODE").(string) {
+	if code != sess.Get("USER_CODE_"+phone).(string) {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
 			"msg":  "验证码错误",
@@ -476,9 +512,15 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 	}
 	defer sess.SessionRelease(ctx.Response())
 
+	var rdb = redis.Get()
+	var rkey = "EDITUSERPHONE_" + this.getIp(ctx)
+	var rnum = 10
 	var phone = ctx.Form("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
 	var userModel = model.User{}
+
+	defer rdb.Close()
+
 	if phone == "" {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
@@ -493,10 +535,29 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 		})
 	}
 
+	num, err := oredis.Int(rdb.Do("GET", rkey))
+	if err != nil && err != oredis.ErrNil {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "系统发生错误,稍后重试",
+		})
+	}
+	if num >= rnum {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "今日修改次数过多,请明天再试",
+		})
+	}
+
 	Sms.SendMsg(phone, "【千兆浏览器】"+code+
 		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
 
-	sess.Set("USER_CODE", code)
+	rdb.Do("INCR", rkey)
+	if num == 0 {
+		rdb.Do("EXPIRE", rkey, 86400)
+	}
+
+	sess.Set("USER_CODE_"+phone, code)
 
 	return ctx.JSON(200, map[string]string{
 		"code": "200",
@@ -513,9 +574,15 @@ func (this *User) GetPhoneCode(ctx *echo.Context) error {
 	}
 	defer sess.SessionRelease(ctx.Response())
 
+	var rdb = redis.Get()
+	var rkey = "GETCODE_" + this.getIp(ctx)
+	var rnum = 10
 	var phone = ctx.Query("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
 	var userModel = model.User{}
+
+	defer rdb.Close()
+
 	if phone == "" {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
@@ -530,10 +597,30 @@ func (this *User) GetPhoneCode(ctx *echo.Context) error {
 		})
 	}
 
+	num, err := oredis.Int(rdb.Do("GET", rkey))
+
+	if err != nil && err != oredis.ErrNil {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "系统发生错误,稍后重试" + err.Error(),
+		})
+	}
+	if num >= rnum {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "今日获取验证码次数过多,请明天再试",
+		})
+	}
+
 	Sms.SendMsg(phone, "【千兆浏览器】"+code+
 		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
 
 	sess.Set("REG_CODE_"+phone, code)
+
+	rdb.Do("INCR", rkey)
+	if num == 0 {
+		rdb.Do("EXPIRE", rkey, 86400)
+	}
 	return ctx.JSON(200, map[string]string{
 		"code": "200",
 		"msg":  code,

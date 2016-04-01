@@ -68,7 +68,7 @@ func (this *Ebit) SpeedupOpen(ctx *echo.Context) error {
 	secret := getSecret(timestamp)
 
 	req := httplib.Post(EBIT_BASE_URL + "speedup/opn")
-	req.JsonBody(map[string]string{
+	req.JSONBody(map[string]string{
 		"app":       APP_KEY,
 		"secret":    secret,
 		"timestamp": timestamp,
@@ -77,7 +77,7 @@ func (this *Ebit) SpeedupOpen(ctx *echo.Context) error {
 		"dial_acct": dial_acct,
 	})
 	res := make(map[string]interface{})
-	req.ToJson(&res)
+	req.ToJSON(&res)
 
 	time.Sleep(time.Second * 3)
 	if v, ok := res["task_id"]; ok {
@@ -157,7 +157,7 @@ func (this *Ebit) SpeedupOpenCheck(ctx *echo.Context) error {
 	secret := getSecret(timestamp)
 
 	req := httplib.Post(EBIT_BASE_URL + "user/query")
-	req.JsonBody(map[string]string{
+	req.JSONBody(map[string]string{
 		"app":       APP_KEY,
 		"secret":    secret,
 		"timestamp": timestamp,
@@ -166,7 +166,7 @@ func (this *Ebit) SpeedupOpenCheck(ctx *echo.Context) error {
 	})
 
 	res := make(map[string]interface{})
-	req.ToJson(&res)
+	req.ToJSON(&res)
 
 	if _, ok := res["task_id"]; !ok {
 		return ctx.JSON(http.StatusOK, map[string]string{
@@ -241,7 +241,7 @@ func (this *Ebit) SpeedupCheck(ctx *echo.Context) error {
 	secret := getSecret(timestamp)
 
 	req := httplib.Post(EBIT_BASE_URL + "speedup/check")
-	req.JsonBody(map[string]string{
+	req.JSONBody(map[string]string{
 		"app":       APP_KEY,
 		"secret":    secret,
 		"timestamp": timestamp,
@@ -249,7 +249,7 @@ func (this *Ebit) SpeedupCheck(ctx *echo.Context) error {
 		"dial_acct": dial_acct,
 	})
 	res := make(map[string]interface{})
-	req.ToJson(&res)
+	req.ToJSON(&res)
 
 	if v, ok := res["task_id"]; !ok {
 		return ctx.JSON(http.StatusOK, map[string]string{
@@ -287,10 +287,10 @@ func TaskQuery(taskId string) map[string]interface{} {
 	body["timestamp"] = timestamp
 	body["task_id"] = taskId
 
-	req.JsonBody(&body)
+	req.JSONBody(&body)
 
 	v := make(map[string]interface{})
 
-	req.ToJson(&v)
+	req.ToJSON(&v)
 	return v
 }

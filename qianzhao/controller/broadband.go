@@ -113,7 +113,7 @@ func (this *BroadBand) UserQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
 	req.Header("SOAPAction", USER_QUERY_URL)
 	req.Body(createUserSOAPXml(USER_QUERY_PRODUCTID, ip))
 	a := global.UserEnvelope{}
-	err := req.ToXml(&a)
+	err := req.ToXML(&a)
 	if err != nil {
 		log.Warn("[BroadBand userQuery] 解析xml失败 ", err)
 		return &UserData{}, ErrProgram

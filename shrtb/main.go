@@ -20,10 +20,12 @@ import (
 
 	_ "net/http/pprof"
 
+	"bufio"
 	"github.com/garyburd/redigo/redis"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"os"
 )
 
 var (
@@ -35,7 +37,10 @@ var (
 	mux        sync.Mutex
 	rtotal     uint64
 	stotal     uint64
+	adtotal    uint64
+	aduatotal  uint64
 	mdbsession *mgo.Session
+	fileChan   chan string
 )
 
 func init() {
@@ -57,20 +62,7 @@ func init() {
 
 	pool = GetRedisPool()
 
-	//	httpclient = http.Client{
-	//		Transport: &http.Transport{
-	//			Dial: func(netw, addr string) (net.Conn, error) {
-	//				deadline := time.Now().Add(25 * time.Second)
-	//				c, err := net.DialTimeout(netw, addr, time.Second*20)
-	//				if err != nil {
-	//					return nil, err
-	//				}
-	//				c.SetDeadline(deadline)
-	//				return c, nil
-	//			},
-	//			DisableKeepAlives: true,
-	//		},
-	//	}
+	fileChan = make(chan string, 1000)
 }
 
 func main() {
@@ -82,13 +74,14 @@ func main() {
 	if host == "" || port == "" {
 		log.Fatalln("电信接口配置出错")
 	}
-
+	go recordBiddingRuquest()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	http.HandleFunc("/uri", requestPrice)
 	http.HandleFunc("/tj", func(w http.ResponseWriter, r *http.Request) {
-
-		io.WriteString(w, "recv-total:"+strconv.FormatUint(rtotal, 10))
-		io.WriteString(w, "deal-total:"+strconv.FormatUint(stotal, 10))
+		io.WriteString(w, "recv-total:"+strconv.FormatUint(rtotal, 10)+"\n")
+		io.WriteString(w, "deal-total:"+strconv.FormatUint(stotal, 10)+"\n")
+		io.WriteString(w, "adua-total:"+strconv.FormatUint(aduatotal, 10)+"\n")
+		io.WriteString(w, "ad-total:"+strconv.FormatUint(adtotal, 10)+"\n")
 	})
 	log.Println(http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), nil))
 }
@@ -116,13 +109,17 @@ func getRand(ary []int) int {
 //请求出价
 func requestPrice(w http.ResponseWriter, r *http.Request) {
 	rtotal++
-	//http://$ip:$port/uri/?ad=$ad&ua=$ua&url=$url&mid=$mid&showType=01|02|03|04|05
+	//http://$ip:$port/uri/?ad=$ad&ua=$ua&url=$url&mid=$mid&showType=01|02|03|04|05&price=$price
 	query := r.URL.Query()
-	//ad := query.Get("ad")
-	//ua := query.Get("ua")
+	ad := query.Get("ad")
+	ua := query.Get("ua")
 	//	url := query.Get("url")
+	price := query.Get("price")
+
 	mid := query.Get("mid")
 	//	showType := query.Get("showType")
+
+	fileChan <- fmt.Sprintf("%s\t%s\t%s", ad, ua, price)
 
 	if mid == "" {
 		w.WriteHeader(404)
@@ -134,13 +131,7 @@ func requestPrice(w http.ResponseWriter, r *http.Request) {
 		param[k] = v[0]
 	}
 
-	//go recordAdUa(param)
-
-	//30%概率返回
-	rd := getRand([]int{30, 70})
-	if rd == 0 {
-		go reponsePrice(param)
-	}
+	go reponsePrice(param)
 }
 
 //请求出价
@@ -176,6 +167,14 @@ func reponsePrice(param map[string]string) {
 	r, err := redis.Bool(conn.Do("EXISTS", key))
 	if err != nil || !r {
 		return
+		r, err = redis.Bool(conn.Do("EXISTS", param["ad"]))
+		if err != nil || !r {
+			return
+		} else {
+			adtotal++
+		}
+	} else {
+		aduatotal++
 	}
 
 	resp, err := http.Get(url)
@@ -328,4 +327,22 @@ func GetSession() *mgo.Session {
 	//高并发下会关闭连接,ping下会恢复
 	mdbsession.Ping()
 	return mdbsession.Copy()
+}
+
+func recordBiddingRuquest() {
+	f, err := os.OpenFile("./adua.txt", os.O_APPEND|os.O_CREATE|os.O_RDWR, os.ModePerm)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer f.Close()
+	bw := bufio.NewWriter(f)
+
+	for {
+		select {
+		case msg := <-fileChan:
+			bw.WriteString(msg + "\n")
+			break
+		}
+	}
+	bw.Flush()
 }

@@ -116,6 +116,7 @@ func (this *Club) Turntable(ctx *echo.Context) error {
 		2: 53,
 		3: 6,
 	})
+
 	if err != nil {
 		log.Error(err)
 	}

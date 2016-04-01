@@ -12,7 +12,7 @@ func init() {
 	go globalSessions.GC()
 }
 
-func GetSession(ctx *echo.Context) (session.SessionStore, error) {
+func GetSession(ctx *echo.Context) (session.Store, error) {
 	sess, err := globalSessions.SessionStart(ctx.Response(), ctx.Request())
 	if err != nil {
 		return nil, err

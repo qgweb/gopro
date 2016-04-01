@@ -304,7 +304,7 @@ func (this *ZJPut) PutAdvertToRedis() {
 // 把AD放入缓存中
 func (this *ZJPut) PutAdToCache(ad string, ua string) {
 	ua = encrypt.DefaultBase64.Decode(ua)
-	var key = ad + "|" + encrypt.DefaultMd5.Encode(ua)
+	var key = ad + "|" + strings.ToUpper(encrypt.DefaultMd5.Encode(ua))
 	this.ldb.HSet(this.prefix+"sad", key, "1")
 }
 

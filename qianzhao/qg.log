@@ -18882,3 +18882,327 @@
 2016/03/21 16:17:00 logger.go:38: [info] GET /getcode [32m200[0m 1.47269ms 28
 2016/03/21 16:17:03 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 2.457059ms 39
 2016/03/21 16:17:05 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 106.505796ms 37
+2016/03/23 15:48:04 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 8.058151ms 39
+2016/03/23 15:48:47 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 5.602536ms 39
+2016/03/23 15:48:50 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 2.550511ms 39
+2016/03/23 15:48:51 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 2.517738ms 39
+2016/03/23 15:49:37 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 6.11131ms 39
+2016/03/23 15:49:39 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 2.499034ms 39
+2016/03/23 15:51:07 logger.go:38: [info] GET /getcode [32m200[0m 4.515411ms 28
+2016/03/23 15:51:09 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 110.733548ms 37
+2016/03/23 15:51:19 user.go:465: [error]  
+2016/03/23 15:51:19 logger.go:38: [info] GET /user [32m200[0m 2.746157ms 15000
+2016/03/23 15:51:19 logger.go:38: [info] GET /css/layout.css [32m200[0m 51.211749ms 7620
+2016/03/23 15:51:19 logger.go:38: [info] GET /img/avatar.jpg [32m200[0m 51.182285ms 5170
+2016/03/23 15:51:19 logger.go:38: [info] GET /js/layer/layer.min.js [32m200[0m 18.476695ms 19185
+2016/03/23 15:51:19 logger.go:38: [info] GET /img/logo.jpg [32m200[0m 9.910004ms 8544
+2016/03/23 15:51:19 logger.go:38: [info] GET /img/bg_banner.jpg [32m200[0m 15.283423ms 129448
+2016/03/23 15:51:19 logger.go:38: [info] GET /img/bg_avatar.png [32m200[0m 11.144329ms 304363
+2016/03/23 15:51:19 logger.go:38: [info] GET /img/ico_small.jpg [32m200[0m 326.704µs 5704
+2016/03/23 15:51:19 logger.go:38: [info] GET /js/layer/skin/layer.css [32m200[0m 8.416121ms 5759
+2016/03/23 15:51:19 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [32m200[0m 11.997895ms 32954
+2016/03/23 15:51:20 logger.go:38: [info] GET /favicon.ico [32m200[0m 109.224µs 0
+2016/03/23 15:51:44 logger.go:38: [info] GET /user [32m200[0m 1.273963ms 37
+2016/03/23 15:51:44 logger.go:38: [info] GET /user [32m200[0m 50.58µs 37
+2016/03/23 15:51:44 logger.go:38: [info] GET /favicon.ico [32m200[0m 4.269312ms 0
+2016/03/23 15:51:46 logger.go:38: [info] GET /user [32m200[0m 62.076µs 37
+2016/03/23 15:51:46 logger.go:38: [info] GET /favicon.ico [32m200[0m 74.724µs 0
+2016/03/23 15:51:54 logger.go:38: [info] GET /getcode [32m200[0m 3.740332ms 28
+2016/03/23 15:51:57 logger.go:38: [info] GET /user [32m200[0m 62.072µs 37
+2016/03/23 15:51:58 logger.go:38: [info] GET /favicon.ico [32m200[0m 74.772µs 0
+2016/03/23 15:51:59 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 114.95054ms 37
+2016/03/23 15:52:02 user.go:465: [error]  
+2016/03/23 15:52:02 logger.go:38: [info] GET /user [32m200[0m 3.969495ms 15000
+2016/03/23 15:52:02 logger.go:38: [info] GET /css/layout.css [36m304[0m 48.845µs 0
+2016/03/23 15:52:02 logger.go:38: [info] GET /img/avatar.jpg [36m304[0m 64.535µs 0
+2016/03/23 15:52:02 logger.go:38: [info] GET /js/layer/layer.min.js [36m304[0m 37.191µs 0
+2016/03/23 15:52:02 logger.go:38: [info] GET /js/layer/skin/layer.css [36m304[0m 60.369µs 0
+2016/03/23 15:52:02 logger.go:38: [info] GET /js/layer/skin/default/xubox_ico0.png [36m304[0m 44.186µs 0
+2016/03/23 15:52:02 logger.go:38: [info] GET /favicon.ico [32m200[0m 74.945µs 0
+2016/03/24 13:48:34 logger.go:38: [info] GET /getcode [32m200[0m 4.845457ms 48
+2016/03/24 13:49:37 logger.go:38: [info] GET /getcode [32m200[0m 2.521179ms 55
+2016/03/24 13:50:07 logger.go:38: [info] GET /getcode [32m200[0m 5.62779ms 75
+2016/03/24 13:51:31 logger.go:38: [info] GET /getcode [32m200[0m 6.241444ms 28
+2016/03/24 13:51:55 logger.go:38: [info] GET /getcode [32m200[0m 2.859858ms 28
+2016/03/24 13:51:56 logger.go:38: [info] GET /getcode [32m200[0m 2.675061ms 28
+2016/03/24 13:51:56 logger.go:38: [info] GET /getcode [32m200[0m 2.633936ms 28
+2016/03/24 13:52:05 logger.go:38: [info] GET /getcode [32m200[0m 2.38428ms 28
+2016/03/24 13:52:06 logger.go:38: [info] GET /getcode [32m200[0m 2.698454ms 28
+2016/03/24 13:52:09 logger.go:38: [info] GET /getcode [32m200[0m 2.860166ms 28
+2016/03/24 13:52:09 logger.go:38: [info] GET /getcode [32m200[0m 2.436143ms 28
+2016/03/24 13:52:10 logger.go:38: [info] GET /getcode [32m200[0m 2.638586ms 28
+2016/03/24 13:52:10 logger.go:38: [info] GET /getcode [32m200[0m 2.664265ms 28
+2016/03/24 13:52:11 logger.go:38: [info] GET /getcode [32m200[0m 1.343325ms 55
+2016/03/24 13:52:31 logger.go:38: [info] GET /getcode [32m200[0m 1.469934ms 55
+2016/03/24 13:52:32 logger.go:38: [info] GET /getcode [32m200[0m 1.176241ms 55
+2016/03/24 13:52:51 logger.go:38: [info] GET /getcode [32m200[0m 6.30255ms 28
+2016/03/24 13:52:52 logger.go:38: [info] GET /getcode [32m200[0m 2.399315ms 73
+2016/03/24 13:53:13 logger.go:38: [info] GET /getcode [32m200[0m 2.513304ms 28
+2016/03/24 13:53:19 logger.go:38: [info] GET /getcode [32m200[0m 2.16215ms 73
+2016/03/24 13:54:15 logger.go:38: [info] GET /getcode [32m200[0m 5.21879ms 73
+2016/03/24 13:54:17 logger.go:38: [info] GET /getcode [32m200[0m 2.461706ms 73
+2016/03/24 13:54:18 logger.go:38: [info] GET /getcode [32m200[0m 2.25186ms 73
+2016/03/24 13:54:18 logger.go:38: [info] GET /getcode [32m200[0m 2.152541ms 73
+2016/03/24 13:55:26 logger.go:38: [info] GET /getcode [32m200[0m 5.298513ms 73
+2016/03/24 13:55:27 logger.go:38: [info] GET /getcode [32m200[0m 2.434221ms 73
+2016/03/24 13:55:27 logger.go:38: [info] GET /getcode [32m200[0m 2.439579ms 73
+2016/03/24 13:55:28 logger.go:38: [info] GET /getcode [32m200[0m 2.075647ms 73
+2016/03/24 13:55:34 logger.go:38: [info] GET /getcode [32m200[0m 2.211162ms 73
+2016/03/24 13:55:35 logger.go:38: [info] GET /getcode [32m200[0m 2.205099ms 73
+2016/03/24 13:55:35 logger.go:38: [info] GET /getcode [32m200[0m 2.380298ms 73
+2016/03/24 13:55:35 logger.go:38: [info] GET /getcode [32m200[0m 2.341592ms 73
+2016/03/24 13:55:36 logger.go:38: [info] GET /getcode [32m200[0m 2.205169ms 73
+2016/03/24 13:55:36 logger.go:38: [info] GET /getcode [32m200[0m 2.302103ms 73
+2016/03/24 14:02:46 logger.go:38: [info] GET /getcode [32m200[0m 6.058975ms 28
+2016/03/24 14:03:23 logger.go:38: [info] GET /getcode [32m200[0m 2.52617ms 28
+2016/03/24 14:03:23 logger.go:38: [info] GET /getcode [32m200[0m 2.421126ms 28
+2016/03/24 14:03:23 logger.go:38: [info] GET /getcode [32m200[0m 2.625093ms 28
+2016/03/24 14:03:24 logger.go:38: [info] GET /getcode [32m200[0m 2.594619ms 28
+2016/03/24 14:03:24 logger.go:38: [info] GET /getcode [32m200[0m 2.421491ms 28
+2016/03/24 14:03:24 logger.go:38: [info] GET /getcode [32m200[0m 2.480067ms 28
+2016/03/24 14:03:24 logger.go:38: [info] GET /getcode [32m200[0m 2.428273ms 28
+2016/03/24 14:03:24 logger.go:38: [info] GET /getcode [32m200[0m 2.360003ms 28
+2016/03/24 14:03:25 logger.go:38: [info] GET /getcode [32m200[0m 2.683413ms 28
+2016/03/24 14:03:25 logger.go:38: [info] GET /getcode [32m200[0m 1.334507ms 55
+2016/03/24 14:03:25 logger.go:38: [info] GET /getcode [32m200[0m 1.408083ms 55
+2016/03/24 14:03:25 logger.go:38: [info] GET /getcode [32m200[0m 1.577445ms 55
+2016/03/24 14:03:27 logger.go:38: [info] GET /getcode [32m200[0m 1.327938ms 55
+2016/03/24 14:03:27 logger.go:38: [info] GET /getcode [32m200[0m 1.352379ms 55
+2016/03/24 14:03:28 logger.go:38: [info] GET /getcode [32m200[0m 1.399958ms 55
+2016/03/24 14:03:28 logger.go:38: [info] GET /getcode [32m200[0m 1.270341ms 55
+2016/03/24 14:03:28 logger.go:38: [info] GET /getcode [32m200[0m 1.347745ms 55
+2016/03/24 14:03:28 logger.go:38: [info] GET /getcode [32m200[0m 1.4161ms 55
+2016/03/24 14:03:29 logger.go:38: [info] GET /getcode [32m200[0m 1.387883ms 55
+2016/03/24 14:03:30 logger.go:38: [info] GET /getcode [32m200[0m 1.358002ms 55
+2016/03/24 14:03:30 logger.go:38: [info] GET /getcode [32m200[0m 1.438868ms 55
+2016/03/24 14:03:30 logger.go:38: [info] GET /getcode [32m200[0m 1.304203ms 55
+2016/03/24 14:03:31 logger.go:38: [info] GET /getcode [32m200[0m 1.455056ms 55
+2016/03/24 14:03:31 logger.go:38: [info] GET /getcode [32m200[0m 1.375364ms 55
+2016/03/24 14:03:54 logger.go:38: [info] GET /getcode [32m200[0m 5.498779ms 73
+2016/03/24 14:03:59 logger.go:38: [info] GET /getcode [32m200[0m 2.786614ms 28
+2016/03/24 14:04:00 logger.go:38: [info] GET /getcode [32m200[0m 2.565719ms 28
+2016/03/24 14:04:00 logger.go:38: [info] GET /getcode [32m200[0m 2.564819ms 28
+2016/03/24 14:04:00 logger.go:38: [info] GET /getcode [32m200[0m 2.817415ms 28
+2016/03/24 14:04:00 logger.go:38: [info] GET /getcode [32m200[0m 2.318452ms 28
+2016/03/24 14:04:00 logger.go:38: [info] GET /getcode [32m200[0m 2.501996ms 28
+2016/03/24 14:04:01 logger.go:38: [info] GET /getcode [32m200[0m 2.56379ms 28
+2016/03/24 14:04:01 logger.go:38: [info] GET /getcode [32m200[0m 2.542897ms 28
+2016/03/24 14:04:01 logger.go:38: [info] GET /getcode [32m200[0m 2.627825ms 28
+2016/03/24 14:04:02 logger.go:38: [info] GET /getcode [32m200[0m 1.518213ms 88
+2016/03/24 14:04:02 logger.go:38: [info] GET /getcode [32m200[0m 1.430514ms 88
+2016/03/24 14:04:44 logger.go:38: [info] GET /getcode [32m200[0m 6.703455ms 28
+2016/03/24 14:04:45 logger.go:38: [info] GET /getcode [32m200[0m 2.216584ms 28
+2016/03/24 14:04:46 logger.go:38: [info] GET /getcode [32m200[0m 2.408065ms 28
+2016/03/24 14:04:46 logger.go:38: [info] GET /getcode [32m200[0m 2.035431ms 28
+2016/03/24 14:04:46 logger.go:38: [info] GET /getcode [32m200[0m 2.182108ms 28
+2016/03/24 14:04:46 logger.go:38: [info] GET /getcode [32m200[0m 2.206855ms 28
+2016/03/24 14:04:46 logger.go:38: [info] GET /getcode [32m200[0m 2.210904ms 28
+2016/03/24 14:04:46 logger.go:38: [info] GET /getcode [32m200[0m 2.116116ms 28
+2016/03/24 14:04:47 logger.go:38: [info] GET /getcode [32m200[0m 2.22679ms 28
+2016/03/24 14:04:47 logger.go:38: [info] GET /getcode [32m200[0m 2.086146ms 28
+2016/03/24 14:04:47 logger.go:38: [info] GET /getcode [32m200[0m 1.723837ms 73
+2016/03/24 14:04:47 logger.go:38: [info] GET /getcode [32m200[0m 1.919994ms 73
+2016/03/24 14:04:47 logger.go:38: [info] GET /getcode [32m200[0m 1.902975ms 73
+2016/03/24 14:04:53 logger.go:38: [info] GET /getcode [32m200[0m 1.78417ms 73
+2016/03/24 14:04:53 logger.go:38: [info] GET /getcode [32m200[0m 1.867345ms 73
+2016/03/24 14:04:53 logger.go:38: [info] GET /getcode [32m200[0m 1.819062ms 73
+2016/03/24 14:04:54 logger.go:38: [info] GET /getcode [32m200[0m 1.646802ms 73
+2016/03/24 14:04:54 logger.go:38: [info] GET /getcode [32m200[0m 1.739944ms 73
+2016/03/24 14:06:01 user.go:45: [info] 15158117079 
+2016/03/24 14:06:01 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 5.3191ms 71
+2016/03/24 14:07:40 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 10.075165ms 37
+2016/03/24 14:07:42 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 4.944848ms 37
+2016/03/24 14:07:43 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 4.892623ms 37
+2016/03/24 14:07:44 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 5.019959ms 37
+2016/03/24 14:07:45 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 5.310069ms 37
+2016/03/24 14:07:45 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 607.649µs 64
+2016/03/24 14:07:47 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 612.69µs 64
+2016/03/24 14:07:48 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 1.002718ms 64
+2016/03/24 14:07:49 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 525.973µs 64
+2016/03/24 14:07:50 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 555.06µs 64
+2016/03/24 14:07:50 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 596.767µs 64
+2016/03/24 14:07:51 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 629.318µs 64
+2016/03/24 14:10:13 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 5.792083ms 37
+2016/03/24 14:10:14 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 4.681656ms 37
+2016/03/24 14:10:14 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 4.874451ms 37
+2016/03/24 14:10:15 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 4.991578ms 37
+2016/03/24 14:10:15 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 4.75025ms 37
+2016/03/24 14:10:15 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 535.499µs 64
+2016/03/24 14:10:15 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 591.969µs 64
+2016/03/24 14:10:15 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 613.918µs 64
+2016/03/24 14:10:15 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 481.954µs 64
+2016/03/24 14:10:16 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 520.754µs 64
+2016/03/24 14:13:30 logger.go:38: [info] POST /Api/v0.1/user/register [32m200[0m 116.237928ms 37
+2016/03/24 14:13:53 user.go:45: [info] 15158117079 
+2016/03/24 14:13:54 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 108.510431ms 160
+2016/03/24 14:14:03 logger.go:38: [info] GET /club [32m200[0m 364.579µs 4372
+2016/03/24 14:14:03 logger.go:38: [info] GET /css/lottery.css [32m200[0m 27.13015ms 7743
+2016/03/24 14:14:03 logger.go:38: [info] GET /js/rotate/jquery.easing.min.js [32m200[0m 17.378889ms 3606
+2016/03/24 14:14:03 logger.go:38: [info] GET /js/rotate/jQueryRotate.2.2.js [32m200[0m 11.236805ms 13522
+2016/03/24 14:14:03 logger.go:38: [info] GET /js/jquery-1.10.2.min.js [32m200[0m 41.364714ms 93113
+2016/03/24 14:14:03 logger.go:38: [info] GET /js/lottery.js [32m200[0m 16.228243ms 7783
+2016/03/24 14:14:03 logger.go:38: [info] GET /img/bg.jpg [32m200[0m 105.761927ms 225502
+2016/03/24 14:14:03 logger.go:38: [info] GET /img/dial_arrow.png [32m200[0m 9.543012ms 3558
+2016/03/24 14:14:03 logger.go:38: [info] GET /img/dial.png [32m200[0m 9.78314ms 23452
+2016/03/24 14:14:03 logger.go:38: [info] GET /img/dial_text.png [32m200[0m 17.421057ms 5059
+2016/03/24 14:14:03 logger.go:38: [info] GET /club/winlist [32m200[0m 4.100395ms 7511
+2016/03/24 14:15:22 logger.go:38: [info] GET //user/getcode [33m404[0m 112.149µs 10
+2016/03/24 14:15:24 logger.go:38: [info] GET //user/getcode [33m404[0m 70.63µs 10
+2016/03/24 14:15:25 logger.go:38: [info] GET //user/getcode [33m404[0m 154.077µs 10
+2016/03/24 14:15:28 logger.go:38: [info] GET /user/getcode [33m404[0m 72.732µs 10
+2016/03/24 14:15:28 logger.go:38: [info] GET /user/getcode [33m404[0m 98.186µs 10
+2016/03/24 14:15:29 logger.go:38: [info] GET /user/getcode [33m404[0m 60.582µs 10
+2016/03/24 14:15:46 logger.go:38: [info] POST /user/getcode [32m200[0m 584.387µs 37
+2016/03/24 14:15:51 user.go:45: [info] 15158117079 
+2016/03/24 14:15:51 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 116.88931ms 160
+2016/03/24 14:15:53 logger.go:38: [info] POST /user/getcode [32m200[0m 2.097684ms 48
+2016/03/24 14:15:58 logger.go:38: [info] POST /user/getcode [32m200[0m 2.012274ms 48
+2016/03/24 14:15:59 logger.go:38: [info] POST /user/getcode [32m200[0m 1.318833ms 48
+2016/03/24 14:16:02 logger.go:38: [info] POST /user/getcode [32m200[0m 3.158605ms 24
+2016/03/24 14:16:04 logger.go:38: [info] POST /user/getcode [32m200[0m 2.185313ms 24
+2016/03/24 14:16:04 logger.go:38: [info] POST /user/getcode [32m200[0m 2.281962ms 24
+2016/03/24 14:16:05 logger.go:38: [info] POST /user/getcode [32m200[0m 2.370549ms 24
+2016/03/24 14:16:05 logger.go:38: [info] POST /user/getcode [32m200[0m 2.198631ms 24
+2016/03/24 14:16:06 logger.go:38: [info] POST /user/getcode [32m200[0m 2.0675ms 24
+2016/03/24 14:16:06 logger.go:38: [info] POST /user/getcode [32m200[0m 2.201141ms 24
+2016/03/24 14:16:06 logger.go:38: [info] POST /user/getcode [32m200[0m 2.053586ms 24
+2016/03/24 14:16:06 logger.go:38: [info] POST /user/getcode [32m200[0m 2.081627ms 24
+2016/03/24 14:16:07 logger.go:38: [info] POST /user/getcode [32m200[0m 1.979718ms 24
+2016/03/24 14:16:07 logger.go:38: [info] POST /user/getcode [32m200[0m 1.744983ms 64
+2016/03/24 14:16:07 logger.go:38: [info] POST /user/getcode [32m200[0m 1.834745ms 64
+2016/03/24 14:16:08 logger.go:38: [info] POST /user/getcode [32m200[0m 2.018848ms 64
+2016/03/24 14:16:08 logger.go:38: [info] POST /user/getcode [32m200[0m 1.709789ms 64
+2016/03/24 14:16:09 logger.go:38: [info] POST /user/getcode [32m200[0m 1.764234ms 64
+2016/03/24 14:16:09 logger.go:38: [info] POST /user/getcode [32m200[0m 1.805916ms 64
+2016/03/24 14:16:09 logger.go:38: [info] POST /user/getcode [32m200[0m 1.678356ms 64
+2016/03/24 14:19:23 logger.go:38: [info] GET /club/turntable [32m200[0m 621.293µs 37
+2016/03/24 14:19:26 user.go:45: [info] 15158117079 
+2016/03/24 14:19:26 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 112.942133ms 160
+2016/03/24 14:19:30 award.go:167: [info] cfcd208495d565ef66e7dff9f98764da 13 
+2016/03/24 14:19:30 award.go:171: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc82028a2a0 0xc8201477c0} <nil> 
+2016/03/24 14:19:30 logger.go:38: [info] GET /club/turntable [32m200[0m 216.291567ms 112
+2016/03/24 14:19:35 logger.go:38: [info] GET /club/turntable [32m200[0m 1.523887ms 76
+2016/03/24 14:19:37 logger.go:38: [info] GET /club/turntable [32m200[0m 1.331141ms 76
+2016/03/24 14:20:14 logger.go:38: [info] GET /club/turntable [32m200[0m 1.345282ms 76
+2016/03/24 14:20:53 logger.go:38: [info] GET /club/turntable [32m200[0m 1.472654ms 76
+2016/03/24 14:20:54 logger.go:38: [info] GET /club/turntable [32m200[0m 1.299544ms 76
+2016/03/24 14:20:54 logger.go:38: [info] GET /club/turntable [32m200[0m 1.334954ms 76
+2016/03/24 14:21:04 logger.go:38: [info] GET /club/turntable [32m200[0m 3.31279ms 58
+2016/03/24 14:21:06 logger.go:38: [info] GET /club/turntable [32m200[0m 5.804622ms 58
+2016/03/24 14:21:07 logger.go:38: [info] GET /club/turntable [32m200[0m 5.816126ms 58
+2016/03/24 14:21:07 logger.go:38: [info] GET /club/turntable [32m200[0m 5.47132ms 58
+2016/03/24 14:21:07 logger.go:38: [info] GET /club/turntable [32m200[0m 5.253043ms 58
+2016/03/24 14:21:08 logger.go:38: [info] GET /club/turntable [32m200[0m 5.382456ms 58
+2016/03/24 14:21:09 logger.go:38: [info] GET /club/turntable [32m200[0m 5.453283ms 58
+2016/03/24 14:21:09 logger.go:38: [info] GET /club/turntable [32m200[0m 5.261323ms 58
+2016/03/24 14:21:10 logger.go:38: [info] GET /club/turntable [32m200[0m 5.410658ms 58
+2016/03/24 14:21:11 logger.go:38: [info] GET /club/turntable [32m200[0m 5.461467ms 58
+2016/03/24 14:21:13 logger.go:38: [info] GET /club/turntable [32m200[0m 5.411416ms 58
+2016/03/24 14:25:02 logger.go:38: [info] GET /club/turntable [32m200[0m 396.45µs 37
+2016/03/24 14:25:03 logger.go:38: [info] GET /club/turntable [32m200[0m 46.602µs 37
+2016/03/24 14:25:06 user.go:45: [info] 15158117079 
+2016/03/24 14:25:06 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 118.171804ms 160
+2016/03/24 14:25:08 logger.go:38: [info] GET /club/turntable [32m200[0m 3.05621ms 58
+2016/03/24 14:25:09 logger.go:38: [info] GET /club/turntable [32m200[0m 4.959177ms 58
+2016/03/24 14:25:09 logger.go:38: [info] GET /club/turntable [32m200[0m 5.018417ms 58
+2016/03/24 14:25:09 logger.go:38: [info] GET /club/turntable [32m200[0m 5.14675ms 58
+2016/03/24 14:25:10 logger.go:38: [info] GET /club/turntable [32m200[0m 4.90036ms 58
+2016/03/24 14:25:10 logger.go:38: [info] GET /club/turntable [32m200[0m 5.109133ms 58
+2016/03/24 14:25:10 logger.go:38: [info] GET /club/turntable [32m200[0m 4.908069ms 58
+2016/03/24 14:25:10 logger.go:38: [info] GET /club/turntable [32m200[0m 5.197753ms 58
+2016/03/24 14:25:10 logger.go:38: [info] GET /club/turntable [32m200[0m 5.160173ms 58
+2016/03/24 14:25:10 logger.go:38: [info] GET /club/turntable [32m200[0m 5.607965ms 58
+2016/03/24 14:25:11 logger.go:38: [info] GET /club/turntable [32m200[0m 5.694692ms 58
+2016/03/24 14:25:11 logger.go:38: [info] GET /club/turntable [32m200[0m 5.559513ms 58
+2016/03/24 14:25:11 logger.go:38: [info] GET /club/turntable [32m200[0m 5.491048ms 58
+2016/03/24 14:25:11 logger.go:38: [info] GET /club/turntable [32m200[0m 5.845898ms 58
+2016/03/24 14:25:11 logger.go:38: [info] GET /club/turntable [32m200[0m 5.590245ms 58
+2016/03/24 14:25:12 logger.go:38: [info] GET /club/turntable [32m200[0m 6.171412ms 58
+2016/03/24 14:25:12 logger.go:38: [info] GET /club/turntable [32m200[0m 5.259012ms 58
+2016/03/24 14:25:12 logger.go:38: [info] GET /club/turntable [32m200[0m 5.269317ms 58
+2016/03/24 14:30:26 logger.go:38: [info] GET /club/turntable [32m200[0m 91.70547ms 58
+2016/03/24 14:30:26 logger.go:38: [info] GET /club/turntable [32m200[0m 1.590428ms 76
+2016/03/24 14:30:39 logger.go:38: [info] GET /club/turntable [32m200[0m 100.946729ms 58
+2016/03/24 14:30:44 logger.go:38: [info] GET /club/turntable [32m200[0m 60.97727ms 58
+2016/03/24 14:30:48 logger.go:38: [info] GET /club/turntable [32m200[0m 26.677678ms 58
+2016/03/24 14:30:55 award.go:167: [info] cfcd208495d565ef66e7dff9f98764da 13 
+2016/03/24 14:30:55 award.go:171: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc8201ef7a0 0xc820283910} <nil> 
+2016/03/24 14:30:55 logger.go:38: [info] GET /club/turntable [32m200[0m 28.594254ms 112
+2016/03/30 13:11:00 logger.go:38: [info] GET /club/turntable [32m200[0m 638.045µs 37
+2016/03/30 13:11:03 user.go:45: [info] 15158117079 
+2016/03/30 13:11:03 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 143.049617ms 160
+2016/03/30 13:11:10 user.go:45: [info] 15158117079 
+2016/03/30 13:11:10 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.259802ms 160
+2016/03/30 13:11:11 user.go:45: [info] 15158117079 
+2016/03/30 13:11:11 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.565979ms 160
+2016/03/30 13:11:11 user.go:45: [info] 15158117079 
+2016/03/30 13:11:12 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.061237ms 160
+2016/03/30 13:11:13 user.go:45: [info] 15158117079 
+2016/03/30 13:11:13 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.055524ms 160
+2016/03/30 13:11:14 user.go:45: [info] 15158117079 
+2016/03/30 13:11:14 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.914551ms 160
+2016/03/30 13:11:16 user.go:45: [info] 15158117079 
+2016/03/30 13:11:16 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.229736ms 160
+2016/03/30 13:11:17 user.go:45: [info] 15158117079 
+2016/03/30 13:11:17 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 112.04718ms 160
+2016/03/30 13:11:18 user.go:45: [info] 15158117079 
+2016/03/30 13:11:18 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 109.30223ms 160
+2016/03/30 13:11:19 user.go:45: [info] 15158117079 
+2016/03/30 13:11:19 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.300653ms 160
+2016/03/30 13:11:20 user.go:45: [info] 15158117079 
+2016/03/30 13:11:20 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.057938ms 160
+2016/03/30 13:11:20 user.go:45: [info] 15158117079 
+2016/03/30 13:11:20 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 109.566618ms 160
+2016/03/30 13:11:57 logger.go:38: [info] GET /club/turntable [32m200[0m 613.464µs 37
+2016/03/30 13:12:00 user.go:45: [info] 15158117079 
+2016/03/30 13:12:00 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 116.103329ms 160
+2016/03/30 13:12:03 user.go:45: [info] 15158117079 
+2016/03/30 13:12:04 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 114.214107ms 160
+2016/03/30 13:12:04 user.go:45: [info] 15158117079 
+2016/03/30 13:12:04 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 108.584633ms 160
+2016/03/30 13:12:05 user.go:45: [info] 15158117079 
+2016/03/30 13:12:05 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 115.852395ms 160
+2016/03/30 13:12:06 user.go:45: [info] 15158117079 
+2016/03/30 13:12:06 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 109.742063ms 160
+2016/03/30 13:12:06 user.go:45: [info] 15158117079 
+2016/03/30 13:12:07 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 108.752655ms 160
+2016/03/30 13:12:07 user.go:45: [info] 15158117079 
+2016/03/30 13:12:07 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 109.030214ms 160
+2016/03/30 13:12:48 user.go:45: [info] 15158117079 
+2016/03/30 13:12:48 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 112.896465ms 160
+2016/03/30 13:12:53 user.go:45: [info] 15158117079 
+2016/03/30 13:12:53 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 117.834884ms 160
+2016/03/30 13:12:54 user.go:45: [info] 15158117079 
+2016/03/30 13:12:54 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.760826ms 160
+2016/03/30 13:12:55 user.go:45: [info] 15158117079 
+2016/03/30 13:12:55 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.489345ms 160
+2016/03/30 13:12:56 user.go:45: [info] 15158117079 
+2016/03/30 13:12:56 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 109.37043ms 160
+2016/03/30 13:12:57 user.go:45: [info] 15158117079 
+2016/03/30 13:12:57 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.205178ms 160
+2016/03/30 13:12:58 user.go:45: [info] 15158117079 
+2016/03/30 13:12:58 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 116.484695ms 160
+2016/03/30 13:13:21 user.go:45: [info] 15158117079 
+2016/03/30 13:13:21 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 112.359964ms 160
+2016/03/30 13:13:22 user.go:45: [info] 15158117079 
+2016/03/30 13:13:22 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.809937ms 160
+2016/03/30 13:13:24 user.go:45: [info] 15158117079 
+2016/03/30 13:13:24 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.102364ms 160
+2016/03/30 13:13:24 user.go:45: [info] 15158117079 
+2016/03/30 13:13:24 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.280164ms 160
+2016/03/30 13:13:25 user.go:45: [info] 15158117079 
+2016/03/30 13:13:25 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.035997ms 160
+2016/03/30 13:13:25 user.go:45: [info] 15158117079 
+2016/03/30 13:13:26 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.908551ms 160
+2016/03/30 13:13:26 user.go:45: [info] 15158117079 
+2016/03/30 13:13:26 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 109.587996ms 160
+2016/03/30 13:13:26 user.go:45: [info] 15158117079 
+2016/03/30 13:13:26 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.876997ms 160
+2016/03/30 13:13:26 user.go:45: [info] 15158117079 
+2016/03/30 13:13:27 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 112.526822ms 160
+2016/03/30 13:13:27 user.go:45: [info] 15158117079 
+2016/03/30 13:13:27 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 110.071094ms 160
+2016/03/30 13:13:30 logger.go:38: [info] GET /club/turntable [32m200[0m 68.31µs 67
+2016/03/30 13:13:40 user.go:45: [info] 15158117079 
+2016/03/30 13:13:40 logger.go:38: [info] POST /Api/v0.1/user/login [32m200[0m 111.193324ms 160
+2016/03/30 15:37:15 logger.go:38: [info] GET /club/turntable [32m200[0m 584.834µs 37

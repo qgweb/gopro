@@ -54,6 +54,8 @@ func (c *MainController) checkInUserCookies(conn *mgo.Session, uid string) (stri
 }
 
 func (c *MainController) CookieMatch() {
+	c.Ctx.WriteString("ok")
+	return
 	var (
 		rconn      = xredis.GetRedis()
 		mconn, err = mongo.LinkMongo()
@@ -90,4 +92,8 @@ func (c *MainController) Reffer() {
 	)
 	beego.Info(tu, "---------", ref)
 	c.Ctx.WriteString("ok")
+}
+
+func (c *MainController) Iframe() {
+	beego.Info(c.GetString("if"))
 }

@@ -58,11 +58,38 @@ func (this *Award) getRand(ary map[int]int) int {
 	return -1
 }
 
+func (this *Award) black(tx *sql.Tx, id string) (bool, error) {
+	r, err := tx.Query("select count(*) as num from 221su_users where created>=? and created<? and id=?",
+		1458057600, 1458403200, id)
+	if err != nil {
+		return true, err
+	}
+	defer r.Close()
+	if r.Next() {
+		time.Sleep(time.Minute*10)
+		var id int
+		err := r.Scan(&id)
+		if err != nil {
+			return true, err
+		}
+		if id >= 1 {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func (this *Award) Get(userid string, awardnum map[int]int) (int, string, error) {
 	tx, err := myorm.Begin()
 	if err != nil {
 		return 0, "", err
 	}
+	// 验证是否黑名单
+	b, err := this.black(tx, userid)
+	if err != nil || b {
+		return 0, "", err
+	}
+
 	// 获取抽奖号码
 	n, err := this.getAwardNum(tx, awardnum)
 	if err != nil {
