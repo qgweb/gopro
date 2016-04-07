@@ -34,8 +34,8 @@ var (
 )
 
 const (
-	MODEL_REDIS = 1
-	MODEL_URL   = 2
+	MODEL_REDIS = "1"
+	MODEL_URL   = "2"
 )
 
 func init() {
@@ -118,7 +118,7 @@ func reponsePrice(param map[string]string) {
 	var (
 		host  = IniFile.String("dxhttp::host")
 		port  = IniFile.String("dxhttp::port")
-		adurl = IniFile.String("dxhttp::url")
+		adurl = IniFile.String("adurl::url")
 		mode  = IniFile.String("default::mode")
 	)
 
@@ -201,7 +201,7 @@ func parseUrl(ourl string) string {
 	if err != nil {
 		return ""
 	}
-	return a.Host + a.Path
+	return a.Host
 }
 
 // 匹配链接

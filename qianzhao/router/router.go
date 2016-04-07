@@ -23,6 +23,7 @@ func Router(e *echo.Echo) {
 	e.Post("/user/getcode", (&controller.User{}).GetUserPhoneCode)
 	e.Post("/user/editphone", (&controller.User{}).EditUserphone)
 	e.Post("/user/uploadpic", (&controller.User{}).UploadPic)
+	e.Get("/ip", (&controller.User{}).GetIp)
 
 	//// 用户收藏夹
 	e.Post("/Api/v0.1/backup_favorite", (&controller.Favorite{}).BackupFavorite)
@@ -70,10 +71,10 @@ func Router(e *echo.Echo) {
 	e.Get("/getcode", ((&controller.User{}).GetPhoneCode))
 
 	//// 转盘
-	e.Get("/club",((&controller.Club{}).Index))
+	e.Get("/club", ((&controller.Club{}).Index))
 	e.Get("/club/turntable", ((&controller.Club{}).Turntable))
 	e.Get("/club/winlist", (&controller.Club{}).Winlist)
-	e.Get("/club/mywin",((&controller.Club{}).Mylist))
+	e.Get("/club/mywin", ((&controller.Club{}).Mylist))
 }
 
 //// 秒速浏览器用户注册

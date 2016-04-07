@@ -18,6 +18,7 @@ import (
 
 	"net/http"
 
+	"fmt"
 	oredis "github.com/garyburd/redigo/redis"
 	"github.com/labstack/echo"
 	"strings"
@@ -28,7 +29,13 @@ type User struct {
 }
 
 func (this *User) getIp(ctx *echo.Context) string {
-	return strings.Split(ctx.Request().RemoteAddr, ":")[0]
+	var rip = strings.Split(ctx.Request().RemoteAddr, ":")[0]
+	if rip == "127.0.0.1" {
+		if v := ctx.Request().Header.Get("Remote-Host"); v != "" {
+			return v
+		}
+	}
+	return "127.0.0.1"
 }
 
 // 登录
@@ -580,7 +587,7 @@ func (this *User) GetPhoneCode(ctx *echo.Context) error {
 	var phone = ctx.Query("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
 	var userModel = model.User{}
-
+	fmt.Println(this.getIp(ctx))
 	defer rdb.Close()
 
 	if phone == "" {
@@ -704,4 +711,8 @@ func (this *User) GetBandwith(ctx *echo.Context) error {
 			"msg":  global.CONTROLLER_USER_BANDWITH_NOTEXISTBRAND,
 		})
 	}
+}
+
+func (this *User) GetIp(ctx *echo.Context) error {
+	return ctx.JSON(200, this.getIp(ctx))
 }
