@@ -5,12 +5,13 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/9xutool/common"
-	"github.com/qgweb/gopro/lib/orm"
 	"gopkg.in/ini.v1"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/olivere/elastic.v3"
 	"io/ioutil"
 	"runtime/debug"
+	"strings"
 	"time"
 )
 
@@ -18,7 +19,7 @@ type CarHouse struct {
 	iniFile     *ini.File
 	industry_mp *common.MgoPool
 	lonlat_mp   *common.MgoPool
-	mysql       *orm.QGORM
+	es          *elastic.Client
 	debug       string
 }
 
@@ -75,11 +76,15 @@ func NewCarHouseCli() cli.Command {
 
 			ch.industry_mp = common.NewMgoPool(industry_mconf)
 			ch.lonlat_mp = common.NewMgoPool(lonlat_mconf)
-			//mysql 配置文件
-			ch.mysql = orm.NewORM()
+
 			//debug
 			ch.debug = ch.iniFile.Section("mongo-industry").Key("debug").String()
-
+			//es
+			esurl := ch.iniFile.Section("es").Key("host").String()
+			ch.es, err = elastic.NewClient(elastic.SetURL(strings.Split(esurl, ",")...))
+			if err != nil {
+				log.Fatal(err)
+			}
 			ch.Do(c)
 		},
 	}
@@ -151,39 +156,21 @@ func (this *CarHouse) Do(c *cli.Context) {
 
 	if len(CarHouseData_Map) > 0 {
 		fmt.Println("数据处理完毕，开始入库...")
-		this.getMysqlConnect()
-		j := 1
+		bk := this.es.Bulk()
 		for _, v := range CarHouseData_Map {
-			this.mysql.BSQL().Insert("tags_car_house_report_jw").Values("ad", "lon", "lat", "tag_id", "num", "province", "city", "district", "time")
-			_, err := this.mysql.Insert(v.ad, v.lon, v.lat, v.category, v.num, v.province, v.city, v.district, v.time)
-			if err != nil {
-				log.Warn("插入失败 ", err)
-			}
-
-			if this.debug == "1" {
-				fmt.Println("已插入mysql", j, "条")
-			}
-			j++
+			bk.Add(elastic.NewBulkIndexRequest().Index("tags_car_house_report_jw").Type("map").Doc(map[string]interface{}{
+				"ad":       v.ad,
+				"geo":      v.lat + "," + v.lon,
+				"tag_id":   v.category,
+				"num":      v.num,
+				"province": v.province,
+				"city":     v.city,
+				"district": v.district,
+				"time":     v.time,
+			}))
 		}
+		bk.Do()
 	}
-}
-
-func (this *CarHouse) getMysqlConnect() {
-	var (
-		db      = this.iniFile.Section("mysql-jw").Key("db").String()
-		host    = this.iniFile.Section("mysql-jw").Key("host").String()
-		port    = this.iniFile.Section("mysql-jw").Key("port").String()
-		user    = this.iniFile.Section("mysql-jw").Key("user").String()
-		pwd     = this.iniFile.Section("mysql-jw").Key("pwd").String()
-		charset = "utf8"
-		err     = this.mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s",
-			user, pwd, host, port, db, charset))
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	this.mysql.SetMaxIdleConns(50)
-	this.mysql.SetMaxOpenConns(100)
 }
 
 func getIndustryCollectionName() string {

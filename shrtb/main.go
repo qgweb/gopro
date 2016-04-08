@@ -10,6 +10,7 @@ import (
 	"github.com/qgweb/new/lib/config"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	_ "net/http/pprof"
 	"net/url"
@@ -126,32 +127,37 @@ func reponsePrice(param map[string]string) {
 		log.Fatalln("读取电信配置文件出错")
 	}
 
-	if _, ok := param["ad"]; ok {
-		adurl = adurl + "?sh_cox=" + param["ad"]
-	}
-
-	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
-		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
-		"03", "reBkYQmESMs=", "10")
-
 	if checkExistAd(param["ad"]) {
 		return
 	}
 
 	isput := false
+	puturl := ""
 	switch mode {
 	case MODEL_REDIS:
 		isput = matchRedis(param) //redis匹配
 	case MODEL_URL:
-		isput = matchUrl(param) //url匹配
+		isput, puturl = matchUrl(param) //url匹配
 	default: //所有
-		isput = matchRedis(param) || matchUrl(param)
+		//isput = matchRedis(param) || matchUrl(param)
 	}
 
 	if !isput {
 		return
 	}
 
+	if mode == MODEL_URL {
+		adurl = puturl
+	}
+
+	if _, ok := param["ad"]; ok {
+		adurl = adurl + "?sh_cox=" + param["ad"]
+	}
+
+	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
+		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
+		param["showType"], "reBkYQmESMs=", "10")
+	fmt.Println(url)
 	resp, err := http.Get(url)
 	stotal++
 	if resp != nil {
@@ -204,17 +210,38 @@ func parseUrl(ourl string) string {
 	return a.Host
 }
 
+// 随机区一个
+func randNum(size int) int {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return r.Intn(size)
+}
+
 // 匹配链接
-func matchUrl(param map[string]string) bool {
+func matchUrl(param map[string]string) (bool, string) {
 	var db = IniFile.String("auredis::urldb")
 	var key = parseUrl(encrypt.DefaultBase64.Decode(param["url"]))
 	conn := aupool.Get()
 	defer conn.Close()
 
 	conn.Do("SELECT", db)
-	v, _ := redis.Bool(conn.Do("EXISTS", key))
-	return v
+	v, _ := redis.Strings(conn.Do("SMEMBERS", key))
+
+	if len(v) == 0 {
+		return false, ""
+	}
+	nurl := make([]string, 0, len(v))
+	for _, url := range v {
+		urls := strings.Split(url, "_")
+		if param["showType"] == urls[0] {
+			nurl = append(nurl, urls[1])
+		}
+	}
+	if len(nurl) == 0 {
+		return false, ""
+	}
+	return true, nurl[randNum(len(nurl))]
 }
+
 
 // 验证是否存在
 func checkExistAd(ad string) bool {
