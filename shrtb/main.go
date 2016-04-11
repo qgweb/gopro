@@ -87,13 +87,13 @@ func requestPrice(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	ad := query.Get("ad")
 	ua := query.Get("ua")
-	//	url := query.Get("url")
+	url := query.Get("url")
 	price := query.Get("price")
-
 	mid := query.Get("mid")
 	//	showType := query.Get("showType")
 
-	fileChan <- fmt.Sprintf("%s\t%s\t%s", ad, ua, price)
+	fileChan <- fmt.Sprintf("%s\t%s\t%s\t%s", ad, ua, price,
+		encrypt.DefaultBase64.Decode(url))
 
 	if mid == "" {
 		w.WriteHeader(404)
@@ -133,11 +133,12 @@ func reponsePrice(param map[string]string) {
 
 	isput := false
 	puturl := ""
+	stype := "03"
 	switch mode {
 	case MODEL_REDIS:
 		isput = matchRedis(param) //redis匹配
 	case MODEL_URL:
-		isput, puturl = matchUrl(param) //url匹配
+		isput, puturl, stype = matchUrl(param) //url匹配
 	default: //所有
 		//isput = matchRedis(param) || matchUrl(param)
 	}
@@ -156,8 +157,8 @@ func reponsePrice(param map[string]string) {
 
 	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
-		param["showType"], "reBkYQmESMs=", "10")
-	fmt.Println(url)
+		stype, "reBkYQmESMs=", "10")
+
 	resp, err := http.Get(url)
 	stotal++
 	if resp != nil {
@@ -217,7 +218,7 @@ func randNum(size int) int {
 }
 
 // 匹配链接
-func matchUrl(param map[string]string) (bool, string) {
+func matchUrl(param map[string]string) (bool, string, string) {
 	var db = IniFile.String("auredis::urldb")
 	var key = parseUrl(encrypt.DefaultBase64.Decode(param["url"]))
 	conn := aupool.Get()
@@ -227,21 +228,26 @@ func matchUrl(param map[string]string) (bool, string) {
 	v, _ := redis.Strings(conn.Do("SMEMBERS", key))
 
 	if len(v) == 0 {
-		return false, ""
+		return false, "", ""
 	}
-	nurl := make([]string, 0, len(v))
-	for _, url := range v {
-		urls := strings.Split(url, "_")
-		if param["showType"] == urls[0] {
-			nurl = append(nurl, urls[1])
-		}
+	//nurl := make([]string, 0, len(v))
+	//for _, url := range v {
+	//	urls := strings.Split(url, "_")
+	//	if param["showType"] == urls[0] {
+	//		nurl = append(nurl, urls[1])
+	//	}
+	//}
+	//if len(nurl) == 0 {
+	//	return false, ""
+	//}
+	urls := strings.Split(v[randNum(len(v))], "_")
+	if len(urls) == 1 {
+		return true, urls[1], "03"
+	} else {
+		nurl := strings.Join(urls[1:], "_")
+		return true, nurl, urls[0]
 	}
-	if len(nurl) == 0 {
-		return false, ""
-	}
-	return true, nurl[randNum(len(nurl))]
 }
-
 
 // 验证是否存在
 func checkExistAd(ad string) bool {
@@ -295,7 +301,7 @@ func recordBiddingRuquest() {
 	for {
 		select {
 		case msg := <-fileChan:
-			bw.WriteString(msg + "\n")
+			bw.WriteString(time.Now().Format("2006-01-02") + "\t" + msg + "\n")
 			break
 		}
 	}
