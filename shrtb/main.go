@@ -120,15 +120,12 @@ func reponsePrice(param map[string]string) {
 		host  = IniFile.String("dxhttp::host")
 		port  = IniFile.String("dxhttp::port")
 		adurl = IniFile.String("adurl::url")
+		rurl  = adurl
 		mode  = IniFile.String("default::mode")
 	)
 
 	if host == "" || port == "" {
 		log.Fatalln("读取电信配置文件出错")
-	}
-
-	if checkExistAd(param["ad"]) {
-		return
 	}
 
 	isput := false
@@ -149,10 +146,15 @@ func reponsePrice(param map[string]string) {
 
 	if mode == MODEL_URL {
 		adurl = puturl
+		rurl = puturl
 	}
 
 	if _, ok := param["ad"]; ok {
 		adurl = adurl + "?sh_cox=" + param["ad"]
+	}
+
+	if checkExistAd(param["ad"], rurl) {
+		return
 	}
 
 	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
@@ -173,7 +175,7 @@ func reponsePrice(param map[string]string) {
 		return
 	}
 
-	recordPutAd(param["ad"])
+	recordPutAd(param["ad"], rurl)
 }
 
 // 匹配redis
@@ -250,29 +252,31 @@ func matchUrl(param map[string]string) (bool, string, string) {
 }
 
 // 验证是否存在
-func checkExistAd(ad string) bool {
+func checkExistAd(ad string, url string) bool {
 	var db = IniFile.String("auredis::db")
 	var key = "SH_HPUT_" + time.Now().Format("20060102")
+	var dkey = encrypt.DefaultMd5.Encode(ad + "_" + url)
 	conn := aupool.Get()
 	defer conn.Close()
 
 	conn.Do("SELECT", db)
 
-	if r, _ := redis.Bool(conn.Do("HEXISTS", key, ad)); r {
+	if r, _ := redis.Bool(conn.Do("HEXISTS", key, dkey)); r {
 		return true
 	}
 	return false
 }
 
 // 记录投放过的ad
-func recordPutAd(ad string) {
+func recordPutAd(ad string, url string) {
 	var db = IniFile.String("auredis::db")
 	var key = "SH_HPUT_" + time.Now().Format("20060102")
+	var dkey = encrypt.DefaultMd5.Encode(ad + "_" + url)
 	conn := aupool.Get()
 	defer conn.Close()
-
+	fmt.Println(dkey)
 	conn.Do("SELECT", db)
-	conn.Do("HSET", key, ad, 1)
+	conn.Do("HSET", key, dkey, 1)
 }
 
 //redis链接此

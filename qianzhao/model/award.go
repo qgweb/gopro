@@ -60,13 +60,12 @@ func (this *Award) getRand(ary map[int]int) int {
 
 func (this *Award) black(tx *sql.Tx, id string) (bool, error) {
 	r, err := tx.Query("select count(*) as num from 221su_users where created>=? and created<? and id=?",
-		1458057600, 1458403200, id)
+		1458057600, 1460476800, id)
 	if err != nil {
 		return true, err
 	}
 	defer r.Close()
 	if r.Next() {
-		time.Sleep(time.Minute*10)
 		var id int
 		err := r.Scan(&id)
 		if err != nil {
