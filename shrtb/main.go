@@ -131,11 +131,12 @@ func reponsePrice(param map[string]string) {
 	isput := false
 	puturl := ""
 	stype := "03"
+	price := "10"
 	switch mode {
 	case MODEL_REDIS:
 		isput = matchRedis(param) //redis匹配
 	case MODEL_URL:
-		isput, puturl, stype = matchUrl(param) //url匹配
+		isput, price, stype, puturl = matchUrl(param) //url匹配
 	default: //所有
 		//isput = matchRedis(param) || matchUrl(param)
 	}
@@ -159,7 +160,7 @@ func reponsePrice(param map[string]string) {
 
 	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
-		stype, "reBkYQmESMs=", "10")
+		stype, "reBkYQmESMs=", price)
 
 	resp, err := http.Get(url)
 	stotal++
@@ -220,7 +221,7 @@ func randNum(size int) int {
 }
 
 // 匹配链接
-func matchUrl(param map[string]string) (bool, string, string) {
+func matchUrl(param map[string]string) (bool, string, string, string) {
 	var db = IniFile.String("auredis::urldb")
 	var key = parseUrl(encrypt.DefaultBase64.Decode(param["url"]))
 	conn := aupool.Get()
@@ -230,7 +231,7 @@ func matchUrl(param map[string]string) (bool, string, string) {
 	v, _ := redis.Strings(conn.Do("SMEMBERS", key))
 
 	if len(v) == 0 {
-		return false, "", ""
+		return false, "", "", ""
 	}
 	//nurl := make([]string, 0, len(v))
 	//for _, url := range v {
@@ -242,13 +243,13 @@ func matchUrl(param map[string]string) (bool, string, string) {
 	//if len(nurl) == 0 {
 	//	return false, ""
 	//}
-	urls := strings.Split(v[randNum(len(v))], "_")
-	if len(urls) == 1 {
-		return true, urls[1], "03"
-	} else {
-		nurl := strings.Join(urls[1:], "_")
-		return true, nurl, urls[0]
+
+	//出价，尺寸，素材地址
+	urls := strings.Split(v[randNum(len(v))], "\t")
+	if len(urls) < 3 {
+		return false, "", "", ""
 	}
+	return true, urls[0], urls[1], urls[2]
 }
 
 // 验证是否存在
@@ -274,7 +275,7 @@ func recordPutAd(ad string, url string) {
 	var dkey = encrypt.DefaultMd5.Encode(ad + "_" + url)
 	conn := aupool.Get()
 	defer conn.Close()
-	fmt.Println(dkey)
+	fmt.Println(ad, url, dkey)
 	conn.Do("SELECT", db)
 	conn.Do("HSET", key, dkey, 1)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Func struct {
-	GetShopCount func(string, string) int
+	GetTagCount func(string, int) []byte
 }
 
 func main() {
@@ -15,6 +15,6 @@ func main() {
 	var f Func
 	client.UseService(&f)
 	bt := time.Now()
-	fmt.Println(f.GetShopCount("112608855", "1455933600"))
+	fmt.Println(string(f.GetTagCount("11111", 2)))
 	fmt.Println(time.Since(bt).Seconds())
 }

@@ -90,7 +90,7 @@ func (this TaoShop) GetShopInfo(param string) []byte {
 				return jsonReturn(nil, errors.New("抓取店铺信息失败"))
 			}
 			// 添加店铺
-			this.addShop(si)
+			//this.addShop(si)
 			return jsonReturn(si, nil)
 		}
 		return jsonReturn(nil, errors.New("数据不存在"))

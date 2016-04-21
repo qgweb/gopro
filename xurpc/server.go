@@ -56,7 +56,7 @@ func main() {
 	service.AddMethods(UserCookieData{})
 	service.AddMethods(SearchWord{})
 	service.AddMethods(putin.Putin{})
-
+	service.AddFunction("GetTagCount", Stats{}.GetTagCount)
 	//服务开启
 	http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), service)
 }
