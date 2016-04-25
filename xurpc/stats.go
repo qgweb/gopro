@@ -29,8 +29,8 @@ func (this Stats) GetTagCount(tp string, tagid string, day int) []byte {
 	aurl := config.String("stats::host") + "/api/list"
 	u := url.Values{}
 	u.Add("db", "tags_stats")
-	u.Add("bkey", fmt.Sprintf("zj_%s_%s_%s", tp, btime, tagid))
-	u.Add("ekey", fmt.Sprintf("zj_%s_%s_%s", tp, etime, tagid))
+	u.Add("bkey", fmt.Sprintf("zj_%s_%s_%s", btime, tp, tagid))
+	u.Add("ekey", fmt.Sprintf("zj_%s_%s_%s", etime, tp, tagid))
 	u.Add("limit", "10000000")
 	aurl += "?" + u.Encode()
 	resp, err := http.Get(aurl)
