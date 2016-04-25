@@ -47,7 +47,6 @@ func (this Stats) GetTagCount(tp string, tagid string, day int) []byte {
 			var count = 0
 			if ret, err := sj.Get("ret").String(); ret == "0" && err == nil {
 				if data, err := sj.Get("data").Map(); err == nil {
-					fmt.Println(data)
 					for _, v := range data {
 						if vv, ok := v.(map[string]interface{}); ok {
 							count += convert.ToInt(vv["Value"])
