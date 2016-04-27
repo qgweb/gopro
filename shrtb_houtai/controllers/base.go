@@ -39,14 +39,18 @@ func (this *BaseController) Prepare() {
 
 //登录状态验证
 func (this *BaseController) auth() {
+	var (
+		uname =  beego.AppConfig.String("user::name")
+		upwd = beego.AppConfig.String("user::pwd")
+	)
 	arr := strings.Split(this.Ctx.GetCookie("auth"), "|")
 	if len(arr) == 2 {
 		idstr, password := arr[0], arr[1]
 		userId, _ := strconv.Atoi(idstr)
 		if userId == 1 {
-			if  password == libs.Md5([]byte(this.getClientIp()+"|"+"qgshrtb123")) {
+			if  password == libs.Md5([]byte(this.getClientIp()+"|"+upwd)) {
 				this.userId = 1
-				this.userName = "qgshrtb"
+				this.userName = uname
 			}
 		}
 	}
