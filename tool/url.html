@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>呵呵</title>
+    <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+    <style>
+        li {
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+<a href="/tc">淘宝标签值修改</a> |
+<a href="/url">域名标签值修改</a>
+<ul>
+    {{range $k,$v := .}}
+    <li>
+        {{$v.Name}}
+        <ul>
+            {{if lt 0 ($v.Child|len)}}
+            {{with $c := $v.Child}}
+            {{range $vv := $c}}
+            <li>
+                {{$vv.Name}} - <input type="text" value="{{$vv.Count}}" cid="{{$vv.ObjId}}">
+                <a href="javascript:void(0);" style="text-decoration: none;color: #31c3ff;font-size: 13px;" tag="edit">修改</a>
+            </li>
+            {{end}}
+            {{end}}
+            {{else}}
+            <li>
+                {{$v.Name}} - {{$v.Count}}
+            </li>
+            {{end}}
+        </ul>
+    </li>
+    {{end}}
+</ul>
+<script type="text/javascript">
+    $(function () {
+        $("a[tag]").click(function () {
+            var obj = $(this).prev("[cid]").eq(0);
+            var cid = obj.attr("cid");
+            var val = $.trim(obj.val());
+            $.ajax({
+                url: "/surl",
+                type: "post",
+                data: {"cid": cid, "val": val},
+                success: function (msg) {
+                    alert(msg);
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

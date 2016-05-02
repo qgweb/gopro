@@ -441,7 +441,7 @@ var path = this.iniFile.Section("default").Key("put_path").String()
 func (this *JSPut) savePutData() {
 	var path1 = this.iniFile.Section("default").Key("put_path2").String()
 	var path2 = this.iniFile.Section("default").Key("put_path3").String()
-	var ftp1 = this.iniFile.Section("default").Key("ftp_bash1").String()
+	//var ftp1 = this.iniFile.Section("default").Key("ftp_bash1").String()
 	var ftp2 = this.iniFile.Section("default").Key("ftp_bash2").String()
 
 	rk1 := time.Now().Add(-time.Hour).Format("2006010215")
@@ -474,12 +474,12 @@ func (this *JSPut) savePutData() {
 	f2.Close()
 
 	//提交ftp
-	cmd := exec.Command(ftp1, "tag_"+rk1+".txt")
-	str, err := cmd.Output()
-	log.Info(string(str), err)
+	//cmd := exec.Command(ftp1, "tag_"+rk1+".txt")
+	//str, err := cmd.Output()
+	//log.Info(string(str), err)
 	log.Info(ftp2, rk2)
-	cmd = exec.Command(ftp2, rk2)
-	str, err = cmd.Output()
+	cmd := exec.Command(ftp2, rk2)
+	str, err := cmd.Output()
 	log.Info(string(str), err)
 }
 
