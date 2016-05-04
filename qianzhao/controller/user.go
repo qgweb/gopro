@@ -18,7 +18,6 @@ import (
 
 	"net/http"
 
-	"fmt"
 	oredis "github.com/garyburd/redigo/redis"
 	"github.com/labstack/echo"
 	"strings"
@@ -587,7 +586,6 @@ func (this *User) GetPhoneCode(ctx *echo.Context) error {
 	var phone = ctx.Query("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
 	var userModel = model.User{}
-	fmt.Println(this.getIp(ctx))
 	defer rdb.Close()
 
 	if phone == "" {

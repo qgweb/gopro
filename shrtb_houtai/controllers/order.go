@@ -40,8 +40,11 @@ func (this *OrderController) Add() {
 		if err := this.ParseForm(&o); err != nil {
 			this.ajaxMsg("参数解析错误", MSG_ERR)
 		}
+		o.Name = strings.TrimSpace(o.Name)
+		o.Url = strings.TrimSpace(o.Url)
+		o.Price = strings.TrimSpace(o.Price)
 		o.Purl = this.parsePutUrls(this.Input().Get("purl"))
-		if err :=o.Add(o);err !=nil {
+		if err := o.Add(o); err != nil {
 			this.ajaxMsg(fmt.Sprint(o), MSG_ERR)
 		}
 		this.ajaxMsg("添加成功", MSG_OK)
@@ -53,8 +56,8 @@ func (this *OrderController) Add() {
 
 // 删除订单
 func (this *OrderController) Del() {
-	name :=this.Input().Get("name")
-	o:=models.Order{}
+	name := this.Input().Get("name")
+	o := models.Order{}
 	o.Del(name)
 	this.redirect("/order/list")
 }

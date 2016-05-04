@@ -25,6 +25,7 @@ type CarHouse struct {
 
 type CarHouseData struct {
 	ad       string
+	ua       string
 	lon      string //经度
 	lat      string //纬度
 	province string
@@ -121,7 +122,7 @@ func (this *CarHouse) Do(c *cli.Context) {
 
 		err := lonlat_sess.DB(lonlat_db).C("tbl_map").Find(bson.M{"ad": ad}).One(&longlatData)
 		if err != nil && err != mgo.ErrNotFound { //如果有错误
-			log.Fatal(err)
+			log.Error(err)
 			continue
 		}
 		if err == mgo.ErrNotFound { //如果没有查询到
@@ -142,6 +143,7 @@ func (this *CarHouse) Do(c *cli.Context) {
 
 		r := &CarHouseData{
 			ad:       longlatData["ad"].(string),
+			ua:       longlatData["ua"].(string),
 			lon:      longlatData["lon"].(string),
 			lat:      longlatData["lat"].(string),
 			province: longlatData["province"].(string),
@@ -160,6 +162,7 @@ func (this *CarHouse) Do(c *cli.Context) {
 		for _, v := range CarHouseData_Map {
 			bk.Add(elastic.NewBulkIndexRequest().Index("tags_car_house_report_jw").Type("map").Doc(map[string]interface{}{
 				"ad":       v.ad,
+				"ua":       v.ua,
 				"geo":      v.lat + "," + v.lon,
 				"tag_id":   v.category,
 				"num":      v.num,

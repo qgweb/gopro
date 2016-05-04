@@ -45,8 +45,6 @@ func (this *QGORM) Debug(d bool) {
 }
 
 func (this *QGORM) Query(osql string, data ...interface{}) ([]map[string]string, error) {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
 	var list = make([]map[string]string, 0)
 
 	rows, err := this.db.Query(osql, data...)
@@ -80,9 +78,6 @@ func (this *QGORM) Query(osql string, data ...interface{}) ([]map[string]string,
 }
 
 func (this *QGORM) Update(sql string, data ...interface{}) (int64, error) {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
-
 	res, err := this.db.Exec(sql, data...)
 	if err != nil {
 		return 0, err
@@ -91,9 +86,6 @@ func (this *QGORM) Update(sql string, data ...interface{}) (int64, error) {
 }
 
 func (this *QGORM) Insert(sql string, data ...interface{}) (int64, error) {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
-
 	res, err := this.db.Exec(sql, data...)
 	if err != nil {
 		return 0, err
@@ -102,9 +94,6 @@ func (this *QGORM) Insert(sql string, data ...interface{}) (int64, error) {
 }
 
 func (this *QGORM) Delete(sql string, data ...interface{}) (int64, error) {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
-
 	res, err := this.db.Exec(sql, data...)
 	if err != nil {
 		return 0, err
