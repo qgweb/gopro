@@ -79,15 +79,6 @@ func main() {
 	log.Println(http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), nil))
 }
 
-// 上单页面
-
-
-
-
-
-
-
-
 //请求出价
 func requestPrice(w http.ResponseWriter, r *http.Request) {
 	var isopen = IniFile.String("default::open")

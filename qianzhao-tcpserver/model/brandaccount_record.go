@@ -26,8 +26,8 @@ type BrandAccountRecord struct {
 }
 
 func (this *BrandAccountRecord) AddRecord(info BrandAccountRecord) bool {
-	myorm.BSQL().Insert(BROADRECORD_TABLE_NAME).Values("account", "begin_time", "end_time", "time")
-	n, err := myorm.Insert(info.Account, info.BeginTime, info.EndTime, info.Time)
+	sql := myorm.BSQL().Insert(BROADRECORD_TABLE_NAME).Values("account", "begin_time", "end_time", "time").GetSQL()
+	n, err := myorm.Insert(sql, info.Account, info.BeginTime, info.EndTime, info.Time)
 	if err != nil {
 		log.Println("[model BrandAccountRecord AddRecord] 插入记录失败 ", err)
 		return false

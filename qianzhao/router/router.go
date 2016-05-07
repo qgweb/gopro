@@ -75,6 +75,9 @@ func Router(e *echo.Echo) {
 	//e.Get("/club/turntable", ((&controller.Club{}).Turntable))
 	//e.Get("/club/winlist", (&controller.Club{}).Winlist)
 	//e.Get("/club/mywin", ((&controller.Club{}).Mylist))
+
+	//// 首页
+	e.Get("/index/getmainpage", (&controller.Index{}).MainPage)
 }
 
 //// 秒速浏览器用户注册
