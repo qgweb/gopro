@@ -20,12 +20,12 @@ type Statistics struct {
 }
 
 // 下载统计
-func (this *Statistics) Download(ctx *echo.Context) error {
+func (this *Statistics) Download(ctx echo.Context) error {
 	var (
-		q       = ctx.Query("q") //渠道
-		v       = ctx.Query("v") //版本号
-		t       = ctx.Query("t") //版本 大众版 2,校园版 1
-		ip      = strings.Split(ctx.Request().RemoteAddr, ":")[0]
+		q       = ctx.QueryParam("q") //渠道
+		v       = ctx.QueryParam("v") //版本号
+		t       = ctx.QueryParam("t") //版本 大众版 2,校园版 1
+		ip      = strings.Split(ctx.Request().RemoteAddress(), ":")[0]
 		err     error
 		dlmodel = &model.Download{}
 	)
@@ -60,10 +60,10 @@ func (this *Statistics) Download(ctx *echo.Context) error {
 }
 
 // 日活统计
-func (this *Statistics) DayActivity(ctx *echo.Context) error {
+func (this *Statistics) DayActivity(ctx echo.Context) error {
 	var (
-		v       = ctx.Form("v") //版本号
-		t       = ctx.Form("t") // 类型
+		v       = ctx.FormValue("v") //版本号
+		t       = ctx.FormValue("t") // 类型
 		damodel = &model.DayActivity{}
 	)
 
@@ -81,13 +81,13 @@ func (this *Statistics) DayActivity(ctx *echo.Context) error {
 }
 
 // 侧边栏统计
-func (this *Statistics) SideBar(ctx *echo.Context) error {
+func (this *Statistics) SideBar(ctx echo.Context) error {
 	var (
-		t        = ctx.Form("t")        // 类型
-		v        = ctx.Form("v")        //版本号
-		favorite = ctx.Form("favorite") //收藏夹
-		email    = ctx.Form("email")    //邮箱
-		yixin    = ctx.Form("yixin")    //易信
+		t        = ctx.FormValue("t")        // 类型
+		v        = ctx.FormValue("v")        //版本号
+		favorite = ctx.FormValue("favorite") //收藏夹
+		email    = ctx.FormValue("email")    //邮箱
+		yixin    = ctx.FormValue("yixin")    //易信
 		sbmodel  = &model.SideBar{}
 	)
 
@@ -128,7 +128,7 @@ func (this *Statistics) decode(v string) (string, error) {
 }
 
 // 通过ip获取账号信息
-func (this *Statistics) getAccountByIp(ctx *echo.Context) string {
+func (this *Statistics) getAccountByIp(ctx echo.Context) string {
 	bcontroller := &BroadBand{}
 	user, err := bcontroller.UserQuery(ctx)
 	if err != nil {

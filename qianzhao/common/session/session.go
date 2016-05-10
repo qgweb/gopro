@@ -3,6 +3,7 @@ package session
 import (
 	"github.com/astaxie/beego/session"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
 )
 
 var globalSessions *session.Manager
@@ -12,8 +13,10 @@ func init() {
 	go globalSessions.GC()
 }
 
-func GetSession(ctx *echo.Context) (session.Store, error) {
-	sess, err := globalSessions.SessionStart(ctx.Response(), ctx.Request())
+func GetSession(ctx echo.Context) (session.Store, error) {
+	rsp := ctx.Response().(*standard.Response).ResponseWriter
+	req := ctx.Request().(*standard.Request).Request
+	sess, err := globalSessions.SessionStart(rsp, req)
 	if err != nil {
 		return nil, err
 	}

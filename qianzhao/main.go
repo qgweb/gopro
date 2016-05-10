@@ -16,9 +16,11 @@ import (
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/qianzhao/common/config"
 	//_ "github.com/qgweb/gopro/qianzhao/common/redis"
+	"github.com/qgweb/gopro/qianzhao/common/function"
 	_ "github.com/qgweb/gopro/qianzhao/common/session"
 	_ "github.com/qgweb/gopro/qianzhao/model"
 	"github.com/qgweb/gopro/qianzhao/router"
+	"github.com/labstack/echo/engine/standard"
 )
 
 const (
@@ -29,7 +31,7 @@ type Template struct {
 	templates *template.Template
 }
 
-func (t *Template) Render(w io.Writer, name string, data interface{}) error {
+func (t *Template) Render(w io.Writer, name string, data interface{},c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
@@ -77,18 +79,19 @@ func main() {
 	e.Use(mw.Recover())
 	e.Use(mw.Logger())
 
-	e.Favicon("public/favicon.ico")
-	e.Static("/", "public/")
-	e.Index("public/index.html")
+	//e.Favicon("public/favicon.ico")
+	e.File("/", "public/index.html")
+	e.File("/favicon.ico", "public/favicon.ico")
+	e.Static("/", function.GetBasePath()+"/public/")
+	//.Index("public/index.html")
 	//路由
 	router.Router(e)
-
 	e.SetRenderer(t)
-	e.Run(fmt.Sprintf("%s:%s", host, port))
+	e.Run(standard.New(fmt.Sprintf("%s:%s", host, port)))
 }
 
 // 设置错误处理
 //e.SetHTTPErrorHandler(func(err error, c *echo.Context) {
-//	fmt.Println(err)
-//	http.Error(c.Response(), "fuck", 404)
+//fmt.Println(c.Response())
+//http.Error(c.Response(), "fuck", 404)
 //})

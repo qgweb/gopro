@@ -44,6 +44,7 @@ func (this *OrderController) Add() {
 		o.Url = strings.TrimSpace(o.Url)
 		o.Price = strings.TrimSpace(o.Price)
 		o.Purl = this.parsePutUrls(this.Input().Get("purl"))
+		beego.Info(o.Purl)
 		if err := o.Add(o); err != nil {
 			this.ajaxMsg(fmt.Sprint(o), MSG_ERR)
 		}

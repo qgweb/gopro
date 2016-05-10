@@ -21,16 +21,18 @@ import (
 	oredis "github.com/garyburd/redigo/redis"
 	"github.com/labstack/echo"
 	"strings"
+	"fmt"
+	"github.com/labstack/echo/engine/standard"
 )
 
 type User struct {
 	Base
 }
 
-func (this *User) getIp(ctx *echo.Context) string {
-	var rip = strings.Split(ctx.Request().RemoteAddr, ":")[0]
+func (this *User) getIp(ctx echo.Context) string {
+	var rip = strings.Split(ctx.Request().RemoteAddress(), ":")[0]
 	if rip == "127.0.0.1" {
-		if v := ctx.Request().Header.Get("Remote-Host"); v != "" {
+		if v := ctx.Request().Header().Get("Remote-Host"); v != "" {
 			return v
 		}
 	}
@@ -38,19 +40,19 @@ func (this *User) getIp(ctx *echo.Context) string {
 }
 
 // 登录
-func (this *User) Login(ctx *echo.Context) error {
+func (this *User) Login(ctx echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)
 		return err
 	}
 
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 	// return ctx.String(200, "fff")
 
 	var (
-		userName, _ = url.QueryUnescape(ctx.Form("username"))
-		password, _ = url.QueryUnescape(ctx.Form("password"))
+		userName, _ = url.QueryUnescape(ctx.FormValue("username"))
+		password, _ = url.QueryUnescape(ctx.FormValue("password"))
 		umodel      = model.User{}
 	)
 
@@ -89,21 +91,21 @@ func (this *User) Login(ctx *echo.Context) error {
 }
 
 // 注册
-func (this *User) Register(ctx *echo.Context) error {
+func (this *User) Register(ctx echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)
 		return err
 	}
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	var (
-		phone, _    = url.QueryUnescape(ctx.Form("phone"))
-		password, _ = url.QueryUnescape(ctx.Form("password"))
-		email, _    = url.QueryUnescape(ctx.Form("email"))
-		pwd, _      = url.QueryUnescape(ctx.Form("pwd"))
-		app_uid, _  = url.QueryUnescape(ctx.Form("app_uid"))
-		code, _     = url.QueryUnescape(ctx.Form("code"))
+		phone, _    = url.QueryUnescape(ctx.FormValue("phone"))
+		password, _ = url.QueryUnescape(ctx.FormValue("password"))
+		email, _    = url.QueryUnescape(ctx.FormValue("email"))
+		pwd, _      = url.QueryUnescape(ctx.FormValue("pwd"))
+		app_uid, _  = url.QueryUnescape(ctx.FormValue("app_uid"))
+		code, _     = url.QueryUnescape(ctx.FormValue("code"))
 		codekey     = "REG_CODE_" + phone
 		umodel      = model.User{}
 		rdb         = redis.Get()
@@ -232,18 +234,18 @@ func (this *User) Register(ctx *echo.Context) error {
 }
 
 // 编辑
-func (this *User) Edit(ctx *echo.Context) error {
+func (this *User) Edit(ctx echo.Context) error {
 	return ctx.String(http.StatusOK, "暂无")
 }
 
 // 修改用户昵称
-func (this *User) EditUsername(ctx *echo.Context) error {
+func (this *User) EditUsername(ctx echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
 	if !res {
 		return nil
 	}
 
-	var username = ctx.Form("username")
+	var username = ctx.FormValue("username")
 	var umodel = model.User{}
 
 	if username == "" {
@@ -281,13 +283,13 @@ func (this *User) EditUsername(ctx *echo.Context) error {
 }
 
 // 修改用户头像
-func (this *User) EditUserpic(ctx *echo.Context) error {
+func (this *User) EditUserpic(ctx echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
 	if !res {
 		return nil
 	}
 
-	var pic = ctx.Form("pic")
+	var pic = ctx.FormValue("pic")
 	var umodel = model.User{}
 
 	if pic == "" {
@@ -314,12 +316,12 @@ func (this *User) EditUserpic(ctx *echo.Context) error {
 }
 
 // 上传头像
-func (this *User) UploadPic(ctx *echo.Context) error {
+func (this *User) UploadPic(ctx echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
 	if !res {
 		return nil
 	}
-	var cb = ctx.Form("callback")
+	var cb = ctx.FormValue("callback")
 	path, err := UploadPic(ctx, "photo", false)
 
 	if err != nil {
@@ -327,25 +329,25 @@ func (this *User) UploadPic(ctx *echo.Context) error {
 			"code": "300",
 			"msg":  err.Error(),
 		})
-		return ctx.HTML(200, "<script>parent.%s(%s)</script>", cb, ebs)
+		return ctx.HTML(200, fmt.Sprintf("<script>parent.%s(%s)</script>", cb, ebs))
 	}
 
 	ebs, _ := json.Marshal(map[string]string{
 		"code": "200",
 		"msg":  path,
 	})
-	return ctx.HTML(200, "<script>parent.%s(%s)</script>", cb, ebs)
+	return ctx.HTML(200, fmt.Sprintf("<script>parent.%s(%s)</script>", cb, ebs))
 
 }
 
 // 修改用户email
-func (this *User) EditUseremail(ctx *echo.Context) error {
+func (this *User) EditUseremail(ctx echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
 	if !res {
 		return nil
 	}
 
-	var email = ctx.Form("email")
+	var email = ctx.FormValue("email")
 	var umodel = model.User{}
 
 	if email == "" {
@@ -383,7 +385,7 @@ func (this *User) EditUseremail(ctx *echo.Context) error {
 }
 
 // 修改用户手机
-func (this *User) EditUserphone(ctx *echo.Context) error {
+func (this *User) EditUserphone(ctx echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
 	if !res {
 		return nil
@@ -394,10 +396,10 @@ func (this *User) EditUserphone(ctx *echo.Context) error {
 		log.Error("获取session失败：", err)
 		return err
 	}
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
-	var phone = ctx.Form("phone")
-	var code = ctx.Form("code")
+	var phone = ctx.FormValue("phone")
+	var code = ctx.FormValue("code")
 	var umodel = model.User{}
 
 	if phone == "" {
@@ -449,14 +451,14 @@ func (this *User) EditUserphone(ctx *echo.Context) error {
 }
 
 // 是否登录
-func (this *User) IsLogin(ctx *echo.Context) error {
+func (this *User) IsLogin(ctx echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)
 		return err
 	}
 
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	if u, ok := sess.Get(global.SESSION_USER_INFO).(model.User); !ok {
 		return ctx.JSON(http.StatusOK, map[string]string{
@@ -473,14 +475,14 @@ func (this *User) IsLogin(ctx *echo.Context) error {
 }
 
 // 退出登录
-func (this *User) LoginOut(ctx *echo.Context) error {
+func (this *User) LoginOut(ctx echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)
 		return err
 	}
 
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	sess.Delete(global.SESSION_USER_INFO)
 
@@ -491,7 +493,7 @@ func (this *User) LoginOut(ctx *echo.Context) error {
 }
 
 // 用户
-func (this *User) MemberCenter(ctx *echo.Context) error {
+func (this *User) MemberCenter(ctx echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
 	if !res {
 		return nil
@@ -506,7 +508,7 @@ func (this *User) MemberCenter(ctx *echo.Context) error {
 }
 
 // 获取手机验证码
-func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
+func (this *User) GetUserPhoneCode(ctx echo.Context) error {
 	res, _ := this.Base.IsLogin(ctx)
 	if !res {
 		return nil
@@ -516,12 +518,12 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 		log.Error("获取session失败：", err)
 		return err
 	}
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	var rdb = redis.Get()
 	var rkey = "EDITUSERPHONE_" + this.getIp(ctx)
 	var rnum = 10
-	var phone = ctx.Form("phone")
+	var phone = ctx.FormValue("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
 	var userModel = model.User{}
 
@@ -572,18 +574,18 @@ func (this *User) GetUserPhoneCode(ctx *echo.Context) error {
 }
 
 // 获取手机验证码
-func (this *User) GetPhoneCode(ctx *echo.Context) error {
+func (this *User) GetPhoneCode(ctx echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)
 		return err
 	}
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	var rdb = redis.Get()
 	var rkey = "GETCODE_" + this.getIp(ctx)
 	var rnum = 10
-	var phone = ctx.Query("phone")
+	var phone = ctx.QueryParam("phone")
 	var code = convert.ToString(function.GetRand(1000, 9999))
 	var userModel = model.User{}
 	defer rdb.Close()
@@ -633,16 +635,16 @@ func (this *User) GetPhoneCode(ctx *echo.Context) error {
 }
 
 // 速度测试
-func (this *User) SpeedTest(ctx *echo.Context) error {
+func (this *User) SpeedTest(ctx echo.Context) error {
 	return ctx.Render(200, "speedtest", "")
 }
 
 // 验证宽带
-func (this *User) VerifyBandwith(ctx *echo.Context) error {
+func (this *User) VerifyBandwith(ctx echo.Context) error {
 	var (
-		action       = ctx.Form("action")
-		bandwith     = ctx.Form("bandwith")
-		bandwith_pwd = ctx.Form("bandwith_pwd")
+		action       = ctx.FormValue("action")
+		bandwith     = ctx.FormValue("bandwith")
+		bandwith_pwd = ctx.FormValue("bandwith_pwd")
 		umodel       = model.User{}
 	)
 
@@ -684,9 +686,9 @@ func (this *User) VerifyBandwith(ctx *echo.Context) error {
 }
 
 // 获取宽带
-func (this *User) GetBandwith(ctx *echo.Context) error {
+func (this *User) GetBandwith(ctx echo.Context) error {
 	var (
-		app_uid = ctx.Query("app_uid")
+		app_uid = ctx.QueryParam("app_uid")
 		umodel  = model.User{}
 	)
 
@@ -711,6 +713,6 @@ func (this *User) GetBandwith(ctx *echo.Context) error {
 	}
 }
 
-func (this *User) GetIp(ctx *echo.Context) error {
+func (this *User) GetIp(ctx echo.Context) error {
 	return ctx.JSON(200, this.getIp(ctx))
 }

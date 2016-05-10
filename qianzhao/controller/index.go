@@ -11,10 +11,10 @@ type Index struct {
 }
 
 //qzbrower-主版本号.次版本号.修订版本号-类型号
-func (this *Index) Update(ctx *echo.Context) error {
+func (this *Index) Update(ctx echo.Context) error {
 	var (
-		version  = ctx.Query("version")
-		btype    = ctx.Query("type")
+		version  = ctx.FormValue("version")
+		btype    = ctx.FormValue("type")
 		mversion = model.Version{}
 	)
 
@@ -39,7 +39,7 @@ func (this *Index) Update(ctx *echo.Context) error {
 }
 
 // 浏览器首页控制
-func (this *Index) MainPage(ctx *echo.Context) error {
+func (this *Index) MainPage(ctx echo.Context) error {
 	conn := redis.Get()
 	defer conn.Close()
 	conn.Do("SELECT", "1")

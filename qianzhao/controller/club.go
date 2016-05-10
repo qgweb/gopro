@@ -20,7 +20,7 @@ var (
 	awardChan    = make(chan int, awardChanNum)
 )
 
-func (this *Club) Index(ctx *echo.Context) error {
+func (this *Club) Index(ctx echo.Context) error {
 	return ctx.Render(http.StatusOK, "club", nil)
 }
 
@@ -44,7 +44,7 @@ func (this *Club) getRand(ary map[string]int) string {
 	return ""
 }
 
-func (this *Club) Winlist(ctx *echo.Context) error {
+func (this *Club) Winlist(ctx echo.Context) error {
 	//前3位在189/181/180/153/133/177中提取，中间4位用*隐去，
 	//后四位由0-9随机组合生成。中奖纪录由1元话费、5元话费、10元话费按6:3：1概率生成。
 	type Result struct {
@@ -75,7 +75,7 @@ func (this *Club) Winlist(ctx *echo.Context) error {
 	return ctx.JSON(http.StatusOK, rlist)
 }
 
-func (this *Club) Turntable(ctx *echo.Context) error {
+func (this *Club) Turntable(ctx echo.Context) error {
 	// 验证是否登录
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
@@ -129,7 +129,7 @@ func (this *Club) Turntable(ctx *echo.Context) error {
 	})
 }
 
-func (this *Club) Mylist(ctx *echo.Context) error {
+func (this *Club) Mylist(ctx echo.Context) error {
 	//验证是否登录
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err

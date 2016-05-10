@@ -42,7 +42,7 @@ type BroadBand struct {
 }
 
 // 开启
-func (this *BroadBand) Start(ctx *echo.Context) error {
+func (this *BroadBand) Start(ctx echo.Context) error {
 	udata, err := this.UserQuery(ctx)
 	if err != nil {
 		return ctx.JSON(200, map[string]string{
@@ -90,21 +90,21 @@ func (this *BroadBand) Start(ctx *echo.Context) error {
 }
 
 // 停止
-func (this *BroadBand) Stop(ctx *echo.Context) error {
+func (this *BroadBand) Stop(ctx echo.Context) error {
 	return nil
 }
 
 // 重置用户体验时间
-func (this *BroadBand) ResetTime(ctx *echo.Context) error {
+func (this *BroadBand) ResetTime(ctx echo.Context) error {
 	baModel := model.BrandAccount{}
 	baModel.ResetTime()
 	return nil
 }
 
 // 用户宽带查询(username string, areacode string)
-func (this *BroadBand) UserQuery(ctx *echo.Context) (*UserData, *ErrBrand) {
+func (this *BroadBand) UserQuery(ctx echo.Context) (*UserData, *ErrBrand) {
 	var (
-		ip = ctx.Request().RemoteAddr
+		ip = ctx.Request().RemoteAddress()
 		//ip = "121.237.226.1:11137"
 	)
 

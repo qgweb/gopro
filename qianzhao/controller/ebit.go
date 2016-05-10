@@ -33,7 +33,7 @@ func getSecret(timestamp string) string {
 }
 
 // 提速
-func (this *Ebit) SpeedupOpen(ctx *echo.Context) error {
+func (this *Ebit) SpeedupOpen(ctx echo.Context) error {
 	var (
 		sid  = function.GetPost(ctx, "sid")
 		conn = redis.Get()
@@ -117,7 +117,7 @@ func (this *Ebit) SpeedupOpen(ctx *echo.Context) error {
 }
 
 // 用户查询 判断是否满足提速条件
-func (this *Ebit) SpeedupOpenCheck(ctx *echo.Context) error {
+func (this *Ebit) SpeedupOpenCheck(ctx echo.Context) error {
 	var (
 		ip   = function.GetIP(ctx)
 		conn = redis.Get()
@@ -207,7 +207,7 @@ func (this *Ebit) SpeedupOpenCheck(ctx *echo.Context) error {
 }
 
 // 用户当前提速状态查询
-func (this *Ebit) SpeedupCheck(ctx *echo.Context) error {
+func (this *Ebit) SpeedupCheck(ctx echo.Context) error {
 	var (
 		ip   = function.GetPost(ctx, "ip")
 		sign = function.GetPost(ctx, "sign")

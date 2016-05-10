@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/labstack/echo"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/encrypt"
@@ -19,9 +20,9 @@ type JsonReturn struct {
 	Data string `json:"data"`
 }
 
-func (this *Interfacer) checkSafe(ctx *echo.Context) (bool, error) {
-	key := ctx.Request().Header.Get("af0007298116140e4e8aa3e0cc763703")
-	code := ctx.Request().Header.Get("bf97c2ebf72e9631502671a1b69bad3a")
+func (this *Interfacer) checkSafe(ctx echo.Context) (bool, error) {
+	key := ctx.Request().Header().Get("af0007298116140e4e8aa3e0cc763703")
+	code := ctx.Request().Header().Get("bf97c2ebf72e9631502671a1b69bad3a")
 	secret := config.GetInterface().Key("secret").String()
 
 	if encrypt.DefaultMd5.Encode("qgweb_"+key+"_"+secret) == code {
@@ -37,13 +38,13 @@ func (this *Interfacer) checkSafe(ctx *echo.Context) (bool, error) {
 }
 
 // 账户名单
-func (this *Interfacer) AccountList(ctx *echo.Context) error {
+func (this *Interfacer) AccountList(ctx echo.Context) error {
 	// 验证是否有效
 	if res, err := this.checkSafe(ctx); !res {
 		return err
 	}
 
-	body, err := ioutil.ReadAll(ctx.Request().Body)
+	body, err := ioutil.ReadAll(ctx.Request().Body())
 	if err != nil {
 		log.Error("[interfacer AccountList] 读取body失败 ", err)
 		return ctx.JSON(200, ctx.JSON(200, JsonReturn{
@@ -76,6 +77,6 @@ func (this *Interfacer) AccountList(ctx *echo.Context) error {
 		}
 	}
 
-	ctx.HTML(200, "%v", accoutList)
+	ctx.HTML(200, fmt.Sprintf("%v", accoutList))
 	return nil
 }

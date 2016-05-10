@@ -13,14 +13,14 @@ type Favorite struct {
 }
 
 // 获取收藏夹
-func (this *Favorite) GetFavorite(ctx *echo.Context) error {
+func (this *Favorite) GetFavorite(ctx echo.Context) error {
 	// 验证是否登录
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
 	}
 
 	var (
-		username = ctx.Form("username")
+		username = ctx.FormValue("username")
 		fmodel   = model.Favorite{}
 		umodel   = model.User{}
 	)
@@ -42,15 +42,15 @@ func (this *Favorite) GetFavorite(ctx *echo.Context) error {
 }
 
 // 备份收藏夹
-func (this *Favorite) BackupFavorite(ctx *echo.Context) error {
+func (this *Favorite) BackupFavorite(ctx echo.Context) error {
 	// 验证是否登录
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
 	}
 
 	var (
-		username = ctx.Form("username")
-		favorite = ctx.Form("favorite")
+		username = ctx.FormValue("username")
+		favorite = ctx.FormValue("favorite")
 		fmodel   = model.Favorite{}
 		umodel   = model.User{}
 	)

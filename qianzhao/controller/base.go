@@ -10,19 +10,20 @@ import (
 	"github.com/qgweb/gopro/qianzhao/common/global"
 	"github.com/qgweb/gopro/qianzhao/common/session"
 	"github.com/qgweb/gopro/qianzhao/model"
+	"github.com/labstack/echo/engine/standard"
 )
 
 type Base struct {
 }
 
-func (this *Base) IsLogin(ctx *echo.Context) (bool, error) {
+func (this *Base) IsLogin(ctx echo.Context) (bool, error) {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)
 		return false, err
 	}
 
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	if _, ok := sess.Get(global.SESSION_USER_INFO).(model.User); !ok {
 		return false, ctx.JSON(http.StatusOK, map[string]string{
@@ -35,14 +36,14 @@ func (this *Base) IsLogin(ctx *echo.Context) (bool, error) {
 }
 
 // 获取用户信息
-func (this *Base) GetUserInfo(ctx *echo.Context) (ui model.User) {
+func (this *Base) GetUserInfo(ctx echo.Context) (ui model.User) {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)
 		return
 	}
 
-	defer sess.SessionRelease(ctx.Response())
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	if u, ok := sess.Get(global.SESSION_USER_INFO).(model.User); ok {
 		return u

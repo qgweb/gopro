@@ -62,8 +62,8 @@ func (this *Order) Add(order Order) error {
 	if err != nil {
 		return err
 	}
-	client.Hset(order_table, order.Name, string(v))
-	client.MultiHset(order_prefix+order.Name, order.Purl)
+	beego.Error(client.Hset(order_table, order.Name, string(v)))
+	beego.Error(client.MultiHset(order_prefix+order.Name, order.Purl))
 	// 推送到投放系统
 	puturl := fmt.Sprintf("%s\t%s\t%s", order.Price, order.Size, order.Url)
 	for v := range order.Purl {
@@ -120,7 +120,7 @@ func (this *Order) Del(name string) error {
 	}
 
 	// 删除订单信息
-	client.Hdel(order_table, name)
-	client.Hclear(order_prefix + name)
+	beego.Error(client.Hdel(order_table, name))
+	beego.Error(client.Hclear(order_prefix + name))
 	return nil
 }

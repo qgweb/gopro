@@ -45,12 +45,12 @@ func CheckBcrypt(data []byte, pwd []byte) bool {
 }
 
 // get或者post
-func GetPost(ctx *echo.Context, name string) string {
-	if ctx.Query(name) == "" {
-		return ctx.Form(name)
+func GetPost(ctx echo.Context, name string) string {
+	if ctx.QueryParam(name) == "" {
+		return ctx.FormValue(name)
 	}
 
-	return ctx.Query(name)
+	return ctx.QueryParam(name)
 }
 
 // 获取随机数
@@ -60,8 +60,8 @@ func GetRand(b int, e int) int {
 }
 
 //  ip
-func GetIP(ctx *echo.Context) string {
-	return strings.Split(ctx.Request().RemoteAddr, ":")[0]
+func GetIP(ctx echo.Context) string {
+	return strings.Split(ctx.Request().RemoteAddress(), ":")[0]
 }
 
 // 原图生成缩略图
