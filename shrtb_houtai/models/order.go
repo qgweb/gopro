@@ -63,7 +63,10 @@ func (this *Order) Add(order Order) error {
 		return err
 	}
 	beego.Error(client.Hset(order_table, order.Name, string(v)))
-	beego.Error(client.MultiHset(order_prefix+order.Name, order.Purl))
+	for url, _ := range order.Purl {
+		beego.Error(client.Hset(order_prefix+order.Name, url, "1"))
+	}
+
 	// 推送到投放系统
 	puturl := fmt.Sprintf("%s\t%s\t%s", order.Price, order.Size, order.Url)
 	for v := range order.Purl {
