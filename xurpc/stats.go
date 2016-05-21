@@ -18,19 +18,19 @@ type Stats struct {
 
 // 获取标签的数量
 // 可根据天来获取
-func (this Stats) GetTagCount(tp string, tagid string, day int) []byte {
+func (this Stats) GetTagCount(province string, tp string, tagid string, day int) []byte {
 	config, err := common.GetBeegoIniObject()
 	if err != nil {
 		return jsonReturn("0", errors.New("配置文件出错"))
 	}
 	btime := timestamp.GetDayTimestamp(-1 * day)
-	etime := timestamp.GetHourTimestamp(-1)
+	etime := timestamp.GetDayTimestamp(0)
 
 	aurl := config.String("stats::host") + "/api/list"
 	u := url.Values{}
 	u.Add("db", "tags_stats")
-	u.Add("bkey", fmt.Sprintf("zj_%s_%s_%s", btime, tp, tagid))
-	u.Add("ekey", fmt.Sprintf("zj_%s_%s_%s", etime, tp, tagid))
+	u.Add("bkey", fmt.Sprintf("%s_%s_%s_%s", province, btime, tp, tagid))
+	u.Add("ekey", fmt.Sprintf("%s_%s_%s_%s", province, etime, tp, tagid))
 	u.Add("limit", "10000000")
 	aurl += "?" + u.Encode()
 	resp, err := http.Get(aurl)

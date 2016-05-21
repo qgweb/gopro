@@ -39,6 +39,13 @@ const (
 	MODEL_URL   = "2"
 )
 
+// 物料结构
+type materials struct {
+	isput  bool   //是否有物料
+	puturl string //投放地址
+	uniqId string //唯一id，用于频次控制
+}
+
 func init() {
 	flag.Parse()
 
@@ -112,94 +119,77 @@ func requestPrice(w http.ResponseWriter, r *http.Request) {
 
 //请求出价
 func reponsePrice(param map[string]string) {
-	//	mux.Lock()
-	//	defer mux.Unlock()
-
 	//	//http://ip:port/uri?mid=$mid&prod=$prod&showType=$showType
 	var (
-		host  = IniFile.String("dxhttp::host")
-		port  = IniFile.String("dxhttp::port")
-		adurl = IniFile.String("adurl::url")
-		rurl  = adurl
-		mode  = IniFile.String("default::mode")
+		mode = IniFile.String("default::mode")
 	)
 
-	if host == "" || port == "" {
+	param["DX_HOST"] = IniFile.String("dxhttp::host")
+	param["DX_PORT"] = IniFile.String("dxhttp::port")
+	param["XU_URL"] = IniFile.String("adurl::url")
+	if param["DX_HOST"] == "" || param["DX_PORT"] == "" {
 		log.Fatalln("读取电信配置文件出错")
 	}
 
-	isput := false
-	puturl := ""
-	stype := "03"
-	price := "10"
+	pm := materials{}
 	switch mode {
 	case MODEL_REDIS:
-		isput = matchRedis(param) //redis匹配
+		pm = matchRedis(param) //redis匹配
 	case MODEL_URL:
-		isput, price, stype, puturl = matchUrl(param) //url匹配
+		pm = matchUrl(param) //url匹配
 	default: //所有
-		//isput = matchRedis(param) || matchUrl(param)
+		var pms = make([]materials, 0, 2)
+		if ms := matchRedis(param); ms.isput {
+			pms = append(pms, ms)
+		}
+		if ms := matchUrl(param); ms.isput {
+			pms = append(pms, ms)
+		}
+		pm = pms[randNum(len(pms))]
 	}
-
-	if !isput {
+	log.Println(pm)
+	if !pm.isput {
 		return
 	}
 
-	if mode == MODEL_URL {
-		adurl = puturl
-		rurl = puturl
-	}
-
-	if _, ok := param["ad"]; ok {
-		adurl = adurl + "?sh_cox=" + param["ad"]
-	}
-
-	if checkExistAd(param["ad"], rurl) {
+	if checkExistAd(param["ad"], pm.uniqId) {
 		return
 	}
 
-	url := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
-		host, port, param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
-		stype, "reBkYQmESMs=", price)
-
-	resp, err := http.Get(url)
+	resp, err := http.Get(pm.puturl)
 	stotal++
 	if resp != nil {
 		resp.Body.Close()
 	}
 	if err != nil {
 		log.Println("发送数据出错,错误信息为:", err)
-		return
+		//return
 	}
 	if resp != nil && resp.StatusCode != 200 {
 		log.Println("返回数据出错,错误code为:", resp.StatusCode)
-		return
+		//return
 	}
 
-	recordPutAd(param["ad"], rurl)
+	recordPutAd(param["ad"], pm.uniqId)
 }
 
 // 匹配redis
-func matchRedis(param map[string]string) bool {
+func matchRedis(param map[string]string) (ms materials) {
 	conn := pool.Get()
 	defer conn.Close()
 
 	conn.Do("SELECT", "1")
-
-	key := encrypt.DefaultMd5.Encode(param["ad"] + "_" + param["ua"])
-	r, err := redis.Bool(conn.Do("EXISTS", key))
-	if err != nil || !r {
-		return false
-		r, err = redis.Bool(conn.Do("EXISTS", param["ad"]))
-		if err != nil || !r {
-			return false
-		} else {
-			adtotal++
-		}
-	} else {
-		aduatotal++
+	key := param["ad"]
+	aids, err := redis.Strings(conn.Do("SMEMBERS", key))
+	if err != nil || len(aids) == 0 {
+		return ms
 	}
-	return true
+	aid := aids[randNum(len(aids))]
+	adurl := fmt.Sprintf("%s?sh_cox=%s&aid=%s", param["XU_URL"], param["ad"], aid)
+	purl := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
+		param["DX_HOST"], param["DX_PORT"], param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
+		"03", "reBkYQmESMs=", "10")
+	return materials{isput: true, puturl: purl, uniqId: aid}
 }
 
 // 解析url地址
@@ -221,7 +211,7 @@ func randNum(size int) int {
 }
 
 // 匹配链接
-func matchUrl(param map[string]string) (bool, string, string, string) {
+func matchUrl(param map[string]string) (ms materials) {
 	var db = IniFile.String("auredis::urldb")
 	var key = parseUrl(encrypt.DefaultBase64.Decode(param["url"]))
 	conn := aupool.Get()
@@ -231,25 +221,18 @@ func matchUrl(param map[string]string) (bool, string, string, string) {
 	v, _ := redis.Strings(conn.Do("SMEMBERS", key))
 
 	if len(v) == 0 {
-		return false, "", "", ""
+		return ms
 	}
-	//nurl := make([]string, 0, len(v))
-	//for _, url := range v {
-	//	urls := strings.Split(url, "_")
-	//	if param["showType"] == urls[0] {
-	//		nurl = append(nurl, urls[1])
-	//	}
-	//}
-	//if len(nurl) == 0 {
-	//	return false, ""
-	//}
 
 	//出价，尺寸，素材地址
 	urls := strings.Split(v[randNum(len(v))], "\t")
 	if len(urls) < 3 {
-		return false, "", "", ""
+		return ms
 	}
-	return true, urls[0], urls[1], urls[2]
+	purl := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
+		param["DX_HOST"], param["DX_PORT"], param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(urls[2]),
+		urls[1], "reBkYQmESMs=", urls[0])
+	return materials{isput: true, puturl: purl, uniqId: urls[2]}
 }
 
 // 验证是否存在
@@ -275,7 +258,6 @@ func recordPutAd(ad string, url string) {
 	var dkey = encrypt.DefaultMd5.Encode(ad + "_" + url)
 	conn := aupool.Get()
 	defer conn.Close()
-	fmt.Println(ad, url, dkey)
 	conn.Do("SELECT", db)
 	conn.Do("HSET", key, dkey, 1)
 }

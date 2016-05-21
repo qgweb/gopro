@@ -28,6 +28,9 @@ func (this *OrderController) List() {
 func (this *OrderController) parsePutUrls(value string) map[string]interface{} {
 	var list = make(map[string]interface{}, 100)
 	for _, v := range strings.Split(value, "\n") {
+		if strings.TrimSpace(v) == "" {
+			continue
+		}
 		list[strings.TrimSpace(v)] = 1
 	}
 	return list

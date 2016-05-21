@@ -7,14 +7,14 @@ import (
 )
 
 type Func struct {
-	GetTagCount func(string, int) []byte
+	GetTagCount func(province string, tp string, tagid string, day int) []byte
 }
 
 func main() {
-	client := hprose.NewHttpClient("http://127.0.0.1:12345")
+	client := hprose.NewHttpClient("http://192.168.1.199:12345")
 	var f Func
 	client.UseService(&f)
 	bt := time.Now()
-	fmt.Println(string(f.GetTagCount("11111", 2)))
+	fmt.Println(string(f.GetTagCount("zj","url","111",1)))
 	fmt.Println(time.Since(bt).Seconds())
 }
