@@ -22,21 +22,21 @@ import (
 )
 
 var (
-	conf      = flag.String("conf", "", "配置文件")
-	IniFile   config.ConfigContainer
-	err       error
+	conf = flag.String("conf", "", "配置文件")
+	IniFile config.ConfigContainer
+	err error
 	pool      *redis.Pool
 	aupool    *redis.Pool // 记录投放过的adua
-	rtotal    uint64
-	stotal    uint64
-	adtotal   uint64
+	rtotal uint64
+	stotal uint64
+	adtotal uint64
 	aduatotal uint64
 	fileChan  chan string
 )
 
 const (
 	MODEL_REDIS = "1"
-	MODEL_URL   = "2"
+	MODEL_URL = "2"
 )
 
 // 物料结构
@@ -78,10 +78,10 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	http.HandleFunc("/uri", requestPrice)
 	http.HandleFunc("/tj", func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "recv-total:"+strconv.FormatUint(rtotal, 10)+"\n")
-		io.WriteString(w, "deal-total:"+strconv.FormatUint(stotal, 10)+"\n")
-		io.WriteString(w, "adua-total:"+strconv.FormatUint(aduatotal, 10)+"\n")
-		io.WriteString(w, "ad-total:"+strconv.FormatUint(adtotal, 10)+"\n")
+		io.WriteString(w, "recv-total:" + strconv.FormatUint(rtotal, 10) + "\n")
+		io.WriteString(w, "deal-total:" + strconv.FormatUint(stotal, 10) + "\n")
+		io.WriteString(w, "adua-total:" + strconv.FormatUint(aduatotal, 10) + "\n")
+		io.WriteString(w, "ad-total:" + strconv.FormatUint(adtotal, 10) + "\n")
 	})
 	log.Println(http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), nil))
 }
@@ -145,7 +145,9 @@ func reponsePrice(param map[string]string) {
 		if ms := matchUrl(param); ms.isput {
 			pms = append(pms, ms)
 		}
-		pm = pms[randNum(len(pms))]
+		if len(pms) > 0 {
+			pm = pms[randNum(len(pms))]
+		}
 	}
 	log.Println(pm)
 	if !pm.isput {
@@ -180,11 +182,21 @@ func matchRedis(param map[string]string) (ms materials) {
 
 	conn.Do("SELECT", "1")
 	key := param["ad"]
-	aids, err := redis.Strings(conn.Do("SMEMBERS", key))
+	aids, err := redis.Strings(conn.Do("HVALS", key))
 	if err != nil || len(aids) == 0 {
 		return ms
 	}
-	aid := aids[randNum(len(aids))]
+	conn.Do("SELECT", "0")
+	naids := make([]string, 0, len(aids))
+	for _, aid := range aids {
+		if ok, _ := redis.Bool(conn.Do("EXISTS", "advert_info:" + aid)); ok {
+			naids = append(naids, aid)
+		}
+	}
+	if len(naids) == 0 {
+		return ms
+	}
+	aid := aids[randNum(len(naids))]
 	adurl := fmt.Sprintf("%s?sh_cox=%s&aid=%s", param["XU_URL"], param["ad"], aid)
 	purl := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		param["DX_HOST"], param["DX_PORT"], param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(adurl),
@@ -268,7 +280,7 @@ func GetRedisPool(host, port string) *redis.Pool {
 		MaxIdle:   100,
 		MaxActive: 100, // max number of connections
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", host+":"+port)
+			c, err := redis.Dial("tcp", host + ":" + port)
 			if err != nil {
 				return nil, err
 			}
@@ -278,7 +290,7 @@ func GetRedisPool(host, port string) *redis.Pool {
 }
 
 func recordBiddingRuquest() {
-	f, err := os.OpenFile("./adua.txt", os.O_APPEND|os.O_CREATE|os.O_RDWR, os.ModePerm)
+	f, err := os.OpenFile("./adua.txt", os.O_APPEND | os.O_CREATE | os.O_RDWR, os.ModePerm)
 	if err != nil {
 		log.Fatalln(err)
 	}
