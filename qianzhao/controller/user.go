@@ -794,8 +794,8 @@ func (this *User) GetPhoneCodeByPwd(ctx echo.Context) error {
 		})
 	}
 
-	//Sms.SendMsg(phone, "【千兆浏览器】"+code+
-	//	"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
+	Sms.SendMsg(phone, "【千兆浏览器】"+code+
+		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
 
 	sess.Set(fmt.Sprintf("PWD_CODE_%s_%s", this.getIp(ctx), phone), code)
 
