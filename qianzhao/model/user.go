@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/ngaut/log"
 	"strings"
+
+	"github.com/ngaut/log"
 
 	"github.com/qgweb/gopro/lib/encrypt"
 
@@ -102,6 +103,35 @@ func (this *User) UserExist(name string, pwd string) bool {
 func (this *User) UserInfo(name string) (u User) {
 	sql := myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("username=? or phone=? or email=?").GetSQL()
 	list, err := myorm.Query(sql, name, name, name)
+	if err != nil {
+		log.Warn("[user UserInfo]数据获取失败", err)
+		return
+	}
+
+	if len(list) == 0 {
+		return
+	}
+
+	u.Id = list[0]["id"]
+	u.Name = list[0]["username"]
+	u.Pwd = list[0]["password"]
+	u.Avatar = list[0]["avatar"]
+	u.Bandwith = list[0]["bandwith"]
+	u.BandwithPwd = list[0]["bandwith_pwd"]
+	u.AppUid = list[0]["app_uid"]
+	u.Created = convert.ToInt(list[0]["created"])
+	u.RememberToken = list[0]["remember_token"]
+	u.Sid = list[0]["sid"]
+	u.Email = list[0]["email"]
+	u.Phone = list[0]["phone"]
+
+	return u
+}
+
+// 用户信息
+func (this *User) GetUserIdByPhone(phone string) (u User) {
+	sql := myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("phone=?").GetSQL()
+	list, err := myorm.Query(sql, phone)
 	if err != nil {
 		log.Warn("[user UserInfo]数据获取失败", err)
 		return

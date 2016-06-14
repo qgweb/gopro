@@ -2,9 +2,10 @@ package controller
 
 import (
 	"encoding/json"
+	"net/url"
+
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/qianzhao/common/Sms"
-	"net/url"
 
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/grab"
@@ -18,10 +19,11 @@ import (
 
 	"net/http"
 
+	"fmt"
+	"strings"
+
 	oredis "github.com/garyburd/redigo/redis"
 	"github.com/labstack/echo"
-	"strings"
-	"fmt"
 	"github.com/labstack/echo/engine/standard"
 )
 
@@ -144,10 +146,25 @@ func (this *User) Register(ctx echo.Context) error {
 		})
 	}
 
+	if !function.CheckPassword(pwd) || !function.CheckPassword(password) {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "密码格式错误",
+		})
+	}
+
 	if pwd != password {
 		return ctx.JSON(http.StatusOK, map[string]string{
 			"code": global.CONTROLLER_CODE_ERROR,
 			"msg":  "两次密码不一致",
+		})
+	}
+
+	//验证手机号码格式
+	if !function.CheckPhone(phone) {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "手机号码格式不正确",
 		})
 	}
 
@@ -159,6 +176,13 @@ func (this *User) Register(ctx echo.Context) error {
 		})
 	}
 
+	//验证手机号码格式
+	if !function.CheckEmail(email) {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "邮箱格式不正确",
+		})
+	}
 	// 验证邮箱是否存在
 	if umodel.EmailExist(email) {
 		return ctx.JSON(http.StatusOK, map[string]string{
@@ -715,4 +739,147 @@ func (this *User) GetBandwith(ctx echo.Context) error {
 
 func (this *User) GetIp(ctx echo.Context) error {
 	return ctx.JSON(200, this.getIp(ctx))
+}
+
+// 获取手机验证码，密码找回
+func (this *User) GetPhoneCodeByPwd(ctx echo.Context) error {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+
+	var rdb = redis.Get()
+	var rkey = "GETPWDCODE_" + this.getIp(ctx)
+	var rnum = 10
+	var phone = ctx.QueryParam("phone")
+	var code = convert.ToString(function.GetRand(1000, 9999))
+	var userModel = model.User{}
+	defer rdb.Close()
+
+	if phone == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码为空",
+		})
+	}
+
+	if !function.CheckPhone(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码格式错误",
+		})
+	}
+
+	if !userModel.PhoneExist(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码不存在",
+		})
+	}
+
+	num, err := oredis.Int(rdb.Do("GET", rkey))
+
+	if err != nil && err != oredis.ErrNil {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "系统发生错误,稍后重试" + err.Error(),
+		})
+	}
+	if num >= rnum {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "今日获取验证码次数过多,请明天再试",
+		})
+	}
+
+	//Sms.SendMsg(phone, "【千兆浏览器】"+code+
+	//	"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
+
+	sess.Set(fmt.Sprintf("PWD_CODE_%s_%s", this.getIp(ctx), phone), code)
+
+	rdb.Do("INCR", rkey)
+	if num == 0 {
+		rdb.Do("EXPIRE", rkey, 86400)
+	}
+	return ctx.JSON(200, map[string]string{
+		"code": "200",
+		"msg":  code,
+	})
+}
+
+// 找回密码
+func (this *User) FindPwd(ctx echo.Context) error {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+	var (
+		phone     = ctx.FormValue("phone")
+		code      = ctx.FormValue("code")
+		pwd1      = ctx.FormValue("pwd1")
+		pwd2      = ctx.FormValue("pwd2")
+		skey      = fmt.Sprintf("PWD_CODE_%s_%s", this.getIp(ctx), phone)
+		userModel = model.User{}
+	)
+
+	if phone == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码为空",
+		})
+	}
+
+	if !function.CheckPassword(pwd1) || !function.CheckPassword(pwd2) {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "密码格式错误",
+		})
+	}
+
+	if pwd1 != pwd2 {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "两次密码不一致",
+		})
+	}
+
+	if !function.CheckPhone(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码格式错误",
+		})
+	}
+
+	if !userModel.PhoneExist(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码不存在",
+		})
+	}
+
+	if convert.ToString(sess.Get(skey)) != code {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "验证码错误",
+		})
+	}
+
+	uinfo := userModel.GetUserIdByPhone(phone)
+	res := uinfo.Update(map[string]interface{}{"password": function.GetBcrypt([]byte(pwd1))},
+		map[string]interface{}{"id": uinfo.Id})
+	if !res {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "修改密码失败",
+		})
+	}
+	sess.Delete(skey)
+	return ctx.JSON(200, map[string]string{
+		"code": "200",
+		"msg":  "修改密码成功",
+	})
 }

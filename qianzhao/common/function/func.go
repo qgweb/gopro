@@ -1,14 +1,16 @@
 package function
 
 import (
-	"github.com/nfnt/resize"
 	"image/jpeg"
 	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
+
+	"github.com/nfnt/resize"
 
 	"github.com/labstack/echo"
 
@@ -83,4 +85,22 @@ func ThumbPic(pic string, width int, height int) error {
 	defer f1.Close()
 	jpeg.Encode(f1, m, nil)
 	return nil
+}
+
+// 验证邮箱格式
+func CheckEmail(email string) bool {
+	var emailPattern = regexp.MustCompile("[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[a-zA-Z0-9](?:[\\w-]*[\\w])?")
+	return emailPattern.MatchString(email)
+}
+
+// 验证手机格式
+func CheckPhone(email string) bool {
+	var mobilePattern = regexp.MustCompile("^((\\+86)|(86))?(1(([35][0-9])|[8][0-9]|[7][06789]|[4][579]))\\d{8}$")
+	return mobilePattern.MatchString(email)
+}
+
+// 验证密码
+func CheckPassword(pwd string) bool {
+	var pwdPattern = regexp.MustCompile("[a-zA-Z0-9]{8,}")
+	return pwdPattern.MatchString(pwd)
 }
