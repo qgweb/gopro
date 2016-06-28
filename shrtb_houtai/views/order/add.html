@@ -1,81 +1,111 @@
 <div class="row">
-<div class="span12">      		
-	   		
-	<div class="widget ">
-		<div class="widget-header">
-			<i class="icon-plus"></i>
- 			<h3>添加订单</h3>
-		</div> <!-- /widget-header -->
+    <div class="span12">
+        <div class="widget ">
+            <div class="widget-header">
+                <i class="icon-plus"></i>
+                <h3>添加订单</h3>
+            </div>
+            <!-- /widget-header -->
 
-		<div class="widget-content">
-		
-		<div class="alert alert-danger hide" role="alert"></div>
+            <div class="widget-content">
 
-		<form id="add-task" action="{{urlfor "OrderController.Add"}}" enctype="multipart/form-data" method="post"  class="form-horizontal">
-			<fieldset>
-				<div class="control-group">											
-					<label class="control-label" for="order_name">名称</label>
-					<div class="controls">
-						<input type="text" name="name" class="span6" id="order_name">
-					</div>				
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="order_price">出价</label>
-					<div class="controls">
-						<input type="text" name="price" class="span6" id="order_price">
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="order_size">尺寸</label>
-					<div class="controls">
-						<select name="size" id="order_size" >
+                <div class="alert alert-danger hide" role="alert"></div>
+
+                <form id="add-task" action="{{urlfor " OrderController.Add "}}" enctype="multipart/form-data" method="post" class="form-horizontal">
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="order_name">名称</label>
+                            <div class="controls">
+                                <input type="text" name="name" class="span6" id="order_name">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="order_price">出价</label>
+                            <div class="controls">
+                                <input type="text" name="price" class="span6" id="order_price">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="order_size">尺寸</label>
+                            <div class="controls">
+                                <select name="size" id="order_size">
 							<option value="03">300x250</option>
 							<option value="04">400x300</option>
 						</select>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="order_url">物料地址</label>
-					<div class="controls">
-						<input type="text" name="url" class="span6" id="order_url">
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="order_purl">域名列表</label>
-					<div class="controls">
-						<textarea name="purl" id="order_purl" class="span6" id="description" rows="6"></textarea>
-					</div>
-				</div>
-				<br />
-				
-					
-				<div class="form-actions">
-					<button type="submit" class="btn btn-primary">保 存</button> 
-					<a href="{{urlfor "OrderController.List"}}" class="btn">返 回</a>
-				</div> <!-- /form-actions -->
-			</fieldset>
-		</form>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="order_url">物料地址</label>
+                            <div class="controls">
+                                <input type="text" name="purl" class="span6" id="order_url">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="day_limit">日限额</label>
+                            <div class="controls">
+                                <input type="text" name="day_limit" class="span2" id="day_limit"> CPM(不填不限)
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="total_limit">总限额</label>
+                            <div class="controls">
+                                <input type="text" name="total_limit" class="span2" id="total_limit"> CPM(不填不限)
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="time_point">投放时间段</label>
+                            <div class="controls">
+                                <span id="allowPercent">0</span>%全日程
+                                <a id="setPrdTime">选择</a>
+                                <input type="hidden" name="time_point" time="1" value="111111111111111111111111|111111111111111111111111|111111111111111111111111|111111111111111111111111|111111111111111111111111|111111111111111111111111|111111111111111111111111" id="time_point">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="btime">投放周期</label>
+                            <div class="controls">
+                                <input type="text" name="btime" class="span3 laydate-icon-molv" id="btime" onclick="laydate()">-
+                                <input type="text" name="etime" class="span3 laydate-icon-molv" id="etime" onclick="laydate()">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="order_purl">域名列表</label>
+                            <div class="controls">
+                                <textarea name="surls" id="order_purl" class="span6" id="surls" rows="6"></textarea>
+                            </div>
+                        </div>
+                        <br />
 
-		</div>
-	</div>
-</div>
-</div>
 
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">保 存</button>
+                            <a href='{{urlfor "OrderController.List"}}' class="btn">返 回</a>
+
+                        </div>
+                        <!-- /form-actions -->
+                    </fieldset>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/order/time.js"></script>
 <script>
-$(function () {
-	$("form").submit(function () {
-		$(".alert").hide();
-		$("button[type='submit']").attr('disabled', true);
-		$.post('{{urlfor "OrderController.Add"}}', $(this).serialize(), function (out) {
-			if (out.status == 0) {
-				window.location.href = '{{urlfor "OrderController.List"}}';
-			} else {
-				$(".alert").text(out.msg);
-				$(".alert").show();
-				$("button[type='submit']").attr('disabled', false);
-			}
-		}, "json");
-		return false;
-	});
-});
+    laydate.skin('molv');
+    $(function() {
+        $("form").submit(function() {
+            $(".alert").hide();
+            $("button[type='submit']").attr('disabled', true);
+            $.post('{{urlfor "OrderController.Add"}}', $(this).serialize(), function(out) {
+                if (out.status == 0) {
+                    window.location.href = '{{urlfor "OrderController.List"}}';
+                } else {
+                    $(".alert").text(out.msg);
+                    $(".alert").show();
+                    $("button[type='submit']").attr('disabled', false);
+                }
+            }, "json");
+            return false;
+        });
+    });
 </script>

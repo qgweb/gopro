@@ -80,8 +80,10 @@ func Router(e *echo.Echo) {
 	e.Get("/index/getmainpage", (&controller.Index{}).MainPage)
 
 	////找回密码
+	e.Get("/user/pwd", (&controller.User{}).FindPwdView)
 	e.GET("/forget/code", (&controller.User{}).GetPhoneCodeByPwd)
 	e.Post("/forget/pwd", (&controller.User{}).FindPwd)
+	e.Get("/user/pwdcode", (&controller.User{}).GetFindPwdCode)
 }
 
 //// 秒速浏览器用户注册

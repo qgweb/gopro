@@ -1,37 +1,28 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
-	"github.com/qgweb/new/lib/rediscache"
-	"github.com/qgweb/gossdb"
 	"os"
 	"strings"
-	"github.com/qgweb/new/lib/convert"
+
+	"github.com/astaxie/beego"
+	"github.com/qgweb/new/lib/mongodb"
+	"github.com/qgweb/new/lib/rediscache"
 )
 
 var (
-	dataDb *gossdb.Connectors
-	putDb  *rediscache.MemCache
+	putDb *rediscache.MemCache
+	mdb   *mongodb.Mongodb
 )
 
-func initDataDb() {
+func initDataMongo() {
 	var (
-		hosts = strings.Split(beego.AppConfig.String("ssdb::host"), ":")
-		err       error
+		host = beego.AppConfig.String("mongo::host")
+		port = beego.AppConfig.String("mongo::port")
+		db   = beego.AppConfig.String("mongo::db")
+		conf = mongodb.MongodbConf{Host: host, Port: port, Db: db}
+		err  error
 	)
-
-	dataDb, err = gossdb.NewPool(&gossdb.Config{
-		Host:             hosts[0],
-		Port:             convert.ToInt(hosts[1]),
-		MinPoolSize:      5,
-		MaxPoolSize:      50,
-		AcquireIncrement: 5,
-		GetClientTimeout: 10,
-		MaxWaitSize:      1000,
-		MaxIdleTime:      1,
-		HealthSecond:     2,
-	})
-
+	mdb, err = mongodb.NewMongodb(conf)
 	if err != nil {
 		beego.Error(err)
 		os.Exit(-2)
@@ -58,6 +49,6 @@ func initPutDb() {
 }
 
 func init() {
-	initDataDb()
+	initDataMongo()
 	initPutDb()
 }

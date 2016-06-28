@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"fmt"
+	"strings"
+
 	"github.com/astaxie/beego"
 	"github.com/qgweb/gopro/shrtb_houtai/models"
-	"strings"
 )
 
 type OrderController struct {
@@ -43,25 +43,58 @@ func (this *OrderController) Add() {
 		if err := this.ParseForm(&o); err != nil {
 			this.ajaxMsg("参数解析错误", MSG_ERR)
 		}
-		o.Name = strings.TrimSpace(o.Name)
-		o.Url = strings.TrimSpace(o.Url)
-		o.Price = strings.TrimSpace(o.Price)
-		o.Purl = this.parsePutUrls(this.Input().Get("purl"))
-		beego.Info(o.Purl)
 		if err := o.Add(o); err != nil {
-			this.ajaxMsg(fmt.Sprint(o), MSG_ERR)
+			this.ajaxMsg("添加失败", MSG_ERR)
 		}
 		this.ajaxMsg("添加成功", MSG_OK)
 	}
 
 	this.Data["pageTitle"] = "添加订单"
+	this.LayoutSections = make(map[string]string)
+	this.LayoutSections["ProTime"] = "include/time.html"
 	this.display()
 }
 
 // 删除订单
 func (this *OrderController) Del() {
-	name := this.Input().Get("name")
-	o := models.Order{}
-	o.Del(name)
-	this.redirect("/order/list")
+	var o models.Order
+	id := this.GetString("id")
+	beego.Info(id)
+	if err := o.Del(id); err == nil {
+		this.ajaxMsg("删除成功", MSG_OK)
+	} else {
+		this.ajaxMsg("删除失败"+err.Error(), MSG_ERR)
+	}
+}
+
+// 编辑订单
+func (this *OrderController) Edit() {
+	var (
+		order = models.Order{}
+		id    = this.GetString("id")
+	)
+
+	if this.isPost() {
+		o := models.Order{}
+		if err := this.ParseForm(&o); err != nil {
+			this.ajaxMsg("参数解析错误", MSG_ERR)
+		}
+		if err := o.Edit(o); err != nil {
+			this.ajaxMsg("修改失败"+err.Error(), MSG_ERR)
+		}
+		this.ajaxMsg("修改成功", MSG_OK)
+	}
+
+	if strings.TrimSpace(id) == "" {
+		this.redirect("/order/list")
+	}
+	if info, err := order.GetId(id); err != nil {
+		this.redirect("/order/list")
+	} else {
+		this.Data["info"] = info
+	}
+	this.Data["pageTitle"] = "编辑订单"
+	this.LayoutSections = make(map[string]string)
+	this.LayoutSections["ProTime"] = "include/time.html"
+	this.display()
 }

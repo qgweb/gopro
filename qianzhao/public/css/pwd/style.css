@@ -1,0 +1,243 @@
+@charset 'utf-8';
+html,
+body {
+    padding: 0;
+    font-size: 12px;
+    line-height: 1;
+    font-family: "宋体";
+    background-color: #f7f6f6;
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+img {
+    display: block;
+    border-width: 0;
+}
+
+#header {
+    height: 77px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #fff;
+}
+
+#header p {
+    width: 750px;
+    height: 100%;
+    margin: 0 auto;
+}
+
+#header p .logo {
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin: 14px 15px 13px 0;
+}
+
+#header p span {
+    float: left;
+    padding-left: 16px;
+    margin: 24px 0;
+    line-height: 29px;
+    font-size: 18px;
+    color: #333;
+    border-left: 1px solid #333;
+}
+
+#main {
+    width: 636px;
+    height: 304px;
+    padding: 57px 60px;
+    margin: 76px auto;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+}
+
+.step_num {
+    position: relative;
+    width: 629px;
+    height: 55px;
+    padding-top: 39px;
+    margin-bottom: 56px;
+}
+
+.stepNum_bg {
+    height: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #c0c0c0;
+    overflow: hidden;
+}
+
+.stepNum_bg span {
+    display: block;
+    width: 19%;
+    height: 100%;
+    background-color: #4d90fe;
+}
+
+.stepNum_c {
+    position: absolute;
+    top: 0;
+    left: 42px;
+    width: 545px;
+}
+
+.stepNum_c span {
+    float: left;
+    display: block;
+    width: 25%;
+}
+
+.stepNum_c span label {
+    display: block;
+    color: #c0c0c0;
+    text-align: center;
+}
+
+.stepNum_c span i {
+    display: block;
+    width: 22px;
+    height: 22px;
+    margin: 18px auto 0 auto;
+    line-height: 22px;
+    font-family: arial;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    font-style: normal;
+    text-align: center;
+    background: url('/img/ico_small.png') 0 0 no-repeat;
+}
+
+.stepNum_c span.current label,
+.stepNum_c span.already label {
+    color: #4d90fe;
+}
+
+.stepNum_c span.current i,
+.stepNum_c span.already i {
+    background-position: -23px 0;
+}
+
+.findPwd_form {
+    display: none;
+}
+
+.field {
+    height: 30px;
+    margin-left: 96px;
+    margin-bottom: 25px;
+    line-height: 30px;
+}
+
+.field label {
+    float: left;
+    width: 85px;
+    text-align: right;
+    font-size: 14px;
+    color: #666;
+}
+
+.field input {
+    float: left;
+    width: 192px;
+    height: 14px;
+    padding: 7px 8px;
+    margin-right: 14px;
+    line-height: 14px;
+    border: 1px solid #c7c7c7;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.field input:focus {
+    border: 1px solid #458bff;
+    outline: none;
+}
+
+.field img {
+    float: left;
+    width: 80px;
+    height: 26px;
+    margin-top: 2px;
+    margin-right: 6px;
+}
+
+.field span {
+    float: left;
+}
+
+.refresh {
+    float: left;
+    display: block;
+    width: 13px;
+    height: 15px;
+    margin-top: 7px;
+    background: url('/img/ico_small.png') -46px 0 no-repeat;
+}
+
+.error_hint {
+    color: #fc0505;
+}
+
+.hint {
+    width: 204px;
+    color: #666;
+}
+
+.hint_tline {
+    width: 204px;
+    line-height: 15px;
+    color: #666;
+}
+
+.field_btn {
+    margin-top: 42px;
+    margin-left: 96px;
+}
+
+.btn_next {
+    width: 130px;
+    height: 33px;
+    margin-left: 155px;
+    line-height: 33px;
+    font-size: 16px;
+    color: #fff;
+    border-width: 0;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    background-color: #4d90fe;
+    text-align: center;
+}
+
+.gain_code {
+    color: #666;
+}
+
+.modify_success {
+    display: none;
+    line-height: 49px;
+    font-size: 18px;
+    color: #323232;
+    font-family: "微软雅黑";
+    text-align: center;
+}
+
+.modify_success i {
+    display: inline-block;
+    margin-right: 11px;
+    vertical-align: middle;
+}
+
+.ico_true {
+    width: 49px;
+    height: 49px;
+    background: url('/img/ico_small.png') 0 -23px no-repeat;
+}

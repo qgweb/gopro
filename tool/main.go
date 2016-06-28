@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/qgweb/gopro/lib/ssh"
 	"gopkg.in/mgo.v2"
 	//"gopkg.in/mgo.v2/bson"
-	"github.com/qgweb/new/lib/convert"
-	"gopkg.in/mgo.v2/bson"
 	"html/template"
 	"io"
 	"log"
@@ -15,6 +14,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/qgweb/new/lib/convert"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var sess *mgo.Session
@@ -180,13 +182,12 @@ func getRandNum(bnum, enum int) int {
 
 func updateDomain(list []TBTag) {
 	sess := getSession()
-	for _,v:= range list {
-		num := getRandNum(1000,20000)
+	for _, v := range list {
+		num := getRandNum(1000, 20000)
 		sess.DB("precise").C("domain_category").Update(bson.M{"_id": bson.ObjectIdHex(v.ObjId)}, bson.M{"$set": bson.M{"count": num}})
 	}
 	sess.Close()
 }
-
 
 func main() {
 	http.HandleFunc("/tc", TaoCat)

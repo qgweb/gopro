@@ -6,6 +6,7 @@ import (
 
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/qianzhao/common/Sms"
+	"github.com/qgweb/gopro/qianzhao/common/captcha"
 
 	"github.com/qgweb/gopro/lib/convert"
 	"github.com/qgweb/gopro/lib/grab"
@@ -751,31 +752,17 @@ func (this *User) GetPhoneCodeByPwd(ctx echo.Context) error {
 	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	var rdb = redis.Get()
-	var rkey = "GETPWDCODE_" + this.getIp(ctx)
-	var rnum = 10
-	var phone = ctx.QueryParam("phone")
+	var rkey = "GETPWDCODE_" + sess.SessionID()
+	var rnum = 5
+	var phone = sess.Get("FIND_PWD_PHONE")
 	var code = convert.ToString(function.GetRand(1000, 9999))
-	var userModel = model.User{}
+
 	defer rdb.Close()
 
-	if phone == "" {
+	if phone == nil {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
 			"msg":  "手机号码为空",
-		})
-	}
-
-	if !function.CheckPhone(phone) {
-		return ctx.JSON(200, map[string]string{
-			"code": "300",
-			"msg":  "手机号码格式错误",
-		})
-	}
-
-	if !userModel.PhoneExist(phone) {
-		return ctx.JSON(200, map[string]string{
-			"code": "300",
-			"msg":  "手机号码不存在",
 		})
 	}
 
@@ -794,10 +781,10 @@ func (this *User) GetPhoneCodeByPwd(ctx echo.Context) error {
 		})
 	}
 
-	Sms.SendMsg(phone, "【千兆浏览器】"+code+
-		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
+	//Sms.SendMsg(phone, "【千兆浏览器】"+code+
+	//	"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
 
-	sess.Set(fmt.Sprintf("PWD_CODE_%s_%s", this.getIp(ctx), phone), code)
+	sess.Set("PWD_PHONE_CODE", code)
 
 	rdb.Do("INCR", rkey)
 	if num == 0 {
@@ -809,8 +796,212 @@ func (this *User) GetPhoneCodeByPwd(ctx echo.Context) error {
 	})
 }
 
-// 找回密码
+// 获取图片验证码
+func (this *User) GetFindPwdCode(ctx echo.Context) error {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+
+	code := captcha.Get(ctx.Response().(*standard.Response).ResponseWriter,
+		ctx.Request().(*standard.Request).Request)
+	sess.Set("findpwdcode", code)
+	return nil
+}
+
 func (this *User) FindPwd(ctx echo.Context) error {
+	var (
+		step = ctx.FormValue("step")
+	)
+
+	switch step {
+	case "1":
+		this.findPwdOne(ctx)
+	case "2":
+		this.findPwdTwo(ctx)
+	case "3":
+		this.findPwdThree(ctx)
+	}
+
+	return nil
+}
+
+func (this *User) findPwdOne(ctx echo.Context) error {
+	var (
+		phone     = ctx.FormValue("phone")
+		code      = ctx.FormValue("code")
+		userModel = model.User{}
+	)
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+
+	if strings.TrimSpace(phone) == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码不能为空",
+		})
+	}
+
+	if !function.CheckPhone(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码格式错误",
+		})
+	}
+
+	if sess.Get("findpwdcode") != nil && code != sess.Get("findpwdcode").(string) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "图片验证码错误",
+		})
+	}
+
+	if !userModel.PhoneExist(phone) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机号码不存在",
+		})
+	}
+	sess.Set("FIND_PWD_STEP", 1)
+	sess.Set("FIND_PWD_PHONE", phone)
+	sess.Delete("findpwdcode")
+	return ctx.JSON(200, map[string]string{
+		"code": "200",
+		"msg":  "",
+	})
+}
+
+func (this *User) findPwdTwo(ctx echo.Context) error {
+	var (
+		code = ctx.FormValue("code")
+		rdb  = redis.Get()
+	)
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+	defer rdb.Close()
+
+	if v := sess.Get("FIND_PWD_STEP"); convert.ToInt(v) != 1 {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "非法操作",
+		})
+	}
+
+	if strings.TrimSpace(code) == "" {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "验证码不能为空",
+		})
+	}
+
+	if sess.Get("PWD_PHONE_CODE") == nil || (sess.Get("PWD_PHONE_CODE") != nil && code != sess.Get("PWD_PHONE_CODE").(string)) {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "手机验证码错误",
+		})
+	}
+
+	sess.Set("FIND_PWD_STEP", 2)
+	sess.Delete("PWD_PHONE_CODE")
+	rdb.Do("DEL", "GETPWDCODE_"+sess.SessionID())
+	return ctx.JSON(200, map[string]string{
+		"code": "200",
+		"msg":  "",
+	})
+}
+
+func (this *User) findPwdThree(ctx echo.Context) error {
+	var (
+		pwd1      = ctx.FormValue("pwd1")
+		pwd2      = ctx.FormValue("pwd2")
+		userModel = model.User{}
+	)
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		log.Error("获取session失败：", err)
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+
+	if v := sess.Get("FIND_PWD_STEP"); convert.ToInt(v) != 2 {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "非法操作",
+		})
+	}
+
+	var phone = sess.Get("FIND_PWD_PHONE")
+	if phone == nil {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "非法操作",
+		})
+	}
+
+	if pwd1 == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "新密码不能为空",
+		})
+	}
+
+	if pwd2 == "" {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "确认密码不能为空",
+		})
+	}
+
+	if !function.CheckPassword(pwd1) || !function.CheckPassword(pwd2) {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "密码格式错误",
+		})
+	}
+
+	if pwd1 != pwd2 {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"code": global.CONTROLLER_CODE_ERROR,
+			"msg":  "两次密码不一致",
+		})
+	}
+
+	sess.Set("FIND_PWD_STEP", 3)
+
+	uinfo := userModel.GetUserIdByPhone(phone.(string))
+
+	res := uinfo.Update(map[string]interface{}{"password": function.GetBcrypt([]byte(pwd1))},
+		map[string]interface{}{"id": uinfo.Id})
+	if !res {
+		return ctx.JSON(200, map[string]string{
+			"code": "300",
+			"msg":  "修改密码失败",
+		})
+	}
+	return ctx.JSON(200, map[string]string{
+		"code": "200",
+		"msg":  "修改密码成功",
+	})
+}
+
+// 找回密码页面
+func (this *User) FindPwdView(ctx echo.Context) error {
+	return ctx.Render(200, "findpwd", nil)
+}
+
+// 找回密码
+func (this *User) FindPwd1(ctx echo.Context) error {
 	sess, err := session.GetSession(ctx)
 	if err != nil {
 		log.Error("获取session失败：", err)

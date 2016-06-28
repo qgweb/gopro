@@ -1,0 +1,95 @@
+<!--时段选择-->
+<link rel="stylesheet" type="text/css" href="/static/css/prdTime.css" />
+<div class="modal hide" id="periodTime">
+    <div class="modal-body" id="prdBody">
+        <div id="prdTitle">
+            <h2 class="c_r_title"><span class="c_r_text">选择时段</span></h2>
+
+        </div>
+        <div id="pbdCont">
+            <div id="pdCntTop">
+                <div id="checkTimeRadios">
+                    <label class="oneRadio"><input id="nowSet" name="swhCheck" type="radio" checked/><span>当前设置</span></label>
+                    <label class="oneRadio"><input id="allDays" name="swhCheck" type="radio"/><span>整周全天</span></label>
+                    <label class="oneRadio"><input id="workDays" name="swhCheck" type="radio"/><span>工作全天</span></label>
+                    <label class="oneRadio"><input id="restDays" name="swhCheck" type="radio"/><span>休息日全天</span></label>
+                </div>
+                <div id="checkTimeStatus">
+                    <div class="oneStatus">
+                        <div class="allow clr"></div>
+                        <div class="text">投放时间段</div>
+                    </div>
+                    <div class="oneStatus">
+                        <div class="stop clr"></div>
+                        <div class="text">暂停时间段</div>
+                    </div>
+                    <div class="oneStatus">
+                        <div class="not_allow clr"></div>
+                        <div class="text">不可选</div>
+                    </div>
+                    <div class="oneStatus" style="display: none">
+                        <div class="unable clr"></div>
+                        <div class="text">不可选</div>
+                    </div>
+                </div>
+            </div>
+            <div id="pdCntTable">
+                <div class="leftTb">
+                    <div class="rq">日期</div>
+                    <div class="wk">星期一</div>
+                    <div class="wk">星期二</div>
+                    <div class="wk">星期三</div>
+                    <div class="wk">星期四</div>
+                    <div class="wk">星期五</div>
+                    <div class="wk">星期六</div>
+                    <div class="wk">星期日</div>
+                </div>
+                <div class="rightTb">
+                    <div class="top">
+                        <div class="timeTxt">00:00-05:59</div>
+                        <div class="timeTxt">06:00-11:59</div>
+                        <div class="timeTxt">12:00-17:59</div>
+                        <div class="timeTxt">18:00-23:59</div>
+                    </div>
+                    <div class="middle">
+                        <script type="text/javascript">
+                            var hourTxtHtmlStr = '';
+                            for (var i = 0; i < 24; i++) {
+                                hourTxtHtmlStr += ('<div class="hourTxt">' + i + '</div>');
+                            }
+                            document.write(hourTxtHtmlStr);
+                            hourTxtHtmlStr = null;
+                        </script>
+                    </div>
+                    <div class="bottom" id="rbwhs" onselectstart="return false">
+
+                        <script type="text/javascript">
+                            var weekAllHtmlStr = '';
+                            for (var i = 0; i < 7; i++) {
+                                weekAllHtmlStr += '<div class="week">';
+                                for (var j = 0; j < 24; j++) {
+                                    if (j < 8 || j >= 22) {
+                                        weekAllHtmlStr += ('<div class="hour night" id="week' + i + 'hour' + j + '"></div>');
+                                    } else {
+                                        weekAllHtmlStr += ('<div class="hour playHour" id="week' + i + 'hour' + j + '"></div>');
+                                    }
+                                }
+                                weekAllHtmlStr += '</div>';
+                            }
+                            document.write(weekAllHtmlStr);
+                            weekAllHtmlStr = null;
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <div class="cue">拖曳鼠标可批量选择投放时间</div>
+            <div class="refer">
+                <button id="" class="gray_btn" data-dismiss="modal">取消</button>
+                <button id="surwMyPrds" class="green_btn" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript" src="/static/js/periodTime.js">
+</script>

@@ -2,128 +2,119 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/astaxie/beego"
-)
 
-var (
-	order_table  = "SHRTB_ORDER"
-	order_prefix = "SORDER_"
+	"github.com/qgweb/new/lib/mongodb"
 )
 
 type Order struct {
-	Name  string                 `json:"name" form:"name" comm:"订单名称"`
-	Price string                 `json:"price" form:"price" comm:"出价"`
-	Size  string                 `json:"size" form:"size" comm:"投放尺寸"`
-	Btime string                 `json:"btime" form:"btime" comm:"投放开始时间"`
-	Etime string                 `json:"etime" form:"etime" comm:"投放结束时间"`
-	Url   string                 `json:"url" form:"url" comm:"投放地址"`
-	Purl  map[string]interface{} `json:"purls" form:"purls" comm:"投放地址"`
+	Id         string `json:"oid" bson:"oid" form:"oid" comm:"oid"`
+	Name       string `json:"name" bson:"name" form:"name" comm:"订单名称"`
+	Price      string `json:"price" bson:"price" form:"price" comm:"出价"`
+	Size       string `json:"size" bson:"size" form:"size" comm:"投放尺寸"`
+	Btime      string `json:"btime" bson:"btime" form:"btime" comm:"投放开始时间"`
+	Etime      string `json:"etime" bson:"etime" form:"etime" comm:"投放结束时间"`
+	DayLimit   string `json:"day_limit" bson:"day_limit" form:"day_limit" comm:"日限额"`
+	TotalLimit string `json:"total_limit" bson:"total_limit" form:"total_limit" comm:"总限额"`
+	TimePoint  string `json:"time_point" bson:"time_point" form:"time_point" comm:"投放时间段"`
+	Purl       string `json:"purl" bson:"purl" form:"purl" comm:"物料地址"`
+	Surls      string `json:"surls" bson:"surls" form:"surls" comm:"目标投放地址集合"`
+	Stats      string `json:"stats" bson:"stats" form:"stats" comm:"状态"`
 }
 
-// 序列化
-func (this *Order) marshal(or Order) ([]byte, error) {
-	or.Purl = make(map[string]interface{})
-	return json.Marshal(or)
-}
-
-// 活取列表
-func (this *Order) List() (list []Order, err error) {
-	client, err := dataDb.NewClient()
-	if err != nil {
-		return nil, err
-	}
-	defer client.Close()
-
-	vals, err := client.MultiHgetAll(order_table)
-	if err != nil {
-		return nil, err
-	}
-	list = make([]Order, 0, len(vals))
-	for _, v := range vals {
-		o := Order{}
-		err := json.Unmarshal([]byte(v.String()), &o)
-		if err != nil {
-			continue
+func (this *Order) parse(info map[string]interface{}) Order {
+	if bs, err := json.Marshal(&info); err == nil {
+		var o Order
+		if err := json.Unmarshal(bs, &o); err == nil {
+			return o
 		}
+	}
+	return Order{}
+}
+
+func (this *Order) uparse(info Order) map[string]interface{} {
+	if bs, err := json.Marshal(&info); err == nil {
+		var o map[string]interface{}
+		if err := json.Unmarshal(bs, &o); err == nil {
+			return o
+		}
+	}
+	return nil
+}
+
+func (this *Order) Add(o Order) error {
+	mgo, err := mdb.Get()
+	if err != nil {
+		return err
+	}
+	defer mgo.Close()
+	o.Id = mongodb.GetObjectId()
+	qconf := mongodb.MongodbQueryConf{}
+	qconf.Db = "shrtb"
+	qconf.Table = "order"
+	qconf.Insert = []interface{}{&o}
+	return mgo.Insert(qconf)
+}
+
+func (this *Order) List() ([]Order, error) {
+	mgo, err := mdb.Get()
+	if err != nil {
+		return nil, err
+	}
+	defer mgo.Close()
+	qconf := mongodb.MongodbQueryConf{}
+	qconf.Db = "shrtb"
+	qconf.Table = "order"
+	qconf.Query = nil
+	var list = make([]Order, 0, 20)
+	err = mgo.Query(qconf, func(info map[string]interface{}) {
+		o := this.parse(info)
 		list = append(list, o)
-	}
-	return list, nil
+	})
+	return list, err
 }
 
-// 添加订单
-func (this *Order) Add(order Order) error {
-	client, err := dataDb.NewClient()
+func (this *Order) Del(id string) error {
+	mgo, err := mdb.Get()
 	if err != nil {
 		return err
 	}
-	defer client.Close()
-	v, err := this.marshal(order)
-	if err != nil {
-		return err
-	}
-	beego.Error(client.Hset(order_table, order.Name, string(v)))
-	for url, _ := range order.Purl {
-		beego.Error(client.Hset(order_prefix+order.Name, url, "1"))
-	}
-
-	// 推送到投放系统
-	puturl := fmt.Sprintf("%s\t%s\t%s", order.Price, order.Size, order.Url)
-	for v := range order.Purl {
-		putDb.Sadd(v, puturl)
-	}
-	return nil
+	defer mgo.Close()
+	qconf := mongodb.MongodbQueryConf{}
+	qconf.Db = "shrtb"
+	qconf.Table = "order"
+	qconf.Delete = mongodb.MM{"oid": (id)}
+	return mgo.Delete(qconf)
 }
 
-// 获取订单详情
-func (this *Order) Get(name string) (o Order, err error) {
-	client, err := dataDb.NewClient()
+func (this *Order) GetId(id string) (o Order, err error) {
+	mgo, err := mdb.Get()
 	if err != nil {
 		return o, err
 	}
-	defer client.Close()
-	v, err := client.Hget(order_table, name)
-	if err != nil {
+	defer mgo.Close()
+	qconf := mongodb.MongodbQueryConf{}
+	qconf.Db = "shrtb"
+	qconf.Table = "order"
+	qconf.Query = mongodb.MM{"oid": (id)}
+	if info, err := mgo.One(qconf); err == nil {
+		return this.parse(info), nil
+	} else {
 		return o, err
 	}
-	err = json.Unmarshal([]byte(v), &o)
-	if err != nil {
-		return o, err
-	}
-
-	v1, err1 := client.MultiHgetAll(order_prefix + o.Name)
-	if err1 != nil {
-		return o, err1
-	}
-	o.Purl = make(map[string]interface{}, len(v))
-	for url := range v1 {
-		o.Purl[url] = 1
-	}
-	return o, nil
 }
 
-// 删除订单
-func (this *Order) Del(name string) error {
-	client, err := dataDb.NewClient()
+func (this *Order) Edit(o Order) error {
+	mgo, err := mdb.Get()
 	if err != nil {
 		return err
 	}
-	defer client.Close()
-
-	// 推送到投放系统
-	norder, err := this.Get(name)
-	if err != nil {
-		return err
-	}
-
-	beego.Info(norder)
-	puturl := fmt.Sprintf("%s\t%s\t%s", norder.Price, norder.Size, norder.Url)
-	for v := range norder.Purl {
-		putDb.Srem(v, puturl)
-	}
-
-	// 删除订单信息
-	beego.Error(client.Hdel(order_table, name))
-	beego.Error(client.Hclear(order_prefix + name))
-	return nil
+	defer mgo.Close()
+	qconf := mongodb.MongodbQueryConf{}
+	qconf.Db = "shrtb"
+	qconf.Table = "order"
+	qconf.Update = mongodb.MM{"$set": mongodb.MM(this.uparse(o))}
+	qconf.Query = mongodb.MM{"oid": o.Id}
+	//qconf.Update = mongodb.MM{"$set": mongodb.MM{"name": "bbbb"}}
+	//qconf.Query = mongodb.MM{"oid": "577270b933f5247449e31724"}
+	return mgo.Update(qconf)
 }
