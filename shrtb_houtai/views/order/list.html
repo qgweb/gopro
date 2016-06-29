@@ -20,6 +20,7 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
+                                <th>状态</th>
                                 <th>订单名称</th>
                                 <th>订单出价</th>
                                 <th>订单尺寸</th>
@@ -33,6 +34,7 @@
                         <tbody>
                             {{range $k, $v := .list}}
                             <tr>
+                                <td>{{$v.Stats}}</td>
                                 <td>{{$v.Name}}</td>
                                 <td class="center">{{$v.Price}}</td>
                                 <td>{{$v.Size}}</td>
@@ -41,7 +43,7 @@
                                 <td>{{$v.Btime}} ~ {{$v.Etime}}</td>
                                 <td>{{$v.Purl}}</td>
                                 <td>
-                                    <a class="btn btn-warning" href='{{urlfor "OrderController.Edit"}}?id={{$v.Id}}'>
+                                    <a class="btn btn-warning" onclick="return editOrder({{$v.Stats}});" href='{{urlfor "OrderController.Edit"}}?id={{$v.Id}}'>
                                         <i class="icon-pencil icon-white"></i> 编辑
                                     </a>
                                     <a class="btn btn-info" onclick="delOrder({{$v.Id}})" target="_blank" href='javascript:void(0);'>
@@ -67,6 +69,14 @@
 </div>
 <!-- /row -->
 <script>
+    function editOrder(stats) {
+        if (stats == "投放中") {
+            alert("请先关闭订单");
+            return false;
+        }
+        return true;
+    }
+
     function delOrder(id) {
         var d = confirm("是否删除该订单");
         if (d) {
@@ -88,11 +98,22 @@
     }
 
     function openOrder(id, status) {
-        var d = confirm("是否开启该订单");
+        var msg = "";
+        if (status == "1") {
+            msg = "是否开启该订单";
+        }
+        if (status == "0") {
+            msg = "是否关闭该订单";
+        }
+        var d = confirm(msg);
         if (d) {
             $.ajax({
-                url: '{{urlfor "OrderController.Del"}}/?id=' + id,
-                type: "get",
+                url: '{{urlfor "OrderController.Open"}}',
+                type: "post",
+                data: {
+                    oid: id,
+                    stats: status,
+                },
                 dataType: "json",
                 success: function(info) {
                     if (info.status == 0) {

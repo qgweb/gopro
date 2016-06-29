@@ -45,9 +45,10 @@ const (
 
 // 物料结构
 type materials struct {
-	isput  bool   //是否有物料
-	puturl string //投放地址
-	uniqId string //唯一id，用于频次控制
+	isput   bool   //是否有物料
+	puturl  string //投放地址
+	uniqId  string //唯一id，用于频次控制
+	orderId string //订单id
 }
 
 func init() {
@@ -81,6 +82,7 @@ func main() {
 	go recordBiddingRuquest()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	http.HandleFunc("/uri", requestPrice)
+	http.HandleFunc("/rece", ReceiveSussessOrder)
 	http.HandleFunc("/tj", func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "recv-total:"+strconv.FormatUint(rtotal, 10)+"\n")
 		io.WriteString(w, "deal-total:"+strconv.FormatUint(stotal, 10)+"\n")
@@ -177,6 +179,9 @@ func reponsePrice(param map[string]string) {
 	}
 
 	recordPutAd(param["ad"], pm.uniqId)
+	if pm.orderId != "" {
+		PushMid(param["mid"], pm.orderId)
+	}
 }
 
 // 匹配redis
@@ -247,13 +252,13 @@ func matchUrl(param map[string]string) (ms materials) {
 
 	//出价，尺寸，素材地址
 	urls := strings.Split(v[randNum(len(v))], "\t")
-	if len(urls) < 3 {
+	if len(urls) < 4 {
 		return ms
 	}
 	purl := fmt.Sprintf("http://%s:%s/receive?mid=%s&prod=%s&showType=%s&token=%s&price=%s",
 		param["DX_HOST"], param["DX_PORT"], param["mid"], encrypt.GetEnDecoder(encrypt.TYPE_BASE64).Encode(urls[2]),
 		urls[1], "reBkYQmESMs=", urls[0])
-	return materials{isput: true, puturl: purl, uniqId: urls[2]}
+	return materials{isput: true, puturl: purl, uniqId: urls[2], orderId: urls[3]}
 }
 
 // 验证是否存在
@@ -314,4 +319,30 @@ func recordBiddingRuquest() {
 		}
 	}
 	bw.Flush()
+}
+
+//推送投放id
+func PushMid(mid, orderid string) {
+	var db = IniFile.String("auredis::urldb")
+	var key = "MID_" + mid
+	conn := aupool.Get()
+	defer conn.Close()
+	conn.Do("SELECT", db)
+	conn.Do("SET", key, orderid)
+}
+
+//推送出价成功订单
+func ReceiveSussessOrder(w http.ResponseWriter, r *http.Request) {
+	var mid = r.URL.Query().Get("mid")
+	if mid == "" {
+		w.Write([]byte("no"))
+		return
+	}
+
+	var db = IniFile.String("auredis::urldb")
+	var key = "SHRTB_PV_QUEUE"
+	conn := aupool.Get()
+	defer conn.Close()
+	conn.Do("SELECT", db)
+	conn.Do("RPUSH", key, mid)
 }

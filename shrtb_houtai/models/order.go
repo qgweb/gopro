@@ -2,8 +2,15 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
+	"time"
 
+	"github.com/qgweb/new/lib/convert"
+
+	"github.com/lisijie/cron"
 	"github.com/qgweb/new/lib/mongodb"
+	"github.com/qgweb/new/lib/timestamp"
 )
 
 type Order struct {
@@ -48,6 +55,7 @@ func (this *Order) Add(o Order) error {
 	}
 	defer mgo.Close()
 	o.Id = mongodb.GetObjectId()
+	o.Stats = "未投放"
 	qconf := mongodb.MongodbQueryConf{}
 	qconf.Db = "shrtb"
 	qconf.Table = "order"
@@ -117,4 +125,164 @@ func (this *Order) Edit(o Order) error {
 	//qconf.Update = mongodb.MM{"$set": mongodb.MM{"name": "bbbb"}}
 	//qconf.Query = mongodb.MM{"oid": "577270b933f5247449e31724"}
 	return mgo.Update(qconf)
+}
+
+func (this *Order) getPushUrls(urls string) map[string]byte {
+	var res = make(map[string]byte)
+	for _, v := range strings.Split(urls, "\n") {
+		if strings.TrimSpace(v) != "" {
+			res[v] = 1
+		}
+	}
+	return res
+}
+
+// 推送
+func (this *Order) Push(id string, status string) error {
+	o, err := this.GetId(id)
+	if err != nil {
+		return err
+	}
+	puturl := fmt.Sprintf("%s\t%s\t%s\t%s", o.Price, o.Size, o.Purl, o.Id)
+	if status == "1" {
+		res, err := this.GetStatus(id)
+		if err != nil {
+			return err
+		}
+		o.Stats = res
+		if err := this.Edit(o); err != nil {
+			return err
+		}
+		if res == "投放中" {
+			if status == "1" {
+				for v := range this.getPushUrls(o.Surls) {
+					putDb.Sadd(v, puturl)
+				}
+			}
+		}
+		if res == "未投放" {
+			for v := range this.getPushUrls(o.Surls) {
+				putDb.Srem(v, puturl)
+			}
+		}
+	}
+
+	if status == "0" {
+		o.Stats = "未投放"
+		if err := this.Edit(o); err != nil {
+			return err
+		}
+		for v := range this.getPushUrls(o.Surls) {
+			putDb.Srem(v, puturl)
+		}
+	}
+	// 自定义
+	if status == "self" {
+		res, err := this.GetStatus(id)
+		if err != nil {
+			return err
+		}
+		o.Stats = res
+		if err := this.Edit(o); err != nil {
+			return err
+		}
+		for v := range this.getPushUrls(o.Surls) {
+			putDb.Srem(v, puturl)
+		}
+	}
+
+	return nil
+}
+
+func (this *Order) GetStatus(order_id string) (string, error) {
+	var (
+		r Report
+		d = convert.ToInt64(timestamp.GetDayTimestamp(0))
+	)
+
+	o, err := this.GetId(order_id)
+	if err != nil {
+		return "未投放", err
+	}
+
+	rinfo, err := r.GetOne(map[string]interface{}{"order_id": order_id, "date": d})
+	if err != nil && err.Error() != "not found" {
+		return "未投放", err
+	}
+
+	btime := convert.ToInt64(timestamp.GetTimestamp(o.Btime + " 00:00:00"))
+	etime := convert.ToInt64(timestamp.GetTimestamp(o.Etime + " 00:00:00"))
+	tpv, err := r.GetTotalPv(map[string]interface{}{
+		"order_id": order_id,
+		"date":     map[string]interface{}{"$gte": btime, "$lte": etime},
+	})
+
+	if err != nil {
+		return "未投放", err
+	}
+
+	if convert.ToInt64(o.DayLimit)*1000 < rinfo.Pv {
+		return "日限额已到", nil
+	}
+	if convert.ToInt64(o.TotalLimit)*1000 < tpv {
+		return "总限额已到", nil
+	}
+	if btime > d || etime < d {
+		return "不在投放周期范围内", nil
+	}
+	if !this.CheckInWeekDay(o.TimePoint) {
+		return "不在投放时间段内", nil
+	}
+
+	return "投放中", nil
+}
+
+func (this *Order) CheckInWeekDay(info string) bool {
+	infos := strings.Split(info, "|")
+	w := int(time.Now().Weekday())
+	if w == 0 {
+		w = 6
+	} else {
+		w = w - 1
+	}
+
+	h := time.Now().Hour()
+	if len(infos) < w {
+		return false
+	}
+	if hs := strings.Split(infos[w], ""); len(hs) >= h && hs[h] == "1" {
+		return true
+	}
+	return false
+}
+
+func (this *Order) TimingCheckStats() {
+	list, err := this.List()
+	if err != nil {
+		fmt.Println("[ERROR]", err)
+		return
+	}
+	for _, order := range list {
+		if order.Stats != "未投放" {
+			stats, err := this.GetStatus(order.Id)
+			if err != nil {
+				continue
+			}
+
+			if stats != "投放中" {
+				this.Push(order.Id, "self")
+			} else {
+				this.Push(order.Id, "1")
+			}
+		}
+	}
+}
+
+func (this *Order) Putin() {
+	c := cron.New()
+	c.Start()
+	c.AddFunc("*/5 * * * * *", func() {
+		fmt.Println("ok")
+		this.TimingCheckStats()
+	})
 }

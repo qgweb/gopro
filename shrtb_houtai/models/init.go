@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"os"
 	"strings"
 
@@ -51,4 +52,23 @@ func initPutDb() {
 func init() {
 	initDataMongo()
 	initPutDb()
+}
+
+func Parse(info map[string]interface{}, obj interface{}) interface{} {
+	if bs, err := json.Marshal(&info); err == nil {
+		if err := json.Unmarshal(bs, obj); err == nil {
+			return obj
+		}
+	}
+	return nil
+}
+
+func Uparse(info interface{}) map[string]interface{} {
+	if bs, err := json.Marshal(&info); err == nil {
+		var o map[string]interface{}
+		if err := json.Unmarshal(bs, &o); err == nil {
+			return o
+		}
+	}
+	return nil
 }

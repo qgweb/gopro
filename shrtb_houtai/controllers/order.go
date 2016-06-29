@@ -79,6 +79,7 @@ func (this *OrderController) Edit() {
 		if err := this.ParseForm(&o); err != nil {
 			this.ajaxMsg("参数解析错误", MSG_ERR)
 		}
+		o.Stats = "未投放"
 		if err := o.Edit(o); err != nil {
 			this.ajaxMsg("修改失败"+err.Error(), MSG_ERR)
 		}
@@ -97,4 +98,27 @@ func (this *OrderController) Edit() {
 	this.LayoutSections = make(map[string]string)
 	this.LayoutSections["ProTime"] = "include/time.html"
 	this.display()
+}
+
+func (this *OrderController) Open() {
+	var (
+		oid    = this.Input().Get("oid")
+		status = this.Input().Get("stats")
+		o      models.Order
+	)
+
+	if oid == "" || status == "" {
+		this.ajaxMsg("参数错误", MSG_ERR)
+	}
+	if err := o.Push(oid, status); err != nil {
+		this.ajaxMsg("修改失败", MSG_ERR)
+	} else {
+		this.ajaxMsg("修改成功", MSG_OK)
+	}
+}
+
+func (this *OrderController) Report() {
+	o := &models.Order{}
+	o.Putin()
+	this.Ctx.Output.JSON("ok", true, true)
 }
