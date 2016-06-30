@@ -17,6 +17,11 @@ type Report struct {
 	Time    int64  `json:"time" bson:"time" comm:"时间"`
 }
 
+type ReportEx struct {
+	Report
+	OrderName string `json:"order_name" bson:"order_name" comm:"订单名称"`
+}
+
 func (this *Report) Add(r Report) error {
 	mb, err := mdb.Get()
 	if err != nil {
@@ -94,6 +99,28 @@ func (this *Report) GetTotalPv(query map[string]interface{}) (int64, error) {
 		sum += v.Pv
 	}
 	return sum, nil
+}
+
+func (this *Report) List() ([]ReportEx, error) {
+	mgo, err := mdb.Get()
+	if err != nil {
+		return nil, err
+	}
+	defer mgo.Close()
+	qconf := mongodb.MongodbQueryConf{}
+	qconf.Db = "shrtb"
+	qconf.Table = "report"
+	qconf.Query = nil
+	var list = make([]ReportEx, 0, 20)
+	var or Order
+	err = mgo.Query(qconf, func(info map[string]interface{}) {
+		var r ReportEx
+		Parse(info, &r)
+		o, _ := or.GetId(r.OrderId)
+		r.OrderName = o.Name
+		list = append(list, r)
+	})
+	return list, err
 }
 
 // 处理展现请求

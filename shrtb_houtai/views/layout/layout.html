@@ -61,9 +61,15 @@
             <div class="container">
                 <ul class="mainnav">
                     <li {{if eq .curRoute "order.list"}}class="active" {{end}}>
-                        <a href="/">
+                        <a href="/order/list">
                             <i class="icon-dashboard"></i>
                             <span>订单管理</span>
+                        </a>
+                    </li>
+                    <li {{if eq .curRoute "report.list"}}class="active" {{end}}>
+                        <a href="/report/list">
+                            <i class="icon-list-alt"></i>
+                            <span>报表管理</span>
                         </a>
                     </li>
                 </ul>
