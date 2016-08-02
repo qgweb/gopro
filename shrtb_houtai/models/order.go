@@ -56,6 +56,12 @@ func (this *Order) Add(o Order) error {
 	defer mgo.Close()
 	o.Id = mongodb.GetObjectId()
 	o.Stats = "未投放"
+	if strings.TrimSpace(o.TotalLimit) == "" {
+		o.TotalLimit = "9999999"
+	}
+	if strings.TrimSpace(o.DayLimit) == "" {
+		o.DayLimit = "9999999"
+	}
 	qconf := mongodb.MongodbQueryConf{}
 	qconf.Db = "shrtb"
 	qconf.Table = "order"
@@ -117,6 +123,12 @@ func (this *Order) Edit(o Order) error {
 		return err
 	}
 	defer mgo.Close()
+	if strings.TrimSpace(o.TotalLimit) == "" {
+		o.TotalLimit = "9999999"
+	}
+	if strings.TrimSpace(o.DayLimit) == "" {
+		o.DayLimit = "9999999"
+	}
 	qconf := mongodb.MongodbQueryConf{}
 	qconf.Db = "shrtb"
 	qconf.Table = "order"
@@ -130,7 +142,8 @@ func (this *Order) Edit(o Order) error {
 func (this *Order) getPushUrls(urls string) map[string]byte {
 	var res = make(map[string]byte)
 	for _, v := range strings.Split(urls, "\n") {
-		if strings.TrimSpace(v) != "" {
+		v = strings.TrimSpace(v)
+		if v != "" {
 			res[v] = 1
 		}
 	}
@@ -281,7 +294,7 @@ func (this *Order) TimingCheckStats() {
 func (this *Order) Putin() {
 	c := cron.New()
 	c.Start()
-	c.AddFunc("*/5 * * * * *", func() {
+	c.AddFunc("*/30 * * * * *", func() {
 		fmt.Println("ok")
 		this.TimingCheckStats()
 	})

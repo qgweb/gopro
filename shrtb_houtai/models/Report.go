@@ -4,6 +4,8 @@ import (
 	"goclass/convert"
 	"time"
 
+	"strings"
+
 	"github.com/astaxie/beego"
 	"github.com/qgweb/new/lib/mongodb"
 	"github.com/qgweb/new/lib/timestamp"
@@ -128,11 +130,21 @@ func (this *Report) LoopPvStats() {
 	for {
 		d := convert.ToInt64(timestamp.GetDayTimestamp(0))
 		//格式：mid
-		mid, err := putDb.Lpop("SHRTB_PV_QUEUE")
+		omid, err := putDbLoop.Lpop("SHRTB_PV_QUEUE")
+
 		if err != nil {
 			time.Sleep(time.Second * 5)
+			if strings.Contains(err.Error(), "close") || strings.Contains(err.Error(), "short") {
+				putDbLoop = nil
+				initPutDbLoop()
+			}
 			beego.Error(err)
 			continue
+		}
+
+		mid := convert.ToString(omid)
+		if omid != nil {
+			beego.Info(mid)
 		}
 
 		if mid == "" {
@@ -140,7 +152,7 @@ func (this *Report) LoopPvStats() {
 		}
 
 		var mkey = "MID_" + mid
-		orderId := putDb.Get(mkey)
+		orderId := putDbLoop.Get(mkey)
 		if orderId == "" {
 			continue
 		}
@@ -163,7 +175,8 @@ func (this *Report) LoopPvStats() {
 			this.IncrPv(orderId, d)
 		}
 		//删除处理过的订单
-		putDb.Del(mkey)
-		putDb.Flush()
+		putDbLoop.Del(mkey)
+		putDbLoop.Flush()
+		putDbLoop.Flush()
 	}
 }

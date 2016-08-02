@@ -328,11 +328,12 @@ func PushMid(mid, orderid string) {
 	conn := aupool.Get()
 	defer conn.Close()
 	conn.Do("SELECT", db)
-	conn.Do("SET", key, orderid)
+	conn.Do("SET", key, orderid, "EX", 60)
 }
 
 //推送出价成功订单
 func ReceiveSussessOrder(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL.String())
 	var mid = r.URL.Query().Get("mid")
 	if mid == "" {
 		w.Write([]byte("no"))
@@ -344,5 +345,6 @@ func ReceiveSussessOrder(w http.ResponseWriter, r *http.Request) {
 	conn := aupool.Get()
 	defer conn.Close()
 	conn.Do("SELECT", db)
-	conn.Do("RPUSH", key, mid)
+	log.Println(key, mid)
+	log.Println(conn.Do("RPUSH", key, mid))
 }

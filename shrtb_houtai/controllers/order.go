@@ -92,6 +92,12 @@ func (this *OrderController) Edit() {
 	if info, err := order.GetId(id); err != nil {
 		this.redirect("/order/list")
 	} else {
+		if strings.TrimSpace(info.TotalLimit) == "9999999" {
+			info.TotalLimit = ""
+		}
+		if strings.TrimSpace(info.DayLimit) == "9999999" {
+			info.DayLimit = ""
+		}
 		this.Data["info"] = info
 	}
 	this.Data["pageTitle"] = "编辑订单"
@@ -118,6 +124,7 @@ func (this *OrderController) Open() {
 }
 
 func (this *OrderController) Report() {
+	return
 	o := &models.Order{}
 	o.Putin()
 	this.Ctx.Output.JSON("ok", true, true)

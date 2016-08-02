@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	putDb *rediscache.MemCache
-	mdb   *mongodb.Mongodb
+	putDb     *rediscache.MemCache
+	putDbLoop *rediscache.MemCache
+	mdb       *mongodb.Mongodb
 )
 
 func initDataMongo() {
@@ -49,9 +50,29 @@ func initPutDb() {
 	}
 }
 
+func initPutDbLoop() {
+	var (
+		hosts = strings.Split(beego.AppConfig.String("redis::host"), ":")
+		db    = beego.AppConfig.String("redis::db")
+		err   error
+	)
+	if putDbLoop == nil {
+		conf := rediscache.MemConfig{}
+		conf.Host = hosts[0]
+		conf.Port = hosts[1]
+		putDbLoop, err = rediscache.New(conf)
+		if err != nil {
+			beego.Error(err)
+			os.Exit(-2)
+		}
+		putDbLoop.SelectDb(db)
+	}
+}
+
 func init() {
 	initDataMongo()
 	initPutDb()
+	initPutDbLoop()
 }
 
 func Parse(info map[string]interface{}, obj interface{}) interface{} {

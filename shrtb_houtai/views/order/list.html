@@ -38,8 +38,8 @@
                                 <td>{{$v.Name}}</td>
                                 <td class="center">{{$v.Price}}</td>
                                 <td>{{$v.Size}}</td>
-                                <td>{{$v.DayLimit}}</td>
-                                <td>{{$v.TotalLimit}}</td>
+                                <td>{{if eq $v.DayLimit "9999999"}}∞{{else}}{{$v.DayLimit}}{{end}}</td>
+                                <td>{{if eq $v.TotalLimit "9999999"}}∞{{else}}{{$v.TotalLimit}}{{end}}</td>
                                 <td>{{$v.Btime}} ~ {{$v.Etime}}</td>
                                 <td>{{$v.Purl}}</td>
                                 <td>
