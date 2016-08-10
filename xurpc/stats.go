@@ -7,9 +7,8 @@ import (
 	"github.com/qgweb/gopro/xurpc/common"
 	"github.com/qgweb/new/lib/convert"
 	"github.com/qgweb/new/lib/timestamp"
-	"io/ioutil"
-	"net/http"
 	"net/url"
+	"github.com/astaxie/beego/httplib"
 )
 
 // 统计接口数据
@@ -26,36 +25,40 @@ func (this Stats) GetTagCount(province string, tp string, tagid string, day int)
 	btime := timestamp.GetDayTimestamp(-1 * day)
 	etime := timestamp.GetDayTimestamp(0)
 
-	aurl := config.String("stats::host") + "/api/list"
-	u := url.Values{}
-	u.Add("db", "tags_stats")
-	u.Add("bkey", fmt.Sprintf("%s_%s_%s_%s", province, btime, tp, tagid))
-	u.Add("ekey", fmt.Sprintf("%s_%s_%s_%s", province, etime, tp, tagid))
-	u.Add("limit", "10000000")
-	aurl += "?" + u.Encode()
-	resp, err := http.Get(aurl)
-	if err != nil {
-		return jsonReturn("0", errors.New("接口获取失败"))
-	}
-	if resp != nil && resp.Body != nil {
-		defer resp.Body.Close()
-		info, err := ioutil.ReadAll(resp.Body)
+	var countFun = func(key string) int64 {
+		aurl := config.String("stats::host") + "/api/get"
+		u := url.Values{}
+		u.Add("db", "tags_stats")
+		u.Add("key", key)
+		aurl += "?" + u.Encode()
+		req := httplib.Get(aurl)
+		bs, err := req.Bytes()
 		if err != nil {
-			return jsonReturn("0", errors.New("接口获取失败"))
+			return 0
 		}
-		if sj, err := simplejson.NewJson(info); err == nil {
-			var count = 0
+		if sj, err := simplejson.NewJson(bs); err == nil {
+			var count = int64(0)
 			if ret, err := sj.Get("ret").String(); ret == "0" && err == nil {
-				if data, err := sj.Get("data").Map(); err == nil {
-					for _, v := range data {
-						if vv, ok := v.(map[string]interface{}); ok {
-							count += convert.ToInt(vv["Value"])
-						}
-					}
-					return jsonReturn(count, nil)
+				if d, err := sj.Get("data").String(); err == nil {
+					count += convert.ToInt64(d)
 				}
+				return count
 			}
 		}
+		return 0
 	}
-	return jsonReturn("0", nil)
+
+	count := int64(0)
+	for t := convert.ToInt64(btime); t < convert.ToInt64(etime); t += 3600 {
+		kk := fmt.Sprintf("%s_%s_%s_%s", province, convert.ToString(t), tp, tagid)
+		count += countFun(kk)
+	}
+	return jsonReturn(count, nil)
 }
+//http://qy.weijiabao.com.cn/index.php/qy/ThZhVf1463104885
+//ThZhVf1463104885
+//XZU2Yrqon6zu2XW5gsCnVAd5mOPqp528qTVqec7ZcuG
+
+//http://cqy.weijiabao.com.cn/index.php/qy/ZhuLJM1470301430
+//ZhuLJM1470301430
+//O7nT5decFcPuy6gQaxywCaPfReWLq6YEDLX8pBKue0p

@@ -11,7 +11,7 @@ type Func struct {
 }
 
 func main() {
-	client := hprose.NewHttpClient("http://192.168.1.199:12345")
+	client := hprose.NewHttpClient("http://127.0.0.1:12345")
 	var f Func
 	client.UseService(&f)
 	bt := time.Now()
