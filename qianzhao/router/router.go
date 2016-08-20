@@ -84,42 +84,14 @@ func Router(e *echo.Echo) {
 	e.GET("/forget/code", (&controller.User{}).GetPhoneCodeByPwd)
 	e.Post("/forget/pwd", (&controller.User{}).FindPwd)
 	e.Get("/user/pwdcode", (&controller.User{}).GetFindPwdCode)
+
+	////首页
+	e.Get("/index", (&controller.Index{}).Index)
+
+	//// 新版活动
+	e.Get("/club", (&controller.Club2{}).Index)
+	e.Get("/club/sign",(&controller.Club2{}).Sign)
+	e.Post("/club/word",(&controller.Club2{}).Gword)
+	e.Get("/club/tun",(&controller.Club2{}).Turntable)
+	e.Post("/club/mrecord",(&controller.Club2{}).Mylist)
 }
-
-//// 秒速浏览器用户注册
-//Route::post("Api/v0.1/user/register", "UserController@register");
-
-//// 秒速浏览器用户登录
-//Route::post("Api/v0.1/user/login", "UserController@login");
-//Route::get("Api/v0.1/user/is_login", "UserController@is_login");
-//Route::get("Api/v0.1/user/logout", function(){
-//    Auth::logout();
-//    $return['code'] = "200";
-//    $return['msg'] = "用户已注销!";
-//    return Response::json($return, 200, [], JSON_UNESCAPED_UNICODE)->header('Content-Type', "application/json;charset=UTF-8");
-//});
-
-//// 用户中心
-////Route::get("MemberCenter",  array('before' => 'is_login', 'uses' => 'UserController@member_center'));
-//Route::get('user', 'UserController@member_center');
-//Route::get('user/edit', 'UserController@edit');
-
-//// 用户收藏夹
-//Route::post("Api/v0.1/backup_favorite", array('before' => 'is_login', 'uses' => 'FavoriteController@backup_favorite'));
-//Route::post("Api/v0.1/get_favorite",  array('before' => 'is_login', 'uses' => 'FavoriteController@get_favorite'));
-
-////
-//Route::post('Api/v0.1/verify_Bandwith', 'UserController@verify_Bandwith');
-//Route::get('Api/v0.1/get_Bandwith', 'UserController@get_Bandwith');
-
-//// 123
-//Route::any('Api/v0.1/speedup_open_check', 'EbitController@speedup_open_check');
-//Route::any('Api/v0.1/speedup_check', 'EbitController@speedup_check');
-//Route::any('Api/v0.1/speedup_open', 'EbitController@speedup_open');
-
-//// 测速
-//Route::get('Api/v0.1/user/speed_test', 'UserController@speed_test');
-
-//Route::get("/operate/speedup_prepare", "OperateController@speedup_prepare");
-//Route::post("/operate/speedup_open_check", "EbitController@speedup_open_check");
-//Route::post("/operate/speedup_open", "EbitController@speedup_open");

@@ -2,14 +2,13 @@ package model
 
 import (
 	"strings"
-
 	"github.com/ngaut/log"
-
 	"github.com/qgweb/gopro/lib/encrypt"
-
 	"github.com/qgweb/gopro/qianzhao/common/function"
-
 	"github.com/qgweb/gopro/lib/convert"
+	"time"
+	"errors"
+	"fmt"
 )
 
 const (
@@ -29,10 +28,28 @@ type User struct {
 	Sid           string `sid`
 	Email         string `email`
 	Phone         string `phone`
+	AwardCount    int `award_count`
 }
 
 func make_app_uid(bandwith string, bandwith_pwd string, timestamp string) string {
 	return encrypt.DefaultMd5.Encode(bandwith + bandwith_pwd + timestamp + "1024")
+}
+
+func (this *User) To(info map[string]string) (u User) {
+	u.Id = info["id"]
+	u.Name = info["username"]
+	u.Pwd = info["password"]
+	u.Avatar = info["avatar"]
+	u.Bandwith = info["bandwith"]
+	u.BandwithPwd = info["bandwith_pwd"]
+	u.AppUid = info["app_uid"]
+	u.Created = convert.ToInt(info["created"])
+	u.RememberToken = info["remember_token"]
+	u.Sid = info["sid"]
+	u.Email = info["email"]
+	u.Phone = info["phone"]
+	u.AwardCount = convert.ToInt(info["award_count"])
+	return
 }
 
 // 用户名是否存在
@@ -102,95 +119,51 @@ func (this *User) UserExist(name string, pwd string) bool {
 // 用户信息
 func (this *User) UserInfo(name string) (u User) {
 	sql := myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("username=? or phone=? or email=?").GetSQL()
-	list, err := myorm.Query(sql, name, name, name)
+	info, err := myorm.Get(sql, name, name, name)
 	if err != nil {
 		log.Warn("[user UserInfo]数据获取失败", err)
 		return
 	}
 
-	if len(list) == 0 {
-		return
-	}
-
-	u.Id = list[0]["id"]
-	u.Name = list[0]["username"]
-	u.Pwd = list[0]["password"]
-	u.Avatar = list[0]["avatar"]
-	u.Bandwith = list[0]["bandwith"]
-	u.BandwithPwd = list[0]["bandwith_pwd"]
-	u.AppUid = list[0]["app_uid"]
-	u.Created = convert.ToInt(list[0]["created"])
-	u.RememberToken = list[0]["remember_token"]
-	u.Sid = list[0]["sid"]
-	u.Email = list[0]["email"]
-	u.Phone = list[0]["phone"]
-
-	return u
+	return this.To(info)
 }
 
 // 用户信息
 func (this *User) GetUserIdByPhone(phone string) (u User) {
 	sql := myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("phone=?").GetSQL()
-	list, err := myorm.Query(sql, phone)
+	info, err := myorm.Get(sql, phone)
 	if err != nil {
 		log.Warn("[user UserInfo]数据获取失败", err)
 		return
 	}
 
-	if len(list) == 0 {
-		return
-	}
-
-	u.Id = list[0]["id"]
-	u.Name = list[0]["username"]
-	u.Pwd = list[0]["password"]
-	u.Avatar = list[0]["avatar"]
-	u.Bandwith = list[0]["bandwith"]
-	u.BandwithPwd = list[0]["bandwith_pwd"]
-	u.AppUid = list[0]["app_uid"]
-	u.Created = convert.ToInt(list[0]["created"])
-	u.RememberToken = list[0]["remember_token"]
-	u.Sid = list[0]["sid"]
-	u.Email = list[0]["email"]
-	u.Phone = list[0]["phone"]
-
-	return u
+	return this.To(info)
 }
 
 // 用户信息
 func (this *User) UserInfoById(id string) (u User) {
 	sql := myorm.BSQL().Select("*").From(USER_TABLE_NAME).Where("id=?").GetSQL()
-	list, err := myorm.Query(sql, id)
+	info, err := myorm.Get(sql, id)
 	if err != nil {
 		log.Warn("[user UserInfo]数据获取失败", err)
 		return
 	}
+	return this.To(info)
+}
 
-	if len(list) == 0 {
-		return
+// 获取抽奖次数
+func (this *User) getAwardCount() string {
+	if time.Since(time.Date(2016, 9, 1, 0, 0, 0, 0, time.Local)).Seconds() > 0 {
+		return "1"
 	}
-
-	u.Id = list[0]["id"]
-	u.Name = list[0]["username"]
-	u.Pwd = list[0]["password"]
-	u.Avatar = list[0]["avatar"]
-	u.Bandwith = list[0]["bandwith"]
-	u.BandwithPwd = list[0]["bandwith_pwd"]
-	u.AppUid = list[0]["app_uid"]
-	u.Created = convert.ToInt(list[0]["created"])
-	u.RememberToken = list[0]["remember_token"]
-	u.Sid = list[0]["sid"]
-	u.Email = list[0]["email"]
-	u.Phone = list[0]["phone"]
-
-	return u
+	return "0"
 }
 
 // 用户注册
 func (this *User) UserRegister(phone string, email string, password string) bool {
 	uname := "qz_" + function.GetTimeUnix()
-	sql := myorm.BSQL().Insert(USER_TABLE_NAME).Values("phone", "email", "password", "created", "username").GetSQL()
-	n, err := myorm.Insert(sql, phone, email, function.GetBcrypt([]byte(password)), function.GetTimeUnix(), uname)
+	sql := myorm.BSQL().Insert(USER_TABLE_NAME).Values("phone", "email", "password", "created", "username", "award_count").GetSQL()
+	n, err := myorm.Insert(sql, phone, email, function.GetBcrypt([]byte(password)), function.GetTimeUnix(), uname, this.getAwardCount())
 	if err != nil {
 		log.Warn("[user UserRegister] 插入失败，", err)
 		return false
@@ -207,7 +180,7 @@ func (this *User) UserRegister(phone string, email string, password string) bool
 func (this *User) Update(values map[string]interface{}, wheres map[string]interface{}) bool {
 	var (
 		fields = make([]string, 0, len(values))
-		where  = make([]string, 0, len(wheres))
+		where = make([]string, 0, len(wheres))
 		wvlues = make([]interface{}, 0, len(wheres))
 	)
 
@@ -217,7 +190,7 @@ func (this *User) Update(values map[string]interface{}, wheres map[string]interf
 	}
 
 	for k, v := range wheres {
-		where = append(where, k+"=?")
+		where = append(where, k + "=?")
 		wvlues = append(wvlues, v)
 	}
 
@@ -279,4 +252,31 @@ func (this *User) GetBrandWith(app_uid string) (u User) {
 		return u
 	}
 	return
+}
+
+// 获取可抽奖次数
+func (this *User) GetAwardCount(uid string) (int, error) {
+	u := this.UserInfoById(uid)
+	return u.AwardCount, nil
+}
+
+// 添加或删减抽奖次数
+func (this *User) IncrAwardCount(uid int, count int) (bool, error) {
+	sql := fmt.Sprintf("update 221su_users set award_count = award_count +%d where id=%d", count, uid)
+	fmt.Println(sql)
+	n, err := myorm.Update(sql)
+	return n > 0, err
+}
+
+// 判断是否可参与活动
+func (this *User) CanAward(phone string) (bool, error) {
+	sql := myorm.BSQL().Select("account").From("221su_broadband").Where("account=?").GetSQL()
+	info, err := myorm.Get(sql, phone)
+	if err != nil {
+		return false, err
+	}
+	if len(info) > 0 {
+		return true, nil
+	}
+	return false, errors.New("获取数据失败")
 }

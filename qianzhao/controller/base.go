@@ -50,3 +50,21 @@ func (this *Base) GetUserInfo(ctx echo.Context) (ui model.User) {
 	}
 	return
 }
+
+func (this *Base) SetSess(ctx echo.Context, key string, v interface{}) error {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		return err
+	}
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+	return sess.Set(key, v)
+}
+
+func (this *Base) GetSess(ctx echo.Context, key string) (interface{}, error) {
+	sess, err := session.GetSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
+	return sess.Get(key), nil
+}

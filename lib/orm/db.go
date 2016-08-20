@@ -44,6 +44,17 @@ func (this *QGORM) Debug(d bool) {
 	this.debug = d
 }
 
+func (this *QGORM) Get(osql string, data ...interface{}) (map[string]string, error) {
+	list, err := this.Query(osql, data...)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) > 0 {
+		return list[0], nil
+	}
+	return make(map[string]string), nil
+}
+
 func (this *QGORM) Query(osql string, data ...interface{}) ([]map[string]string, error) {
 	var list = make([]map[string]string, 0)
 
@@ -101,12 +112,11 @@ func (this *QGORM) Delete(sql string, data ...interface{}) (int64, error) {
 	return res.RowsAffected()
 }
 
-
 func (this *QGORM) BSQL() *BuildSQL {
 	return &BuildSQL{}
 }
 
-func (this *QGORM) Begin() (*sql.Tx, error){
+func (this *QGORM) Begin() (*sql.Tx, error) {
 	return this.db.Begin()
 }
 

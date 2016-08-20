@@ -1,0 +1,202 @@
+{{define "club2"}}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>活动</title>
+    <link rel="stylesheet" href="./club/css/layout.css">
+    <script src="./club/js/jquery-1.10.2.min.js"></script>
+    <script src="./js/layer2/layer.js"></script>
+    <script src="./js/laytpl.js"></script>
+    <script src="./club/js/club.js"></script>
+    <script src="./js/rotate/jQueryRotate.2.2.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="container01">
+        <a name="one"></a>
+        <a href="#" class="view_record">查看获奖记录</a>
+        <div class="description">
+            <h4>注册送话费</h4>
+            <p class="progress"></p>
+            <dl>
+                <dt>活动规则：</dt>
+                <dd>1、活动时间：2016年9月1日-2016年9月25日;</dd>
+                <dd>2、参与活动用户：江苏电信校园用户，非校园用户参与不发放奖品;</dd>
+                <dd>3、9月1日之后（包含9月1日）注册用户可获得一次抽奖机会;</dd>
+                <dd>4、该活动需要登录后参与，请点击左上角头像登录;</dd>
+                <dd>5、话费以兑换码的形式发放，可与指定页面进行兑换;</dd>
+                <dd>6、本活动最终解释权归江苏电信所有。</dd>
+            </dl>
+            <div class="record">
+                <h5>获奖记录</h5>
+                <div class="record_c record_lottery">
+                    <ul>
+                        {{range $k, $el := .list1}}
+                        <li {{if eq $el.tag "1"}}class="even"{{end}}>{{$el.title}}</li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="lottery">
+            <div class="draw_chassis">
+                <div></div>
+            </div>
+            <p class="chance">（剩余<b>{{.lottery_count}}</b>次机会）</p>
+        </div>
+    </div>
+    <div class="container02">
+        <a name="two"></a>
+        <h4>签到抽话费</h4>
+        <input type="hidden" id="signhistory" value="{{.sign}}"/>
+        <ul>
+            <li>第一天</li>
+            <li>第二天</li>
+            <li>第三天</li>
+            <li>第四天</li>
+            <li>第五天</li>
+        </ul>
+        <!-- 已签到sign_btn 后面添加already -->
+        <a href="#" class="sign_btn">点击签到</a>
+        <!--<p class="prompt">请登录后再来参加</p>-->
+        <!--<p class="prompt">你今天已经签到，请明天再来</p>-->
+        <dl>
+            <dt>活动规则：</dt>
+            <dd>1、活动时间：2016年9月1日-2016年9月25日;</dd>
+            <dd>2、参与活动用户：江苏电信校园用户;</dd>
+            <dd>3、参与方式：用户登录成功后，可在当前签到页面进行签到，用户每天可签到1次，连续累计5天签到成功，可获得活动一中，抽话费机会一次，可累计;</dd>
+            <dd>4、该活动需要登录后参与，请点击左上角头像登录;</dd>
+            <dd>5、本活动最终解释权归江苏电信所有。</dd>
+        </dl>
+    </div>
+    <div class="container03">
+        <a name="three"></a>
+        <h4>猜谜得话费</h4>
+        <p class="progress"></p>
+        <div class="guess_description">
+            <form action="" class="guess_form">
+                <p class="guess_c">
+                    <span>请输入谜底</span>
+                    <input type="text" value="" class="guess_an"/>
+                    <input type="submit" value="提交" class="guess_btn"/>
+                </p>
+                <p class="prompt">* 本轮话费已抢完，请明日继续</p>
+                <p class="prompt">* 输入错误，请重试</p>
+            </form>
+            <dl>
+                <dt>活动规则：</dt>
+                <dd>1、活动时间：2016年9月1日-2016年9月25日;</dd>
+                <dd>2、参与活动用户：江苏电信校园用户;</dd>
+                <dd>3、参与方式：首页商品实时折扣区在每天的早上9点，中午12点，晚上9点出现谜题，前10位猜对谜底的同学可随机获得，5元，10元，20元话费其中一种;</dd>
+                <dd>4、每个字谜，只有一次猜谜机会;</dd>
+                <dd>5、话费以兑换码的形式发放，可与指定页面进行兑换;</dd>
+                <dd>6、该活动需要登录后参与，请点击左上角头像登录;</dd>
+                <dd>7、本活动最终解释权归江苏电信所有。</dd>
+            </dl>
+            <div class="record">
+                <h5>获奖记录</h5>
+                <div class="record_c record_lottery">
+                    <ul>
+                        {{range $k, $el := .list2}}
+                        <li {{if eq $el.tag "1"}}class="even"{{end}}>{{$el.title}}</li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container04">
+        <h4>海淘加速，天天抢</h4>
+        <div class="tao_description">
+            <p class="progress"></p>
+            <dl>
+                <dt>活动规则：</dt>
+                <dd>1、活动时间：2016年9月1日-2016年9月25日;</dd>
+                <dd>2、参与活动用户：江苏电信校园用户;</dd>
+                <dd>3、参与方式：点击右上角-海淘助手-点击免费体验，开启海外购物之旅;</dd>
+                <dd>4、每天开放1000个名额，先到先得;</dd>
+                <dd>5、该活动需要登录后参与，请点击左上角头像登录;</dd>
+                <dd>6、本活动最终解释权归江苏电信所有。</dd>
+            </dl>
+        </div>
+        <img src="./club/img/tao.png" alt="">
+    </div>
+</div>
+<div class="popup" id="pprompt">
+    <div class="bg_opa"></div>
+    <!-- 提示弹窗 -->
+    <div class="popup_prompt">
+        <div class="whiteBg_opa"></div>
+        <div class="prompt_c">
+            <h6>提示</h6>
+            <p>恭喜您获得大转盘抽奖机会一次!</p>
+            <input type="button" value="关闭"/>
+        </div>
+    </div>
+</div>
+<div class="popup" id="precord">
+    <div class="bg_opa"></div>
+    <!-- 我的中奖纪录 -->
+    <div class="popup_record">
+        <div class="whiteBg_opa"></div>
+        <div class="precord_c">
+            <h6>我的中奖纪录</h6>
+            <div class="precord_list">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>奖品类别</th>
+                        <th>兑换码</th>
+                        <th>奖品来源</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <p class="page_list">
+                    <a href="#">上一页</a>
+                    <a href="#">1</a>
+                    <a href="#" class="current">2</a>
+                    <a href="#">3</a>
+                    <a href="#">下一页</a>
+                </p>
+            </div>
+            <input type="button" value="关闭"/>
+        </div>
+    </div>
+</div>
+<div class="popup" id="pwin">
+    <div class="bg_opa"></div>
+    <!-- 中奖提示 -->
+    <div class="popup_winningTips" style="display:block;">
+        <div class="whiteBg_opa"></div>
+        <div class="wtips_c">
+            <h6>我的中奖纪录</h6>
+            <div class="wtips_list">
+                <p>恭喜你！抽中10元话费！</p>
+                <dl>
+                    <dt>兑换码</dt>
+                    <dd><a href="http://js.189.cn/pay/recharge.action" target="_blank">**ffsfewe45332**</a> </dd>
+                </dl>
+            </div>
+            <input type="button" value="关闭"/>
+        </div>
+    </div>
+</div>
+<script id="mlist" type="text/javascript">
+    {#{# for(var i = 0, len = d.length; i < len; i++){ }#}
+    <tr>
+    <td>{#{ d[i].title }#}</td>
+    <td>{#{ d[i].code }#}</td>
+    <td>{#{ d[i].source }#}</td>
+    </tr>
+    {#{# } }#}
+</script>
+
+</body>
+</html>
+{{end}}

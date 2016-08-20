@@ -21,7 +21,6 @@ $(function () {
     }
 
     $('.clickRotate').on('click', function () {
-
         var ran = Math.random();
         $.ajax({
             url: '/club/turntable',

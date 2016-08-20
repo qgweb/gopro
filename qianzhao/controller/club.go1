@@ -17,7 +17,7 @@ type Club struct {
 
 var (
 	awardChanNum = 30
-	awardChan    = make(chan int, awardChanNum)
+	awardChan = make(chan int, awardChanNum)
 )
 
 func (this *Club) Index(ctx echo.Context) error {
@@ -59,7 +59,7 @@ func (this *Club) Winlist(ctx echo.Context) error {
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
 		n := r.Intn(len(numlist))
 		list[i] = &Result{}
-		list[i].Phone = numlist[n] + "****" + convert.ToString(r.Intn(8999)+1000)
+		list[i].Phone = numlist[n] + "****" + convert.ToString(r.Intn(8999) + 1000)
 		list[i].Result = this.getRand(map[string]int{
 			"1元话费充值卡":  600,
 			"5元话费充值卡":  300,
@@ -81,7 +81,7 @@ func (this *Club) Turntable(ctx echo.Context) error {
 		return err
 	}
 
-	if len(awardChan) > awardChanNum-1 {
+	if len(awardChan) > awardChanNum - 1 {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
 			"code": 302,
 			"msg":  "当前抽奖人数过多，请稍后再试^_^",
@@ -115,7 +115,7 @@ func (this *Club) Turntable(ctx echo.Context) error {
 		1: 333,
 		2: 53,
 		3: 6,
-	})
+	}, 0)
 
 	if err != nil {
 		log.Error(err)
@@ -141,3 +141,5 @@ func (this *Club) Mylist(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, list)
 }
+
+

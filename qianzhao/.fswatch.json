@@ -2,7 +2,7 @@
     "paths": [
         "."
     ],
-    "depth": 2,
+    "depth": 3,
     "exclude": [],
     "include": [
         "\\.(go|py|php|java|cpp|h|rb|css|js|html)$"

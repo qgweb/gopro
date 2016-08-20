@@ -1,1 +1,400 @@
 2016/06/23 18:06:39 user.go:981: [info] {       0    } 1445 
+2016/08/16 15:45:56 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:45:56 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:15 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:15 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:23 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:23 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:27 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:27 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:28 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:28 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:55 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:55 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:55 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:55 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:55 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:55 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:47:56 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:47:56 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:48:00 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:48:00 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:48:07 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:48:07 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:48:31 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:48:31 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:48:39 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:48:39 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:49:16 index.go:77: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:49:16 index.go:81: [error] unexpected end of JSON input 
+2016/08/16 15:50:28 index.go:78: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:50:28 index.go:82: [error] unexpected end of JSON input 
+2016/08/16 15:50:28 index.go:88: [info] [] type assertion to []byte failed 
+2016/08/16 15:50:54 index.go:78: [error] Get %22http://www.yilejie.com/index/interhot%22: unsupported protocol scheme "" 
+2016/08/16 15:50:54 index.go:82: [error] unexpected end of JSON input 
+2016/08/16 15:50:54 index.go:88: [info] [] type assertion to []byte failed 
+2016/08/16 15:51:46 index.go:88: [info] [] type assertion to []byte failed 
+2016/08/16 15:52:19 index.go:88: [info] [map[custom:{"games_num":"2","type":"0"} invitemode:0 uptinfomode:0 tname:这是一个测试标题 tid:7310875 members:[] announcement:<nil> maxusers:200 size:1 beinvitemode:0 icon:<nil> upcustommode:0 owner:1 joinmode:0 intro:<nil>]] 
+2016/08/16 15:52:44 index.go:88: [info] map[uptinfomode:0 size:1 owner:1 tname:这是一个测试标题 beinvitemode:0 members:[] announcement:<nil> maxusers:200 joinmode:0 invitemode:0 upcustommode:0 tid:7310875 custom:{"games_num":"2","type":"0"} icon:<nil> intro:<nil>] 
+2016/08/16 15:53:24 index.go:88: [info] {"games_num":"2","type":"0"} 
+2016/08/16 15:53:50 index.go:88: [info]  type assertion to string failed 
+2016/08/16 15:54:05 index.go:88: [info] <nil> 
+2016/08/16 15:54:26 index.go:88: [info] {"games_num":"2","type":"0"} 
+2016/08/16 15:54:49 index.go:88: [info] {"games_num":"2","type":"0"} <nil> 
+2016/08/16 15:58:11 index.go:90: [info] 2 <nil> 
+2016/08/18 15:54:56 user.go:62: [info]  
+2016/08/18 15:56:28 user.go:62: [info] 15158117079 
+2016/08/18 15:56:28 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 15:56:34 user.go:62: [info] 15158117079 
+2016/08/18 15:56:34 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 15:57:18 user.go:62: [info] zb2141 
+2016/08/18 15:57:18 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 15:57:53 user.go:62: [info] zb2141 
+2016/08/18 15:57:53 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 15:57:57 user.go:62: [info] zb2141 
+2016/08/18 15:57:57 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 15:58:02 user.go:62: [info] zb2141 
+2016/08/18 15:58:02 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:00:15 user.go:62: [info] zb2141 
+2016/08/18 16:00:15 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:00:33 user.go:62: [info] zb2141 
+2016/08/18 16:00:33 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:02:12 user.go:62: [info] zb2141 
+2016/08/18 16:02:12 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:02:25 user.go:62: [info] zb2141 
+2016/08/18 16:02:25 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:03:04 user.go:62: [info] zb2141 
+2016/08/18 16:03:04 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:03:58 user.go:62: [info] zb2141 
+2016/08/18 16:03:58 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:05:02 user.go:62: [info] zb2141 
+2016/08/18 16:05:02 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:05:28 user.go:62: [info] zb2141 
+2016/08/18 16:05:28 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:05:51 user.go:62: [info] zb2141 
+2016/08/18 16:05:51 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:05:56 user.go:62: [info] zb2141 
+2016/08/18 16:05:56 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:07:00 user.go:62: [info] zb2141 
+2016/08/18 16:07:00 user.go:123: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:07:17 user.go:63: [info] zb2141 
+2016/08/18 16:07:17 user.go:125: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:07:41 user.go:63: [info] zb2141 
+2016/08/18 16:07:41 user.go:125: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:07:44 user.go:63: [info] zb2141 
+2016/08/18 16:07:44 user.go:125: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:07:55 user.go:63: [info] zb2141 
+2016/08/18 16:07:55 user.go:125: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:07:59 user.go:63: [info] zb2141 
+2016/08/18 16:07:59 user.go:125: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:08:49 user.go:63: [info] zb2141 
+2016/08/18 16:08:49 user.go:126: [warning] [user UserInfo]数据获取失败 sql: converting Exec argument #0's type: unsupported type []interface {}, a slice 
+2016/08/18 16:09:34 user.go:63: [info] zb2141 
+2016/08/18 16:10:01 user.go:62: [info] zb2141 
+2016/08/18 16:13:30 user.go:62: [info] 15158117079 
+2016/08/18 16:15:08 user.go:62: [info] 15158117079 
+2016/08/18 16:15:23 user.go:62: [info] zb2141 
+2016/08/18 16:19:49 user.go:62: [info] zb2141 
+2016/08/18 16:20:02 user.go:62: [info] zb2141 
+2016/08/18 16:21:56 user.go:62: [info] zb2141 
+2016/08/18 16:23:06 user.go:62: [info] zb2141 
+2016/08/18 16:23:48 user.go:62: [info] zb2141 
+2016/08/18 16:24:02 user.go:62: [info] zb2141 
+2016/08/18 16:36:46 user.go:62: [info] zb2141 
+2016/08/18 16:37:05 user.go:62: [info] zb2141 
+2016/08/18 16:38:54 user.go:62: [info] zb2141 
+2016/08/18 16:40:29 user.go:62: [info] zb2141 
+2016/08/18 16:41:28 user.go:62: [info] zb2141 
+2016/08/18 16:42:44 user.go:62: [info] zb2141 
+2016/08/18 16:43:09 user.go:62: [info] zb2141 
+2016/08/18 16:43:59 user.go:62: [info] zb2141 
+2016/08/18 16:44:30 user.go:62: [info] zb2141 
+2016/08/18 16:44:53 user.go:62: [info] zb2141 
+2016/08/18 16:46:11 user.go:62: [info] zb2141 
+2016/08/18 16:50:26 user.go:62: [info] zb2141 
+2016/08/18 16:53:04 user.go:62: [info] zb2141 
+2016/08/18 17:09:41 user.go:62: [info] zb2141 
+2016/08/18 17:10:35 user.go:62: [info] zb2141 
+2016/08/18 17:11:10 user.go:62: [info] zb2141 
+2016/08/18 17:12:29 user.go:62: [info] zb2141 
+2016/08/18 17:12:34 user.go:62: [info] zb2141 
+2016/08/18 17:14:53 user.go:62: [info] zb2141 
+2016/08/18 17:17:30 user.go:62: [info] zb2141 
+2016/08/18 17:18:06 user.go:62: [info] zb2141 
+2016/08/18 17:19:52 user.go:62: [info] zb2141 
+2016/08/18 17:21:18 user.go:62: [info] zb2141 
+2016/08/18 17:22:45 user.go:62: [info] zb2141 
+2016/08/18 17:23:34 user.go:62: [info] zb2141 
+2016/08/18 17:23:34 user.go:62: [info] zb2141 
+2016/08/18 17:23:34 user.go:62: [info] zb2141 
+2016/08/18 17:24:25 user.go:62: [info] zb2141 
+2016/08/18 17:26:42 user.go:62: [info] zb2141 
+2016/08/18 17:26:43 user.go:62: [info] zb2141 
+2016/08/18 17:28:37 user.go:62: [info] zb2141 
+2016/08/18 17:30:25 user.go:62: [info] zb2141 
+2016/08/18 17:31:13 user.go:62: [info] zb2141 
+2016/08/18 17:37:57 user.go:62: [info] zb2141 
+2016/08/18 17:47:50 user.go:62: [info] zb2141 
+2016/08/18 17:48:18 user.go:62: [info] zb2141 
+2016/08/18 18:07:28 user.go:62: [info] zb2141 
+2016/08/18 18:08:29 user.go:62: [info] zb2141 
+2016/08/18 18:08:58 user.go:62: [info] zb2141 
+2016/08/18 19:43:24 user.go:62: [info] zb2141 
+2016/08/18 19:44:11 user.go:62: [info] zb2141 
+2016/08/18 19:45:32 user.go:62: [info] zb2141 
+2016/08/18 19:46:48 user.go:62: [info] zb2141 
+2016/08/18 19:47:48 user.go:62: [info] zb2141 
+2016/08/18 19:48:18 user.go:62: [info] zb2141 
+2016/08/18 19:48:30 award.go:213: [info] 257348848964706374 1 
+2016/08/18 19:48:30 award.go:217: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42026c0e0 0xc42031a320} <nil> 
+2016/08/18 19:52:12 award.go:180: [info] 9 1 
+2016/08/18 19:53:33 user.go:62: [info] zb2141 
+2016/08/18 19:53:37 award.go:181: [info] 9 1 
+2016/08/18 19:59:47 user.go:62: [info] zb2141 
+2016/08/18 19:59:53 award.go:181: [info] 9 1 
+2016/08/18 19:59:53 award.go:215: [info] 250743372394513760 5000 
+2016/08/18 19:59:53 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42027e070 0xc420348480} <nil> 
+2016/08/18 20:00:46 award.go:181: [info] 8 1 
+2016/08/18 20:00:46 award.go:181: [info] 1 2 
+2016/08/18 20:00:46 award.go:215: [info] 258544400972136937 5800 
+2016/08/18 20:00:46 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42027e070 0xc420348c50} <nil> 
+2016/08/18 20:01:01 award.go:181: [info] 8 1 
+2016/08/18 20:01:01 award.go:181: [info] 1 2 
+2016/08/18 20:01:01 award.go:181: [info] 1 3 
+2016/08/18 20:01:37 user.go:62: [info] zb2141 
+2016/08/18 20:02:57 user.go:62: [info] zb2141 
+2016/08/18 20:37:51 user.go:62: [info] zb2141 
+2016/08/18 20:42:44 award.go:147: [info] 1 0 
+2016/08/18 20:42:44 award.go:147: [info] 5 1 
+2016/08/18 20:42:44 award.go:147: [info] 1 2 
+2016/08/18 20:42:44 award.go:147: [info] 1 3 
+2016/08/18 20:44:07 user.go:62: [info] zb2141 
+2016/08/18 20:44:19 award.go:147: [info] 1 0 
+2016/08/18 20:44:19 award.go:147: [info] 5 1 
+2016/08/18 20:44:19 award.go:147: [info] 1 2 
+2016/08/18 20:44:19 award.go:147: [info] 1 3 
+2016/08/18 20:45:10 user.go:62: [info] zb2141 
+2016/08/18 20:45:14 award.go:147: [info] 1 0 
+2016/08/18 20:45:14 award.go:147: [info] 5 1 
+2016/08/18 20:45:14 award.go:147: [info] 1 2 
+2016/08/18 20:45:14 award.go:147: [info] 1 3 
+2016/08/18 20:46:52 user.go:63: [info] zb2141 
+2016/08/18 20:47:11 award.go:147: [info] 1 0 
+2016/08/18 20:47:11 award.go:147: [info] 5 1 
+2016/08/18 20:47:11 award.go:147: [info] 1 2 
+2016/08/18 20:47:11 award.go:147: [info] 1 3 
+2016/08/18 20:48:15 user.go:63: [info] zb2141 
+2016/08/18 20:48:20 award.go:147: [info] 1 0 
+2016/08/18 20:48:20 award.go:147: [info] 5 1 
+2016/08/18 20:48:20 award.go:147: [info] 1 2 
+2016/08/18 20:48:20 award.go:147: [info] 1 3 
+2016/08/20 18:15:58 user.go:63: [info] zb2141 
+2016/08/20 18:22:35 user.go:63: [info] zb2141 
+2016/08/20 18:24:35 user.go:63: [info] zb2141 
+2016/08/20 18:31:27 user.go:63: [info] zb2141 
+2016/08/20 18:34:17 user.go:63: [info] zb2141 
+2016/08/20 18:34:53 user.go:63: [info] zb2141 
+2016/08/20 18:38:49 user.go:63: [info] zb2141 
+2016/08/20 18:51:03 user.go:63: [info] zb2141 
+2016/08/20 18:52:57 user.go:63: [info] zb2141 
+2016/08/20 19:02:42 user.go:63: [info] zb2141 
+2016/08/20 19:03:38 user.go:63: [info] zb2141 
+2016/08/20 19:06:27 user.go:63: [info] zb2141 
+2016/08/20 19:07:00 user.go:63: [info] zb2141 
+2016/08/20 19:07:41 user.go:63: [info] zb2141 
+2016/08/20 19:07:51 user.go:63: [info] zb2141 
+2016/08/20 19:10:44 user.go:63: [info] zb2141 
+2016/08/20 19:10:54 user.go:63: [info] zb2141 
+2016/08/20 19:10:55 user.go:63: [info] zb2141 
+2016/08/20 19:11:55 user.go:63: [info] zb2141 
+2016/08/20 19:11:56 user.go:63: [info] zb2141 
+2016/08/20 19:47:08 user.go:63: [info] zb2141 
+2016/08/20 19:47:30 user.go:63: [info] zb2141 
+2016/08/20 19:48:39 user.go:63: [info] zb2141 
+2016/08/20 19:50:02 user.go:63: [info] zb2141 
+2016/08/20 19:50:53 user.go:63: [info] zb2141 
+2016/08/20 19:51:54 user.go:63: [info] zb2141 
+2016/08/20 19:52:38 user.go:63: [info] zb2141 
+2016/08/20 19:53:21 award.go:215: [info] 253568166646397956 5001 
+2016/08/20 19:53:21 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a2b60 0xc420367270} <nil> 
+2016/08/20 19:54:11 award.go:215: [info] 257348848964706374 1 
+2016/08/20 19:54:11 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a2b60 0xc4201d0820} <nil> 
+2016/08/20 20:00:30 user.go:63: [info] zb2141 
+2016/08/20 20:01:18 award.go:215: [info] 250743372394513760 5000 
+2016/08/20 20:01:18 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42029cd20 0xc4204162e0} <nil> 
+2016/08/20 20:05:34 user.go:63: [info] zb2141 
+2016/08/20 20:05:35 award.go:215: [info] 253568166646397956 5001 
+2016/08/20 20:05:35 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4201d8620 0xc42014e530} <nil> 
+2016/08/20 20:28:57 user.go:63: [info] zb2141 
+2016/08/20 21:25:24 user.go:63: [info] zb2141 
+2016/08/20 21:25:46 user.go:63: [info] zb2141 
+2016/08/20 21:25:48 award.go:147: [info] 1 2 
+2016/08/20 21:26:55 award.go:147: [info] 1 2 
+2016/08/20 21:27:14 award.go:147: [info] 1 2 
+2016/08/20 21:28:36 award.go:147: [info] 1 2 
+2016/08/20 21:28:36 award.go:215: [info] 258544400972136937 5800 
+2016/08/20 21:28:36 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420275dc0 0xc4202baea0} <nil> 
+2016/08/20 21:29:51 user.go:63: [info] zb2141 
+2016/08/20 21:30:19 user.go:63: [info] zb2141 
+2016/08/20 21:30:34 award.go:147: [info] 1 2 
+2016/08/20 21:30:34 award.go:215: [info] 257301246212684202 2 
+2016/08/20 21:30:34 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a4c40 0xc4201d44e0} <nil> 
+2016/08/20 21:32:33 user.go:63: [info] zb2141 
+2016/08/20 21:33:45 user.go:63: [info] zb2141 
+2016/08/20 21:33:47 award.go:147: [info] 1 1 
+2016/08/20 21:33:47 award.go:147: [info] 1 2 
+2016/08/20 21:33:47 award.go:215: [info] 252479479343581898 5002 
+2016/08/20 21:33:47 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420019ab0 0xc420391320} <nil> 
+2016/08/20 21:33:58 award.go:147: [info] 1 1 
+2016/08/20 21:33:58 award.go:147: [info] 2 2 
+2016/08/20 21:33:58 award.go:215: [info] 251406698822215655 5003 
+2016/08/20 21:33:58 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420019ab0 0xc4203c6310} <nil> 
+2016/08/20 21:34:09 award.go:147: [info] 1 1 
+2016/08/20 21:34:09 award.go:147: [info] 3 2 
+2016/08/20 21:34:09 award.go:215: [info] 254017547411272858 3 
+2016/08/20 21:34:09 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420019ab0 0xc4202c45c0} <nil> 
+2016/08/20 21:35:29 user.go:63: [info] zb2141 
+2016/08/20 21:35:34 award.go:147: [info] 2 1 
+2016/08/20 21:35:34 award.go:147: [info] 3 2 
+2016/08/20 21:35:34 award.go:215: [info] 253122012480812772 4 
+2016/08/20 21:35:34 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42029bc00 0xc420231080} <nil> 
+2016/08/20 21:35:41 award.go:147: [info] 3 1 
+2016/08/20 21:35:41 award.go:147: [info] 3 2 
+2016/08/20 21:35:41 award.go:215: [info] 251154096441907047 5004 
+2016/08/20 21:35:41 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42029bc00 0xc420390f00} <nil> 
+2016/08/20 21:41:56 award.go:147: [info] 3 1 
+2016/08/20 21:41:56 award.go:147: [info] 4 2 
+2016/08/20 21:41:56 award.go:215: [info] 252956888779528107 5 
+2016/08/20 21:41:56 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42029bc00 0xc4203e4c70} <nil> 
+2016/08/20 21:42:20 user.go:63: [info] zb2141 
+2016/08/20 21:42:23 award.go:147: [info] 4 1 
+2016/08/20 21:42:23 award.go:147: [info] 4 2 
+2016/08/20 21:42:23 award.go:215: [info] 257502724514079759 5005 
+2016/08/20 21:42:23 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420019960 0xc42036c450} <nil> 
+2016/08/20 21:42:40 award.go:147: [info] 4 1 
+2016/08/20 21:42:40 award.go:147: [info] 5 2 
+2016/08/20 21:42:40 award.go:215: [info] 250821086483499035 6 
+2016/08/20 21:42:40 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420019960 0xc4203253c0} <nil> 
+2016/08/20 21:43:03 user.go:63: [info] zb2141 
+2016/08/20 21:43:05 award.go:147: [info] 5 1 
+2016/08/20 21:43:05 award.go:147: [info] 5 2 
+2016/08/20 21:43:05 award.go:215: [info] 259521044574277042 7 
+2016/08/20 21:43:05 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420277960 0xc4201db5c0} <nil> 
+2016/08/20 21:43:14 award.go:147: [info] 6 1 
+2016/08/20 21:43:14 award.go:147: [info] 5 2 
+2016/08/20 21:43:14 award.go:215: [info] 254295603559522927 5006 
+2016/08/20 21:43:14 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420277960 0xc4203151c0} <nil> 
+2016/08/20 21:43:31 award.go:147: [info] 6 1 
+2016/08/20 21:43:31 award.go:147: [info] 6 2 
+2016/08/20 21:43:31 award.go:215: [info] 253892386505936700 8 
+2016/08/20 21:43:31 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420277960 0xc4203ea160} <nil> 
+2016/08/20 21:48:19 user.go:63: [info] zb2141 
+2016/08/20 21:52:30 user.go:63: [info] zb2141 
+2016/08/20 21:52:42 user.go:63: [info] zb2141 
+2016/08/20 21:55:00 user.go:63: [info] zb2141 
+2016/08/20 22:04:29 user.go:63: [info] zb2141 
+2016/08/20 22:10:16 user.go:63: [info] zb2141 
+2016/08/20 22:16:18 user.go:63: [info] zb2141 
+2016/08/20 22:17:31 user.go:63: [info] zb2141 
+2016/08/20 22:20:29 user.go:63: [info] zb2141 
+2016/08/20 22:21:50 user.go:63: [info] zb2141 
+2016/08/20 22:22:44 user.go:63: [info] zb2141 
+2016/08/20 22:24:22 user.go:63: [info] zb2141 
+2016/08/20 22:25:06 user.go:63: [info] zb2141 
+2016/08/20 22:31:27 user.go:63: [info] zb2141 
+2016/08/20 22:31:44 user.go:63: [info] zb2141 
+2016/08/20 22:32:52 user.go:63: [info] zb2141 
+2016/08/20 22:34:43 user.go:63: [info] zb2141 
+2016/08/20 22:37:03 user.go:63: [info] zb2141 
+2016/08/20 22:37:50 user.go:63: [info] zb2141 
+2016/08/20 22:39:08 user.go:63: [info] zb2141 
+2016/08/20 22:44:10 user.go:63: [info] zb2141 
+2016/08/20 22:44:48 user.go:63: [info] zb2141 
+2016/08/20 22:46:00 user.go:63: [info] zb2141 
+2016/08/20 22:46:36 user.go:63: [info] zb2141 
+2016/08/20 22:50:46 user.go:63: [info] zb2141 
+2016/08/20 22:51:07 user.go:63: [info] zb2141 
+2016/08/20 22:52:49 user.go:63: [info] zb2141 
+2016/08/20 22:54:28 user.go:63: [info] zb2141 
+2016/08/20 22:58:44 user.go:63: [info] zb2141 
+2016/08/20 23:00:28 user.go:63: [info] zb2141 
+2016/08/20 23:03:37 user.go:63: [info] zb2141 
+2016/08/20 23:04:33 user.go:63: [info] zb2141 
+2016/08/20 23:05:01 user.go:63: [info] zb2141 
+2016/08/20 23:07:23 user.go:63: [info] zb2141 
+2016/08/20 23:07:47 user.go:63: [info] zb2141 
+2016/08/20 23:08:03 user.go:63: [info] zb2141 
+2016/08/20 23:08:45 user.go:63: [info] zb2141 
+2016/08/20 23:09:11 user.go:63: [info] zb2141 
+2016/08/20 23:10:19 user.go:63: [info] zb2141 
+2016/08/20 23:10:52 user.go:63: [info] zb2141 
+2016/08/20 23:11:39 user.go:63: [info] zb2141 
+2016/08/20 23:12:39 user.go:63: [info] zb2141 
+2016/08/20 23:15:50 user.go:63: [info] zb2141 
+2016/08/20 23:20:50 user.go:63: [info] zb2141 
+2016/08/20 23:21:30 user.go:63: [info] zb2141 
+2016/08/20 23:22:17 user.go:63: [info] zb2141 
+2016/08/20 23:23:49 user.go:63: [info] zb2141 
+2016/08/20 23:25:10 user.go:63: [info] zb2141 
+2016/08/20 23:27:15 user.go:63: [info] zb2141 
+2016/08/20 23:27:15 user.go:63: [info] zb2141 
+2016/08/20 23:28:07 user.go:63: [info] zb2141 
+2016/08/20 23:39:29 user.go:63: [info] zb2141 
+2016/08/20 23:39:59 user.go:63: [info] zb2141 
+2016/08/20 23:40:44 user.go:63: [info] zb2141 
+2016/08/20 23:42:46 user.go:63: [info] zb2141 
+2016/08/20 23:43:30 user.go:63: [info] zb2141 
+2016/08/20 23:45:31 user.go:63: [info] zb2141 
+2016/08/20 23:47:58 user.go:63: [info] zb2141 
+2016/08/20 23:48:38 award.go:147: [info] 1 1 
+2016/08/20 23:48:38 award.go:147: [info] 3 2 
+2016/08/20 23:48:38 award.go:215: [info] 251115346349054082 5801 
+2016/08/20 23:48:38 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42027dd50 0xc4202e7ff0} <nil> 
+2016/08/20 23:48:45 award.go:147: [info] 1 1 
+2016/08/20 23:48:45 award.go:147: [info] 3 2 
+2016/08/20 23:48:45 award.go:147: [info] 1 3 
+2016/08/20 23:48:45 award.go:215: [info] 251981455773492344 9 
+2016/08/20 23:48:45 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42027dd50 0xc4202e6010} <nil> 
+2016/08/20 23:48:49 award.go:147: [info] 2 1 
+2016/08/20 23:48:49 award.go:147: [info] 3 2 
+2016/08/20 23:48:49 award.go:147: [info] 1 3 
+2016/08/20 23:48:49 award.go:215: [info] 250598325254663080 10 
+2016/08/20 23:48:49 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42027dd50 0xc4202e6d70} <nil> 
+2016/08/20 23:49:37 user.go:63: [info] zb2141 
+2016/08/20 23:50:18 user.go:63: [info] zb2141 
+2016/08/20 23:50:51 user.go:63: [info] zb2141 
+2016/08/20 23:51:24 user.go:63: [info] zb2141 
+2016/08/20 23:52:18 user.go:63: [info] zb2141 
+2016/08/20 23:53:02 user.go:63: [info] zb2141 
+2016/08/20 23:53:53 user.go:63: [info] zb2141 
+2016/08/20 23:56:50 user.go:63: [info] zb2141 
+2016/08/20 23:57:43 user.go:63: [info] zb2141 
+2016/08/20 23:58:34 user.go:63: [info] zb2141 
+2016/08/21 00:00:20 user.go:63: [info] zb2141 
+2016/08/21 00:01:31 user.go:63: [info] zb2141 
+2016/08/21 00:02:37 user.go:63: [info] zb2141 
+2016/08/21 00:04:40 user.go:63: [info] zb2141 
+2016/08/21 00:06:17 user.go:63: [info] zb2141 
+2016/08/21 00:07:13 user.go:63: [info] zb2141 
+2016/08/21 00:09:09 user.go:63: [info] zb2141 
+2016/08/21 00:10:00 user.go:63: [info] zb2141 
+2016/08/21 00:11:05 user.go:63: [info] zb2141 
+2016/08/21 00:15:23 user.go:63: [info] zb2141 
+2016/08/21 00:16:13 user.go:63: [info] zb2141 
+2016/08/21 00:17:41 user.go:63: [info] zb2141 
+2016/08/21 00:18:41 user.go:63: [info] zb2141 
+2016/08/21 00:19:20 user.go:63: [info] zb2141 
+2016/08/21 00:19:51 user.go:63: [info] zb2141 
+2016/08/21 00:20:28 user.go:63: [info] zb2141 
+2016/08/21 00:21:33 user.go:63: [info] zb2141 
+2016/08/21 00:23:36 user.go:63: [info] zb2141 
+2016/08/21 00:23:57 user.go:63: [info] zb2141 
+2016/08/21 00:24:29 award.go:147: [info] 1 0 
+2016/08/21 00:24:38 award.go:147: [info] 2 0 
+2016/08/21 00:24:51 award.go:147: [info] 3 0 
+2016/08/21 00:25:37 user.go:63: [info] zb2141 
+2016/08/21 00:48:14 user.go:63: [info] zb2141 
+2016/08/21 00:48:17 award.go:147: [info] 4 0 
+2016/08/21 00:49:01 award.go:147: [info] 5 0 
+2016/08/21 00:49:01 award.go:215: [info] 259905376646604581 11 
+2016/08/21 00:49:01 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a2f50 0xc4201574e0} <nil> 
