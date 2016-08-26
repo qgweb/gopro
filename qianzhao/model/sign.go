@@ -44,11 +44,15 @@ func (this *Sign) GetInfo(uid int) (s Sign, err error) {
 	return this.To(list), nil
 }
 
-func (this *Sign) setHistory(btime int64, histroy string) string {
+func (this *Sign) setHistory(btime int64, histroy string) (string, int64) {
 	day := int(time.Unix(convert.ToInt64(timestamp.GetDayTimestamp(0)), 0).Sub(time.Unix(btime, 0)).Hours() / 24)
 	hs := strings.Split(histroy, "")
 	hs[day] = "1"
-	return strings.Join(hs, "")
+	if day > 0 && hs[day - 1] == "0" {
+		return "10000", convert.ToInt64(timestamp.GetDayTimestamp(0))
+	}
+
+	return strings.Join(hs, ""), btime
 }
 
 func (this *Sign) getHistory(btime int64, histroy string) bool {
@@ -85,9 +89,9 @@ func (this *Sign) Add(uid int, fun func()) (string, error) {
 			info.History = "00000"
 			info.Btime = convert.ToInt64(timestamp.GetDayTimestamp(0))
 		}
-		sql := myorm.BSQL().Update(SIGN_TABLE_NAME).Set("history").Where("uid=?").GetSQL()
-		his := this.setHistory(info.Btime, info.History)
-		_, err := myorm.Update(sql, his, uid)
+		sql := myorm.BSQL().Update(SIGN_TABLE_NAME).Set("history", "btime").Where("uid=?").GetSQL()
+		his, bt := this.setHistory(info.Btime, info.History)
+		_, err := myorm.Update(sql, his, bt, uid)
 		if strings.Count(his, "1") == 5 {
 			fun()
 		}
@@ -97,16 +101,22 @@ func (this *Sign) Add(uid int, fun func()) (string, error) {
 
 func (this *Sign) Reset(uid int) (bool, error) {
 	info, err := this.GetInfo(uid)
-	if err != nil {
+	if err != nil || info.Id == 0 {
 		return false, err
 	}
+	var bt int64 = info.Btime
+	var his string = info.History
 	day := int(time.Unix(convert.ToInt64(timestamp.GetDayTimestamp(0)), 0).Sub(time.Unix(info.Btime, 0)).Hours() / 24)
-	if strings.Count(info.History, "1") == 5 && day > 5 {
-		sql := myorm.BSQL().Update(SIGN_TABLE_NAME).Set("btime", "history").Where("uid=?").GetSQL()
-		n, err := myorm.Update(sql, timestamp.GetDayTimestamp(0), "00000", uid)
-		return n > 0, err
+	hs := strings.Split(info.History, "")
+
+	if (day > 0 && hs[day - 1] == "0") || (strings.Count(info.History, "1") == 5 && day >= 5) {
+		his = "00000"
+		bt = convert.ToInt64(timestamp.GetDayTimestamp(0))
 	}
-	return false, nil
+
+	sql := myorm.BSQL().Update(SIGN_TABLE_NAME).Set("btime", "history").Where("uid=?").GetSQL()
+	n, err := myorm.Update(sql, bt, his, uid)
+	return n > 0, err
 }
 
 

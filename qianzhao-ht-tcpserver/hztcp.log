@@ -254,3 +254,95 @@
 2016/01/21 16:20:19 event.go:126: [info] 36 
 2016/01/21 16:21:41 event.go:126: [info] 36 
 2016/01/21 16:22:41 event.go:126: [info] 36 
+2016/08/23 16:45:06 model.go:265: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2016/08/23 16:45:07 model.go:275: [info] {"Flag":"null"} 
+2016/08/23 16:45:07 model.go:277: [info] {null    } 
+2016/08/23 16:45:07 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:45:23 model.go:265: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2016/08/23 16:45:24 model.go:275: [info] {"Flag":"null"} 
+2016/08/23 16:45:24 model.go:277: [info] {null    } 
+2016/08/23 16:45:24 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:46:03 event.go:67: [error] [1 15158117079 56000005040361 SRgZTmDu] 
+2016/08/23 16:46:03 model.go:164: [error] {0     0 0 0 0 } 
+2016/08/23 16:46:03 model.go:167: [error] {56000005040361 SRgZTmDu 0001  15158117079} 
+2016/08/23 16:46:04 model.go:313: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:checkCard>
+            <ser:in0>jLsM7lccX0ZopJCssM1/Bg==</ser:in0>
+			<ser:in1>/tuKr8FSuZ3FXqCOsiuITw==</ser:in1>
+			<ser:in2>8KLQnhRUkSUoKKMvBDKADQ==</ser:in2>
+			<ser:in3>15158117079</ser:in3>
+			<ser:in4>2F88746B04BF53E2F765A0B48E4537A5</ser:in4>
+        </ser:checkCard>
+    </x:Body>
+</x:Envelope> 
+2016/08/23 16:46:05 model.go:171: [error] 系统异常 
+2016/08/23 16:46:05 model.go:173: [error] 系统异常 
+2016/08/23 16:47:30 model.go:265: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2016/08/23 16:47:32 model.go:275: [info] {"Flag":"null"} 
+2016/08/23 16:47:32 model.go:277: [info] {null    } 
+2016/08/23 16:47:32 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:48:35 event.go:67: [error] [0 15158117071] 
+2016/08/23 16:49:03 model.go:265: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2016/08/23 16:49:05 model.go:275: [info] {"Flag":"null"} 
+2016/08/23 16:49:05 model.go:277: [info] {null    } 
+2016/08/23 16:49:05 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:49:31 model.go:265: [error] <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.com">
+    <x:Header/>
+    <x:Body>
+        <ser:applicationCard>
+            <ser:in0>15158117079</ser:in0>
+            <ser:in1>BLv4+8CmV/jJCS9WLqE8Jej5SOXKJfUt44Pz3ZF/61KuhgFjH99su8NDN1zHXXjk</ser:in1>
+            <ser:in2>07AFBF67CD7EBD8698FB9AB1793E3CF6</ser:in2>
+        </ser:applicationCard>
+    </x:Body>
+</x:Envelope> 
+2016/08/23 16:49:32 model.go:275: [info] {"Flag":"null"} 
+2016/08/23 16:49:32 model.go:277: [info] {null    } 
+2016/08/23 16:49:32 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:49:47 event.go:67: [error] [0 18757105627] 
+2016/08/23 16:50:02 model.go:141: [info] 7200 
+2016/08/23 16:50:02 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:50:26 model.go:141: [info] 7200 
+2016/08/23 16:50:26 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:51:12 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:51:52 event.go:67: [error] [0 15158117079] 
+2016/08/23 16:52:18 model.go:141: [info] 7200 
+2016/08/23 16:52:18 event.go:67: [error] [0 15158117079] 

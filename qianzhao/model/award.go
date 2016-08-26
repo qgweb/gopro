@@ -240,7 +240,7 @@ func (this *Award) addReocrd(tx *sql.Tx, info Award) error {
 }
 
 func (this *Award) MyRecord(userid string) ([]map[string]string, error) {
-	sql := myorm.BSQL().Select("*").From(AWARD_TABLE_NAME).Where("user_id=? and awards_type!=0").GetSQL()
+	sql := myorm.BSQL().Select("*").From(AWARD_TABLE_NAME).Where("user_id=? and awards_type!=0").Order("time desc").GetSQL()
 	return myorm.Query(sql, userid)
 }
 
@@ -288,6 +288,7 @@ func (this *Award) Word(uid string, ok bool) (int, string, error) {
 
 // 获奖记录
 func (this *Award) Records(source string) ([]map[string]string, error) {
-	sql := "SELECT ar.awards_type,u.username from 221su_award_record ar left JOIN 221su_users u on ar.user_id = u.id where ar.awards_type!=0 and source=? limit 30"
+	sql := "SELECT ar.awards_type,u.username from 221su_award_record ar left JOIN 221su_users u on ar.user_id = u.id " +
+		"where ar.awards_type!=0 and source=? order by ar.time desc limit 30"
 	return myorm.Query(sql, source)
 }

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>活动</title>
+    <title>惊喜开学季,话费送不停</title>
     <link rel="stylesheet" href="./club/css/layout.css">
     <script src="./club/js/jquery-1.10.2.min.js"></script>
     <script src="./js/layer2/layer.js"></script>
@@ -35,7 +35,7 @@
                 <div class="record_c record_lottery">
                     <ul>
                         {{range $k, $el := .list1}}
-                        <li {{if eq $el.tag "1"}}class="even"{{end}}>{{$el.title}}</li>
+                        <li>{{$el.title}}</li>
                         {{end}}
                     </ul>
                 </div>
@@ -52,6 +52,7 @@
         <a name="two"></a>
         <h4>签到抽话费</h4>
         <input type="hidden" id="signhistory" value="{{.sign}}"/>
+        <input type="hidden" id="issign" value="{{if .is_sign}}1{{else}}0{{end}}"/>
         <ul>
             <li>第一天</li>
             <li>第二天</li>
@@ -67,7 +68,7 @@
             <dt>活动规则：</dt>
             <dd>1、活动时间：2016年9月1日-2016年9月25日;</dd>
             <dd>2、参与活动用户：江苏电信校园用户;</dd>
-            <dd>3、参与方式：用户登录成功后，可在当前签到页面进行签到，用户每天可签到1次，连续累计5天签到成功，可获得活动一中，抽话费机会一次，可累计;</dd>
+            <dd>3、参与方式：用户登录成功后，可在当前签到页面进行签到，用户每天可签到1次，连续累计5天签到成功，可获得大转盘抽奖机会一次，可累计;</dd>
             <dd>4、该活动需要登录后参与，请点击左上角头像登录;</dd>
             <dd>5、本活动最终解释权归江苏电信所有。</dd>
         </dl>
@@ -81,10 +82,10 @@
                 <p class="guess_c">
                     <span>请输入谜底</span>
                     <input type="text" value="" class="guess_an"/>
-                    <input type="submit" value="提交" class="guess_btn"/>
+                    <input type="button" value="提交" class="guess_btn"/>
                 </p>
-                <p class="prompt">* 本轮话费已抢完，请明日继续</p>
-                <p class="prompt">* 输入错误，请重试</p>
+                <!--<p class="prompt">* 本轮话费已抢完，请明日继续</p>-->
+                <!--<p class="prompt">* 输入错误，请重试</p>-->
             </form>
             <dl>
                 <dt>活动规则：</dt>
@@ -98,10 +99,10 @@
             </dl>
             <div class="record">
                 <h5>获奖记录</h5>
-                <div class="record_c record_lottery">
+                <div class="record_c record_phone">
                     <ul>
                         {{range $k, $el := .list2}}
-                        <li {{if eq $el.tag "1"}}class="even"{{end}}>{{$el.title}}</li>
+                        <li>{{$el.title}}</li>
                         {{end}}
                     </ul>
                 </div>
@@ -116,7 +117,7 @@
                 <dt>活动规则：</dt>
                 <dd>1、活动时间：2016年9月1日-2016年9月25日;</dd>
                 <dd>2、参与活动用户：江苏电信校园用户;</dd>
-                <dd>3、参与方式：点击右上角-海淘助手-点击免费体验，开启海外购物之旅;</dd>
+                <dd>3、参与方式：点击右上角-海淘助手-点击免费体验，尽享急速海淘;</dd>
                 <dd>4、每天开放1000个名额，先到先得;</dd>
                 <dd>5、该活动需要登录后参与，请点击左上角头像登录;</dd>
                 <dd>6、本活动最终解释权归江苏电信所有。</dd>
@@ -164,6 +165,7 @@
                     <a href="#">3</a>
                     <a href="#">下一页</a>
                 </p>
+                <a href="http://js.189.cn/pay/recharge.action" target="_blank" class="recharge">立即充值&gt;&gt;</a>
             </div>
             <input type="button" value="关闭"/>
         </div>
@@ -186,6 +188,17 @@
             <input type="button" value="关闭"/>
         </div>
     </div>
+</div>
+<div class="popup" id="pmsg">
+<div class="popup_down" style="">
+    <div class="whiteBg_opa"></div>
+    <div class="dtips_c">
+        <h6>提示</h6>
+        <p>该活动仅针对<em>校园版千兆浏览器</em>用户，请<a href="http://qianzhao.221su.com:9090/app?q=MQ%3D%3D&amp;t=MQ%3D%3D&amp;v=MS4wLjA%3D">下载</a>后登录参加；<br>
+            已下载用户可点击左上角头像进行登录</p>
+        <input type="button" value="关闭">
+    </div>
+</div>
 </div>
 <script id="mlist" type="text/javascript">
     {#{# for(var i = 0, len = d.length; i < len; i++){ }#}

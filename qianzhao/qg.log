@@ -398,3 +398,337 @@
 2016/08/21 00:49:01 award.go:147: [info] 5 0 
 2016/08/21 00:49:01 award.go:215: [info] 259905376646604581 11 
 2016/08/21 00:49:01 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a2f50 0xc4201574e0} <nil> 
+2016/08/22 09:33:51 index.go:78: [error] Get http://www.yilejie.com/index/interhot: dial tcp 127.0.0.1:80: getsockopt: connection refused 
+2016/08/22 09:33:51 index.go:82: [error] unexpected end of JSON input 
+2016/08/22 09:34:15 index.go:78: [error] Get http://www.yilejie.com/index/interhot: dial tcp 127.0.0.1:80: getsockopt: connection refused 
+2016/08/22 09:34:15 index.go:82: [error] unexpected end of JSON input 
+2016/08/22 09:56:58 user.go:63: [info] zb2141 
+2016/08/22 10:02:57 user.go:63: [info] zb2141 
+2016/08/22 10:03:02 user.go:63: [info] zb2141 
+2016/08/22 10:04:04 user.go:63: [info] zb2141 
+2016/08/22 10:04:59 user.go:63: [info] zb2141 
+2016/08/22 10:05:02 user.go:63: [info] zb2141 
+2016/08/22 10:07:39 user.go:63: [info] zb2141 
+2016/08/22 10:09:03 user.go:63: [info] zb2141 
+2016/08/22 10:20:49 user.go:63: [info] zb2141 
+2016/08/22 10:28:06 user.go:63: [info] zb2141 
+2016/08/22 10:29:07 user.go:63: [info] zb2141 
+2016/08/22 10:29:19 user.go:63: [info] zb2141 
+2016/08/22 11:17:09 user.go:63: [info] zb2141 
+2016/08/22 11:17:12 award.go:147: [info] 1 0 
+2016/08/22 15:16:19 user.go:63: [info] zb2141 
+2016/08/22 15:17:56 award.go:147: [info] 2 0 
+2016/08/22 15:18:11 award.go:147: [info] 3 0 
+2016/08/22 15:22:42 award.go:215: [info] 256734040369741090 12 
+2016/08/22 15:22:42 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc420339910} <nil> 
+2016/08/22 15:24:26 award.go:147: [info] 4 0 
+2016/08/22 15:24:26 award.go:147: [info] 1 1 
+2016/08/22 15:24:26 award.go:215: [info] 251324792160426075 13 
+2016/08/22 15:24:26 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc42016c460} <nil> 
+2016/08/22 15:24:44 award.go:147: [info] 4 0 
+2016/08/22 15:24:44 award.go:147: [info] 2 1 
+2016/08/22 15:24:44 award.go:215: [info] 254727733887533264 5802 
+2016/08/22 15:24:44 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc42000c8e0} <nil> 
+2016/08/22 15:26:55 award.go:147: [info] 4 0 
+2016/08/22 15:26:55 award.go:147: [info] 2 1 
+2016/08/22 15:26:55 award.go:147: [info] 1 3 
+2016/08/22 15:26:55 award.go:215: [info] 256187287617600621 5007 
+2016/08/22 15:26:55 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc4202fe810} <nil> 
+2016/08/22 15:27:09 award.go:147: [info] 4 0 
+2016/08/22 15:27:09 award.go:147: [info] 2 1 
+2016/08/22 15:27:09 award.go:147: [info] 1 2 
+2016/08/22 15:27:09 award.go:147: [info] 1 3 
+2016/08/22 15:27:09 award.go:215: [info] 250759406778474674 5008 
+2016/08/22 15:27:09 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc42000c830} <nil> 
+2016/08/22 15:27:20 award.go:147: [info] 4 0 
+2016/08/22 15:27:20 award.go:147: [info] 2 1 
+2016/08/22 15:27:20 award.go:147: [info] 2 2 
+2016/08/22 15:27:20 award.go:147: [info] 1 3 
+2016/08/22 15:27:20 award.go:215: [info] 254661276060559285 5009 
+2016/08/22 15:27:20 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc42016c6f0} <nil> 
+2016/08/22 15:27:54 award.go:147: [info] 4 0 
+2016/08/22 15:27:54 award.go:147: [info] 2 1 
+2016/08/22 15:27:54 award.go:147: [info] 3 2 
+2016/08/22 15:27:54 award.go:147: [info] 1 3 
+2016/08/22 15:27:54 award.go:215: [info] 257162999624314984 14 
+2016/08/22 15:27:54 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc4202ba380} <nil> 
+2016/08/22 15:28:25 award.go:147: [info] 4 0 
+2016/08/22 15:28:25 award.go:147: [info] 3 1 
+2016/08/22 15:28:25 award.go:147: [info] 3 2 
+2016/08/22 15:28:25 award.go:147: [info] 1 3 
+2016/08/22 15:28:25 award.go:215: [info] 258620711172448513 15 
+2016/08/22 15:28:25 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc42016d180} <nil> 
+2016/08/22 15:28:36 award.go:147: [info] 4 0 
+2016/08/22 15:28:36 award.go:147: [info] 4 1 
+2016/08/22 15:28:36 award.go:147: [info] 3 2 
+2016/08/22 15:28:36 award.go:147: [info] 1 3 
+2016/08/22 15:28:36 award.go:215: [info] 256074982311719852 16 
+2016/08/22 15:28:36 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc420338810} <nil> 
+2016/08/22 15:29:20 award.go:147: [info] 4 0 
+2016/08/22 15:29:20 award.go:147: [info] 5 1 
+2016/08/22 15:29:20 award.go:147: [info] 3 2 
+2016/08/22 15:29:20 award.go:147: [info] 1 3 
+2016/08/22 15:29:20 award.go:215: [info] 255402145845011387 5803 
+2016/08/22 15:29:20 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc42016c550} <nil> 
+2016/08/22 15:29:30 award.go:147: [info] 4 0 
+2016/08/22 15:29:30 award.go:147: [info] 5 1 
+2016/08/22 15:29:30 award.go:147: [info] 3 2 
+2016/08/22 15:29:30 award.go:147: [info] 2 3 
+2016/08/22 15:29:30 award.go:215: [info] 253181834011754323 17 
+2016/08/22 15:29:30 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc42016cee0} <nil> 
+2016/08/22 15:29:37 award.go:147: [info] 4 0 
+2016/08/22 15:29:37 award.go:147: [info] 6 1 
+2016/08/22 15:29:37 award.go:147: [info] 3 2 
+2016/08/22 15:29:37 award.go:147: [info] 2 3 
+2016/08/22 15:29:37 award.go:215: [info] 256023433720094861 18 
+2016/08/22 15:29:37 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc4203383c0} <nil> 
+2016/08/22 15:35:05 award.go:147: [info] 4 0 
+2016/08/22 15:35:05 award.go:147: [info] 7 1 
+2016/08/22 15:35:05 award.go:147: [info] 3 2 
+2016/08/22 15:35:05 award.go:147: [info] 2 3 
+2016/08/22 15:35:05 award.go:215: [info] 250495615249624487 5804 
+2016/08/22 15:35:05 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b8e70 0xc4203fe6e0} <nil> 
+2016/08/22 15:56:28 user.go:63: [info] zb2141 
+2016/08/22 15:58:20 user.go:63: [info] zb2141 
+2016/08/22 16:05:24 user.go:63: [info] zb2141 
+2016/08/22 16:05:59 user.go:63: [info] zb2141 
+2016/08/22 16:06:50 user.go:63: [info] zb2141 
+2016/08/22 16:08:41 user.go:63: [info] zb2141 
+2016/08/22 16:09:30 user.go:63: [info] zb2141 
+2016/08/22 16:11:17 award.go:147: [info] 4 0 
+2016/08/22 16:11:17 award.go:147: [info] 7 1 
+2016/08/22 16:11:17 award.go:147: [info] 3 2 
+2016/08/22 16:11:17 award.go:147: [info] 3 3 
+2016/08/22 16:11:17 award.go:215: [info] 256724279006643480 5805 
+2016/08/22 16:11:17 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42029ddc0 0xc4202a85d0} <nil> 
+2016/08/22 16:11:49 user.go:63: [info] zb2141 
+2016/08/22 16:12:58 user.go:63: [info] zb2141 
+2016/08/22 16:13:44 user.go:63: [info] zb2141 
+2016/08/22 16:14:54 user.go:63: [info] zb2141 
+2016/08/22 16:16:45 user.go:63: [info] zb2141 
+2016/08/22 16:17:08 user.go:63: [info] zb2141 
+2016/08/22 16:18:00 user.go:63: [info] zb2141 
+2016/08/22 16:18:59 user.go:63: [info] zb2141 
+2016/08/22 16:19:58 user.go:63: [info] zb2141 
+2016/08/22 16:20:23 user.go:63: [info] zb2141 
+2016/08/22 16:33:40 user.go:63: [info] zb2141 
+2016/08/22 16:34:00 award.go:147: [info] 4 0 
+2016/08/22 16:34:00 award.go:147: [info] 7 1 
+2016/08/22 16:34:00 award.go:147: [info] 3 2 
+2016/08/22 16:34:00 award.go:147: [info] 4 3 
+2016/08/22 16:34:00 award.go:215: [info] 253501167804940836 5010 
+2016/08/22 16:34:00 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202acaf0 0xc4203f26e0} <nil> 
+2016/08/22 17:18:16 user.go:63: [info] zb2141 
+2016/08/22 17:18:22 award.go:147: [info] 4 0 
+2016/08/22 17:18:22 award.go:147: [info] 7 1 
+2016/08/22 17:18:22 award.go:147: [info] 4 2 
+2016/08/22 17:18:22 award.go:147: [info] 4 3 
+2016/08/22 17:18:22 award.go:215: [info] 250142339508661363 5011 
+2016/08/22 17:18:22 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b4930 0xc4203aa750} <nil> 
+2016/08/22 17:18:33 award.go:147: [info] 4 0 
+2016/08/22 17:18:33 award.go:147: [info] 7 1 
+2016/08/22 17:18:33 award.go:147: [info] 5 2 
+2016/08/22 17:18:33 award.go:147: [info] 4 3 
+2016/08/22 17:18:33 award.go:215: [info] 251103410668779116 5012 
+2016/08/22 17:18:33 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b4930 0xc4203ab0c0} <nil> 
+2016/08/22 17:18:40 award.go:147: [info] 4 0 
+2016/08/22 17:18:40 award.go:147: [info] 7 1 
+2016/08/22 17:18:40 award.go:147: [info] 6 2 
+2016/08/22 17:18:40 award.go:147: [info] 4 3 
+2016/08/22 17:18:40 award.go:215: [info] 259602146960950899 5806 
+2016/08/22 17:18:40 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b4930 0xc4203ab9f0} <nil> 
+2016/08/22 17:18:51 award.go:147: [info] 4 0 
+2016/08/22 17:18:51 award.go:147: [info] 7 1 
+2016/08/22 17:18:51 award.go:147: [info] 6 2 
+2016/08/22 17:18:51 award.go:147: [info] 5 3 
+2016/08/22 17:18:51 award.go:215: [info] 251425329962519575 5807 
+2016/08/22 17:18:51 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b4930 0xc4203ac6f0} <nil> 
+2016/08/22 17:19:01 award.go:147: [info] 4 0 
+2016/08/22 17:19:01 award.go:147: [info] 7 1 
+2016/08/22 17:19:01 award.go:147: [info] 6 2 
+2016/08/22 17:19:01 award.go:147: [info] 6 3 
+2016/08/22 17:19:01 award.go:215: [info] 250033570331499180 5808 
+2016/08/22 17:19:01 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b4930 0xc4203ad070} <nil> 
+2016/08/22 17:19:13 award.go:147: [info] 4 0 
+2016/08/22 17:19:13 award.go:147: [info] 7 1 
+2016/08/22 17:19:13 award.go:147: [info] 6 2 
+2016/08/22 17:19:13 award.go:147: [info] 7 3 
+2016/08/22 17:19:13 award.go:215: [info] 258791596247351780 19 
+2016/08/22 17:19:13 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b4930 0xc4203ad9a0} <nil> 
+2016/08/22 17:26:31 user.go:63: [info] zb2141 
+2016/08/22 17:26:35 award.go:147: [info] 4 0 
+2016/08/22 17:26:35 award.go:147: [info] 8 1 
+2016/08/22 17:26:35 award.go:147: [info] 6 2 
+2016/08/22 17:26:35 award.go:147: [info] 7 3 
+2016/08/22 17:26:35 award.go:215: [info] 255763183458964648 5013 
+2016/08/22 17:26:35 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a4a10 0xc420157c90} <nil> 
+2016/08/22 17:28:11 user.go:63: [info] zb2141 
+2016/08/22 17:28:25 user.go:63: [info] zb2141 
+2016/08/22 17:31:22 user.go:63: [info] zb2141 
+2016/08/22 17:32:24 user.go:63: [info] zb2141 
+2016/08/22 17:32:28 award.go:147: [info] 4 0 
+2016/08/22 17:32:28 award.go:147: [info] 8 1 
+2016/08/22 17:32:28 award.go:147: [info] 7 2 
+2016/08/22 17:32:28 award.go:147: [info] 7 3 
+2016/08/22 17:32:28 award.go:215: [info] 255520419370271585 5809 
+2016/08/22 17:32:28 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a6a10 0xc4203a3060} <nil> 
+2016/08/22 17:33:34 award.go:147: [info] 4 0 
+2016/08/22 17:33:34 award.go:147: [info] 8 1 
+2016/08/22 17:33:34 award.go:147: [info] 7 2 
+2016/08/22 17:33:34 award.go:147: [info] 8 3 
+2016/08/22 17:33:34 award.go:215: [info] 257080903918840958 5810 
+2016/08/22 17:33:34 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a6a10 0xc42036c540} <nil> 
+2016/08/22 17:33:52 award.go:147: [info] 4 0 
+2016/08/22 17:33:52 award.go:147: [info] 8 1 
+2016/08/22 17:33:52 award.go:147: [info] 7 2 
+2016/08/22 17:33:52 award.go:147: [info] 9 3 
+2016/08/22 17:33:52 award.go:215: [info] 258039500910695864 5014 
+2016/08/22 17:33:52 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a6a10 0xc42036cef0} <nil> 
+2016/08/22 17:35:57 user.go:63: [info] zb2141 
+2016/08/22 17:39:35 award.go:215: [info] 255693196094510242 20 
+2016/08/22 17:39:35 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b7030 0xc420362410} <nil> 
+2016/08/22 17:40:13 award.go:147: [info] 4 0 
+2016/08/22 17:40:13 award.go:147: [info] 9 1 
+2016/08/22 17:40:13 award.go:147: [info] 8 2 
+2016/08/22 17:40:13 award.go:147: [info] 9 3 
+2016/08/22 17:40:13 award.go:215: [info] 255228235620710480 5015 
+2016/08/22 17:40:13 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202b7030 0xc4201565f0} <nil> 
+2016/08/22 17:41:06 award.go:147: [info] 4 0 
+2016/08/22 17:41:06 award.go:147: [info] 9 1 
+2016/08/22 17:41:06 award.go:147: [info] 9 2 
+2016/08/22 17:41:06 award.go:147: [info] 9 3 
+2016/08/22 17:44:16 user.go:63: [info] zb2141 
+2016/08/22 17:44:24 award.go:147: [info] 5 0 
+2016/08/22 17:44:24 award.go:147: [info] 9 1 
+2016/08/22 17:44:24 award.go:147: [info] 9 2 
+2016/08/22 17:44:24 award.go:147: [info] 9 3 
+2016/08/22 17:44:49 award.go:147: [info] 6 0 
+2016/08/22 17:44:49 award.go:147: [info] 9 1 
+2016/08/22 17:44:49 award.go:147: [info] 9 2 
+2016/08/22 17:44:49 award.go:147: [info] 9 3 
+2016/08/22 17:45:40 user.go:63: [info] zb2141 
+2016/08/22 17:45:42 award.go:147: [info] 7 0 
+2016/08/22 17:45:42 award.go:147: [info] 9 1 
+2016/08/22 17:45:42 award.go:147: [info] 9 2 
+2016/08/22 17:45:42 award.go:147: [info] 9 3 
+2016/08/22 17:46:01 user.go:63: [info] zb2141 
+2016/08/22 17:46:04 award.go:147: [info] 8 0 
+2016/08/22 17:46:04 award.go:147: [info] 9 1 
+2016/08/22 17:46:04 award.go:147: [info] 9 2 
+2016/08/22 17:46:04 award.go:147: [info] 9 3 
+2016/08/22 17:46:37 award.go:147: [info] 9 0 
+2016/08/22 17:46:37 award.go:147: [info] 9 1 
+2016/08/22 17:46:37 award.go:147: [info] 9 2 
+2016/08/22 17:46:37 award.go:147: [info] 9 3 
+2016/08/22 17:46:37 award.go:215: [info] 253789585644033884 21 
+2016/08/22 17:46:37 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420297f80 0xc420414690} <nil> 
+2016/08/22 17:46:46 award.go:147: [info] 9 0 
+2016/08/22 17:46:46 award.go:147: [info] 10 1 
+2016/08/22 17:46:46 award.go:147: [info] 9 2 
+2016/08/22 17:46:46 award.go:147: [info] 9 3 
+2016/08/22 17:46:46 award.go:215: [info] 256422613686608038 22 
+2016/08/22 17:46:46 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420297f80 0xc420415150} <nil> 
+2016/08/22 17:46:56 award.go:147: [info] 9 0 
+2016/08/22 17:46:56 award.go:147: [info] 11 1 
+2016/08/22 17:46:56 award.go:147: [info] 9 2 
+2016/08/22 17:46:56 award.go:147: [info] 9 3 
+2016/08/22 17:46:56 award.go:215: [info] 251957335905740973 23 
+2016/08/22 17:46:56 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420297f80 0xc420415a80} <nil> 
+2016/08/22 17:47:08 award.go:147: [info] 9 0 
+2016/08/22 17:47:08 award.go:147: [info] 12 1 
+2016/08/22 17:47:08 award.go:147: [info] 9 2 
+2016/08/22 17:47:08 award.go:147: [info] 9 3 
+2016/08/22 17:47:08 award.go:215: [info] 257478014091606598 24 
+2016/08/22 17:47:08 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420297f80 0xc42015f1e0} <nil> 
+2016/08/22 17:47:33 award.go:147: [info] 9 0 
+2016/08/22 17:47:33 award.go:147: [info] 13 1 
+2016/08/22 17:47:33 award.go:147: [info] 9 2 
+2016/08/22 17:47:33 award.go:147: [info] 9 3 
+2016/08/22 17:47:51 award.go:147: [info] 10 0 
+2016/08/22 17:47:51 award.go:147: [info] 13 1 
+2016/08/22 17:47:51 award.go:147: [info] 9 2 
+2016/08/22 17:47:51 award.go:147: [info] 9 3 
+2016/08/22 17:47:51 award.go:215: [info] 252177494406427085 25 
+2016/08/22 17:47:51 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc420297f80 0xc4203943c0} <nil> 
+2016/08/22 17:48:11 award.go:147: [info] 10 0 
+2016/08/22 17:48:11 award.go:147: [info] 14 1 
+2016/08/22 17:48:11 award.go:147: [info] 9 2 
+2016/08/22 17:48:11 award.go:147: [info] 9 3 
+2016/08/22 17:49:12 award.go:147: [info] 11 0 
+2016/08/22 17:49:12 award.go:147: [info] 14 1 
+2016/08/22 17:49:12 award.go:147: [info] 9 2 
+2016/08/22 17:49:12 award.go:147: [info] 9 3 
+2016/08/22 17:50:49 user.go:63: [info] zb2141 
+2016/08/22 17:50:51 award.go:147: [info] 12 0 
+2016/08/22 17:50:51 award.go:147: [info] 14 1 
+2016/08/22 17:50:51 award.go:147: [info] 9 2 
+2016/08/22 17:50:51 award.go:147: [info] 9 3 
+2016/08/22 17:52:14 user.go:63: [info] zb2141 
+2016/08/22 17:52:16 award.go:147: [info] 13 0 
+2016/08/22 17:52:16 award.go:147: [info] 14 1 
+2016/08/22 17:52:16 award.go:147: [info] 9 2 
+2016/08/22 17:52:16 award.go:147: [info] 9 3 
+2016/08/22 17:54:43 award.go:147: [info] 14 0 
+2016/08/22 17:54:43 award.go:147: [info] 14 1 
+2016/08/22 17:54:43 award.go:147: [info] 9 2 
+2016/08/22 17:54:43 award.go:147: [info] 9 3 
+2016/08/22 17:54:43 award.go:215: [info] 250080562672998810 26 
+2016/08/22 17:54:43 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42029a000 0xc4202bc910} <nil> 
+2016/08/22 17:58:18 user.go:63: [info] zb2141 
+2016/08/22 17:58:20 award.go:147: [info] 14 0 
+2016/08/22 17:58:20 award.go:147: [info] 15 1 
+2016/08/22 17:58:20 award.go:147: [info] 9 2 
+2016/08/22 17:58:20 award.go:147: [info] 9 3 
+2016/08/22 18:03:28 award.go:147: [info] 15 0 
+2016/08/22 18:03:28 award.go:147: [info] 15 1 
+2016/08/22 18:03:28 award.go:147: [info] 9 2 
+2016/08/22 18:03:28 award.go:147: [info] 9 3 
+2016/08/22 18:06:00 user.go:63: [info] zb2141 
+2016/08/22 18:06:02 award.go:147: [info] 16 0 
+2016/08/22 18:06:02 award.go:147: [info] 15 1 
+2016/08/22 18:06:02 award.go:147: [info] 9 2 
+2016/08/22 18:06:02 award.go:147: [info] 9 3 
+2016/08/22 18:06:18 award.go:147: [info] 17 0 
+2016/08/22 18:06:18 award.go:147: [info] 15 1 
+2016/08/22 18:06:18 award.go:147: [info] 9 2 
+2016/08/22 18:06:18 award.go:147: [info] 9 3 
+2016/08/22 18:06:28 award.go:147: [info] 18 0 
+2016/08/22 18:06:28 award.go:147: [info] 15 1 
+2016/08/22 18:06:28 award.go:147: [info] 9 2 
+2016/08/22 18:06:28 award.go:147: [info] 9 3 
+2016/08/22 18:06:28 award.go:215: [info] 253710002456839316 5016 
+2016/08/22 18:06:28 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc4202a4e70 0xc4202b3ad0} <nil> 
+2016/08/22 18:09:55 user.go:63: [info] zb2141 
+2016/08/22 18:10:09 award.go:147: [info] 18 0 
+2016/08/22 18:10:09 award.go:147: [info] 15 1 
+2016/08/22 18:10:09 award.go:147: [info] 10 2 
+2016/08/22 18:10:09 award.go:147: [info] 9 3 
+2016/08/22 18:33:52 user.go:63: [info] zb2141 
+2016/08/22 18:35:01 user.go:63: [info] zb2141 
+2016/08/22 18:39:54 award.go:147: [info] 19 0 
+2016/08/22 18:39:54 award.go:147: [info] 15 1 
+2016/08/22 18:39:54 award.go:147: [info] 10 2 
+2016/08/22 18:39:54 award.go:147: [info] 9 3 
+2016/08/22 18:40:05 award.go:147: [info] 20 0 
+2016/08/22 18:40:05 award.go:147: [info] 15 1 
+2016/08/22 18:40:05 award.go:147: [info] 10 2 
+2016/08/22 18:40:05 award.go:147: [info] 9 3 
+2016/08/22 18:40:16 award.go:147: [info] 21 0 
+2016/08/22 18:40:16 award.go:147: [info] 15 1 
+2016/08/22 18:40:16 award.go:147: [info] 10 2 
+2016/08/22 18:40:16 award.go:147: [info] 9 3 
+2016/08/22 18:46:57 award.go:147: [info] 22 0 
+2016/08/22 18:46:57 award.go:147: [info] 15 1 
+2016/08/22 18:46:57 award.go:147: [info] 10 2 
+2016/08/22 18:46:57 award.go:147: [info] 9 3 
+2016/08/22 18:46:57 award.go:215: [info] 257168028800679551 5811 
+2016/08/22 18:46:57 award.go:219: [info] UPDATE 221su_recharge_code SET status=? WHERE id=? {0xc42029c770 0xc42036ca90} <nil> 
+2016/08/23 15:42:20 user.go:63: [info] zb2141 
+2016/08/24 21:05:03 user.go:63: [info] zb2141 
+2016/08/24 21:08:33 user.go:63: [info] zb2141 
+2016/08/24 21:22:46 broadband.go:124: [info] -998|| 
+2016/08/24 21:22:46 statistics.go:135: [warning] &{5000 程序发生异常} 
+2016/08/24 21:27:28 user.go:63: [info] zb2141 
+2016/08/25 09:45:43 broadband.go:124: [info] -998|| 
+2016/08/25 09:45:43 statistics.go:135: [warning] &{5000 程序发生异常} 
+2016/08/25 19:50:16 user.go:63: [info] zb2141 

@@ -151,3 +151,12 @@ func (this *HTCard) UpdateCard(info HTCard) bool {
 
 	return false
 }
+
+func (this *HTCard) UseCount(date int) (int, error) {
+	sql := myorm.BSQL().Select("count(*) as num").From(HT_CARD_TABLE_NAME).Where("date=?").GetSQL()
+	info, err := myorm.Get(sql, date)
+	if err != nil || len(info) == 0 {
+		return 0, err
+	}
+	return convert.ToInt(info["num"]), nil
+}

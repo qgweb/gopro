@@ -63,32 +63,37 @@ $(function () {
 $(function () {
     function sign(his) {
         var sign = his.split("");
+        var dayAry = ["", "一", "二", "三", "四", "五"]
         if (sign.length > 0) {
             for (var i = 0; i < sign.length; i++) {
                 var liobj = $('.container02 ul li');
                 if (sign[i] == "1") {
                     liobj.eq(i).addClass("sign").html("<i></i><span>已签到</span>");
                 } else {
-                    liobj.eq(i).removeClass("sign").html("第" + (i + 1) + "天");
+                    liobj.eq(i).removeClass("sign").html("第" + dayAry[(i + 1)] + "天");
                 }
             }
         }
-        if (sign.length == 5) {
+        if (his == "11111") {
+            $('.sign_btn').addClass('already');
+        }
+
+        if ($('#issign').val() == "1") {
             $('.sign_btn').addClass('already');
         }
     }
 
     sign($('#signhistory').val());
-    $('.sign_btn').click(function (e) {
-        if ($(e).attr("class").indexof("already") != -1) {
-            return;
-        }
-        $(e).attr("css").contains("already")
+    $('.sign_btn').click(function () {
         $.ajax({
             'url': "/club/sign",
             'dataType': 'json',
             'success': function (data) {
-                if (data.code == "301" || data.ret == "-1") {
+                if (data.code == "301") {
+                    $('#pmsg').show();
+                    return;
+                }
+                if (data.ret == "-1") {
                     layer.msg(data.msg, {icon: 5});
                     return;
                 }
@@ -123,7 +128,11 @@ $(function () {
             'type': "post",
             'data': {w: an},
             'success': function (data) {
-                if (data.code == "301" || data.ret == "-1") {
+                if (data.code == "301") {
+                    $('#pmsg').show();
+                    return;
+                }
+                if (data.ret == "-1") {
                     layer.msg(data.msg, {icon: 5});
                     return;
                 }
@@ -136,7 +145,13 @@ $(function () {
                     }
                     if (msgData[data.data.n]) {
                         $('.popup').hide();
+                        $('.popup .wtips_list dl').show();
+                        $('.popup .wtips_list p').css("margin-top", "0px");
                         $('.popup .wtips_list p').html(msgData[data.data.n]);
+                        if (!data.data.c) {
+                            $('.popup .wtips_list dl').hide();
+                            $('.popup .wtips_list p').css("margin-top", "37px");
+                        }
                         $('.popup .wtips_list dd a').html(data.data.c);
                         $('#pwin').show();
                     }
@@ -197,12 +212,21 @@ $(function () {
                     }
                     rotateFunc($('.draw_chassis div'), 45 * resl + 22.5, function () {
                         $('.popup').hide();
+                        $('.popup .wtips_list dl').show();
+                        $('.popup .wtips_list p').css("margin-top", "0px");
+                        if (!d.rcode) {
+                            $('.popup .wtips_list dl').hide();
+                            $('.popup .wtips_list p').css("margin-top", "37px");
+                        }
                         $('.popup .wtips_list p').html(d.res);
                         $('.popup .wtips_list dd a').html(d.rcode);
                         $('#pwin').show();
                         return;
                     })
-                } else if (d.code == 301 || d.ret == -1) {
+                } else if (d.code == 301) {
+                    $('#pmsg').show();
+                    return; 
+                } else if (d.ret == -1) {
                     layer.msg(d.msg, {icon: 5});
                 }
             }
@@ -227,12 +251,12 @@ $(function () {
                     return;
                 }
                 $('.popup').hide();
-                laytpl($('#mlist').html()).render(data.slice(0, 3), function (html) {
+                laytpl($('#mlist').html()).render(data.slice(0, 5), function (html) {
                     $('.precord_list table tbody').html(html);
                 });
                 //分页栏
                 var h = '<a href="#" tg="1">上一页</a>';
-                for (var i = 0; i < Math.ceil(data.length / 3); i++) {
+                for (var i = 0; i < Math.ceil(data.length / 5); i++) {
                     var s = 'class="current"';
                     h += '<a href="#" tg="o" ' + (i == 0 ? s : "") + '>' + (i + 1) + '</a>';
                 }
@@ -244,8 +268,8 @@ $(function () {
                 $('.page_list a').click(function () {
                     var obj = $('.page_list a');
                     var cindex = 0;
-                    var size = 3;
-                    var total = Math.ceil(window.my_record.length / 3);
+                    var size = 5;
+                    var total = Math.ceil(window.my_record.length / size);
                     var pobj = null;
                     var nobj = null;
                     var sobj = this;

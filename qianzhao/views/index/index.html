@@ -6,51 +6,65 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>千兆浏览器首页</title>
-    <link rel="stylesheet" href="./main/css/style.css">
+    <link rel="stylesheet" href="./main/css/style.css" id="link">
+    <script type="text/javascript" src="/js/jquery.cookie.js"></script>
 </head>
 <body>
-<div class="wrapper">
+<div class="wrapper" style="">
     <div id="header">
-        <img src="./main/img/logo.jpg" alt="" class="logo">
+        <img src="./main/img/logo.png" alt="" class="logo">
         <div class="search">
             <form action="https://www.baidu.com/s" method="get" id="frm">
-            <input type="text" value="" name="word"/>
-            <a href="#" onclick="document.getElementById('frm').submit();">百度一下</a>
+                <input type="text" value="" name="word"/>
+                <a href="#" onclick="document.getElementById('frm').submit();">百度一下</a>
             </form>
         </div>
         <a href="#" class="collect" onclick="AddFavorite()">
             <i class="ico_collect"></i>
             <span>收藏本站</span>
         </a>
-        <span class="date">7月22日&nbsp;周五</span>
+        <span class="date"></span>
     </div>
 
     <div class="banner">
-        <a href="#" class="banner_list">
-            <img src="./main/img/banner.jpg" alt="">
-        </a>
+        <ul class="banner_list">
+            <li class="current">
+                <a href="/club" target="_blank">
+                    <img src="./main/img/banner01.jpg" alt="" id="bimg1">
+                </a>
+            </li>
+            <li>
+                <a href="#" target="_blank">
+                    <img src="./main/img/banner02.jpg" alt="" id="bimg2">
+                </a>
+            </li>
+        </ul>
+        <p class="banner_point">
+            <a href="#" class="active"></a>
+            <a href="#"></a>
+        </p>
         <div class="module">
             <ul>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href="http://js.189.cn/service/bill" target="_blank" title="">
                         <i class="ico_huafei"></i>
                         <span>话费查询</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href="http://js.189.cn/service/bill?tabFlag=billing2" target="_blank" title="">
                         <i class="ico_liuliang"></i>
                         <span>流量查询</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href=" http://js.189.cn/service/bill?tabFlag=billing1" target="_blank" title="">
                         <i class="ico_zhangdan"></i>
                         <span>账单查询</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href="http://y.jf.189.cn/home/index.aspx" target="_blank" title="">
                         <i class="ico_jifen"></i>
                         <span>积分兑换</span>
                     </a>
@@ -58,25 +72,25 @@
             </ul>
             <ul>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href="http://js.189.cn/service/transaction?tabFlag=kblyw" target="_blank" title="">
                         <i class="ico_yewu"></i>
                         <span>业务办理</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href="http://www.189.cn/js/liuliang/?intaid=jt-sy-czg-01-liuliangchaoshi" target="_blank" title="">
                         <i class="ico_chaoshi"></i>
                         <span>流量超市</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href="http://www.189.cn/zhigo/?intaid=jt-sy-czg-03-zhigo" target="_blank" title="">
                         <i class="ico_zhineng"></i>
                         <span>智能专区</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" target="_blank" title="">
+                    <a href="http://js.189.cn/3gTo4g" target="_blank" title="">
                         <i class="ico_sheng"></i>
                         <span>3G升4G</span>
                     </a>
@@ -124,49 +138,64 @@
             <div class="website_list" style="display:block;">
                 <ul>
                     <li>
-                        <a href="http://union.dangdang.com/transfer.php?from=P-328528-99&ad_type=10&sys_id=1&backurl=http%3A%2F%2Fwww.dangdang.com" target="_blank" title="当当网">当当网</a>
+                        <a href="http://union.dangdang.com/transfer.php?from=P-328528-99&ad_type=10&sys_id=1&backurl=http%3A%2F%2Fwww.dangdang.com"
+                           target="_blank" title="当当网">当当网</a>
                     </li>
                     <li>
-                        <a href="http://www.mogujie.com/cps/open/track?uid=12inmby&feedback=99&channel=&target=http%3A%2F%2Fwww.mogujie.com%2F" target="_blank" title="蘑菇街">蘑菇街</a>
+                        <a href="http://www.mogujie.com/cps/open/track?uid=12inmby&feedback=99&channel=&target=http%3A%2F%2Fwww.mogujie.com%2F"
+                           target="_blank" title="蘑菇街">蘑菇街</a>
                     </li>
                     <li>
-                        <a href="http://www.meilishuo.com/?nmref=NM_s10149_0_99&channel=40106&pstrc=NM_s10149_0_9" target="_blank" title="美丽街">美丽街</a>
+                        <a href="http://www.meilishuo.com/?nmref=NM_s10149_0_99&channel=40106&pstrc=NM_s10149_0_9"
+                           target="_blank" title="美丽街">美丽街</a>
                     </li>
                     <li>
-                        <a href="https://click.yhd.com/?ut=10680917&s=Mjc0NDc5ODgyNTJjOWFkMzQ3YmU5ODc4MGZiMGViNTc1NWE3NjAwN2Y0MDZmMDMyYzIwZTMzNmE0ZjRlZTAyYzg1NTc5YmM3MTdlYWU2NDAzZmE4NDRmYWFlNjY5NWVj&cv=1&uid=99" target="_blank" title="1号店">1号店</a>
+                        <a href="https://click.yhd.com/?ut=10680917&s=Mjc0NDc5ODgyNTJjOWFkMzQ3YmU5ODc4MGZiMGViNTc1NWE3NjAwN2Y0MDZmMDMyYzIwZTMzNmE0ZjRlZTAyYzg1NTc5YmM3MTdlYWU2NDAzZmE4NDRmYWFlNjY5NWVj&cv=1&uid=99"
+                           target="_blank" title="1号店">1号店</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=2mLErntOWZLErI6H2mLErn2s6ZLF6nDO6l4H6EDmrJVcMn4CRQqerI6HMNtF1NwOMNPH2L--&e=c&t=http://www.jd.com/" target="_blank" title="京东商城">京东商城</a>
+                        <a href="http://p.yiqifa.com/n?k=2mLErntOWZLErI6H2mLErn2s6ZLF6nDO6l4H6EDmrJVcMn4CRQqerI6HMNtF1NwOMNPH2L--&e=c&t=http://www.jd.com/"
+                           target="_blank" title="京东商城">京东商城</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=2mLErn2F1n4H2mLErI6HYPUd3QAfrnDLWNbH1nD76ERSrn2q6lKFrI6HkQLErn2e3EWm6EB9rIW-&e=c&t=http://www.vip.com" target="_blank" title="唯品会">唯品会</a>
+                        <a href="http://p.yiqifa.com/n?k=2mLErn2F1n4H2mLErI6HYPUd3QAfrnDLWNbH1nD76ERSrn2q6lKFrI6HkQLErn2e3EWm6EB9rIW-&e=c&t=http://www.vip.com"
+                           target="_blank" title="唯品会">唯品会</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=Nt7l37BfrI6H6N3OWcLErI6H2mLErnD76NyH1nD7WljSrn2F6EDerI6HkQLErntL6lPbWOgwrIW-&e=c&t=http://www.suning.com/" target="_blank" title="苏宁易购">苏宁易购</a>
+                        <a href="http://p.yiqifa.com/n?k=Nt7l37BfrI6H6N3OWcLErI6H2mLErnD76NyH1nD7WljSrn2F6EDerI6HkQLErntL6lPbWOgwrIW-&e=c&t=http://www.suning.com/"
+                           target="_blank" title="苏宁易购">苏宁易购</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=2mLErnt71N2SrI6H2mLErI6H6NKm1QLF6nDO6l4H6l3eWN6HWKPfgsBMrZyH2mLL6JtF3lby1QLE&e=c&t=http://www.gome.com.cn" target="_blank" title="国美电器">国美电器</a>
+                        <a href="http://p.yiqifa.com/n?k=2mLErnt71N2SrI6H2mLErI6H6NKm1QLF6nDO6l4H6l3eWN6HWKPfgsBMrZyH2mLL6JtF3lby1QLE&e=c&t=http://www.gome.com.cn"
+                           target="_blank" title="国美电器">国美电器</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=2mLErn2L6E2SrI6H2mLErI6H6EKO1QLF6nDS1N4HWNWqWl3qrI6HkQLErJgb6NWqWJWmrnb7MKU3WcL-&e=c&t=http://www.vmall.com" target="_blank" title="华为商城">华为商城</a>
+                        <a href="http://p.yiqifa.com/n?k=2mLErn2L6E2SrI6H2mLErI6H6EKO1QLF6nDS1N4HWNWqWl3qrI6HkQLErJgb6NWqWJWmrnb7MKU3WcL-&e=c&t=http://www.vmall.com"
+                           target="_blank" title="华为商城">华为商城</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=2mLErnDLWE3LrI6H2mLErBBPU7yA1QLq6ltm6mLF6nDS1N4H6nDFWlRqrI6HkQLErn681nweMEKmrIW-&e=c&t=http://www.mi.com/index.php" target="_blank" title="小米商城">小米商城</a>
+                        <a href="http://p.yiqifa.com/n?k=2mLErnDLWE3LrI6H2mLErBBPU7yA1QLq6ltm6mLF6nDS1N4H6nDFWlRqrI6HkQLErn681nweMEKmrIW-&e=c&t=http://www.mi.com/index.php"
+                           target="_blank" title="小米商城">小米商城</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=2mLErnt71ZLErI6H2mqvDsyyWQ6HWEDernz76nWmWcLOWlXH2mqerI6H1nWq653m156H2L--&e=c&t=http://redbaby.suning.com" target="_blank" title="红孩子">红孩子</a>
+                        <a href="http://p.yiqifa.com/n?k=2mLErnt71ZLErI6H2mqvDsyyWQ6HWEDernz76nWmWcLOWlXH2mqerI6H1nWq653m156H2L--&e=c&t=http://redbaby.suning.com"
+                           target="_blank" title="红孩子">红孩子</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=gcyqPJqtrI6H6n2sWEUH2mLErI6H2mLq6lwq6cLF6nDl6l4H6N2l1NwSrI6HkQLErJgEMNRS6O3mrIW-&e=c&t=http://m.mia.com" target="_blank" title="蜜芽">蜜芽</a>
+                        <a href="http://p.yiqifa.com/n?k=gcyqPJqtrI6H6n2sWEUH2mLErI6H2mLq6lwq6cLF6nDl6l4H6N2l1NwSrI6HkQLErJgEMNRS6O3mrIW-&e=c&t=http://m.mia.com"
+                           target="_blank" title="蜜芽">蜜芽</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=gn6n5EbZrI6HWNj76E4H2mLErI6H2mLsWE2mrnz76n2mWmLsWNDs6cLErZyH2mq81NRs1NjS3cLE&t=http://www.jumei.com/" target="_blank" title="聚美优品">聚美优品</a>
+                        <a href="http://p.yiqifa.com/n?k=gn6n5EbZrI6HWNj76E4H2mLErI6H2mLsWE2mrnz76n2mWmLsWNDs6cLErZyH2mq81NRs1NjS3cLE&t=http://www.jumei.com/"
+                           target="_blank" title="聚美优品">聚美优品</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=gcyLDmgOrI6HWEj71n6H2mLErI6H2mLS1NbH1nD7WERlrnRL1ZLErZyH2mLO35tq1J6wWQLE&t=http://www.moonbasa.com" target="_blank" title="梦巴莎">梦巴莎</a>
+                        <a href="http://p.yiqifa.com/n?k=gcyLDmgOrI6HWEj71n6H2mLErI6H2mLS1NbH1nD7WERlrnRL1ZLErZyH2mLO35tq1J6wWQLE&t=http://www.moonbasa.com"
+                           target="_blank" title="梦巴莎">梦巴莎</a>
                     </li>
                     <li>
-                        <a href="http://p.yiqifa.com/n?k=KKyOpyUfrI6H6nts1nXH2mLErI6H2mLq6lKe1ZLF6nDS6l6H6nzS1nD7rI6HkQLErn2F6nUyW927rIW-&t=http://www.feiniu.com" target="_blank" title="飞牛网">飞牛网</a>
+                        <a href="http://p.yiqifa.com/n?k=KKyOpyUfrI6H6nts1nXH2mLErI6H2mLq6lKe1ZLF6nDS6l6H6nzS1nD7rI6HkQLErn2F6nUyW927rIW-&t=http://www.feiniu.com"
+                           target="_blank" title="飞牛网">飞牛网</a>
                     </li>
                     <li>
                         <a href="http://www.sina.com.cn/" target="_blank" title="新浪">新浪</a>
@@ -175,7 +204,8 @@
                         <a href="https://www.taobao.com/" target="_blank" title="淘宝">淘宝</a>
                     </li>
                     <li>
-                        <a href="http://www.jd.com/?cu=true&utm_source=hao.360.cn&utm_medium=tuiguang&utm_campaign=t_1000003625_360mz&utm_term=1c9616605ad748e4bc9df9880f198399" target="_blank" title="京东">京东</a>
+                        <a href="http://www.jd.com/?cu=true&utm_source=hao.360.cn&utm_medium=tuiguang&utm_campaign=t_1000003625_360mz&utm_term=1c9616605ad748e4bc9df9880f198399"
+                           target="_blank" title="京东">京东</a>
                     </li>
                 </ul>
             </div>
@@ -315,7 +345,8 @@
                         <a href="http://y.qq.com/" target="_blank" title="QQ音乐">QQ音乐</a>
                     </li>
                     <li>
-                        <a href="http://music.hao123.com/tag/%E7%BB%8F%E5%85%B8%E8%80%81%E6%AD%8C" target="_blank" title="经典老歌">经典老歌</a>
+                        <a href="http://music.hao123.com/tag/%E7%BB%8F%E5%85%B8%E8%80%81%E6%AD%8C" target="_blank"
+                           title="经典老歌">经典老歌</a>
                     </li>
                     <li>
                         <a href="http://fm.baidu.com/" target="_blank" title="音乐随心听">音乐随心听</a>
@@ -428,61 +459,37 @@
                 </li>
             </ul>
         </div>
-
     </div>
 
     <div class="bottom_banner">
-        <a href="#" target="_blank" title="">
-            <img src="./main/img/bottom_banner.jpg" alt=""/>
+        <div style="width: 970px;height: 90px; border: 1px solid red;margin:0 auto;">
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- 千兆 -->
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:970px;height:90px"
+                 data-ad-client="ca-pub-6948282323251017"
+                 data-ad-slot="3506733081"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            <!--<a href="#" target="_blank" title="">-->
+            <!--<img src="./main/img/bottom_banner.jpg" alt=""/>-->
+            <!--</a>-->
+        </div>
+    </div>
+
+    <div class="haibao">
+        <div class="bg_opa"></div>
+        <a href="/club" target="_blank">
+            <img src="./main/img/haibao.jpg" alt=""/>
         </a>
+        <i class="close"></i>
     </div>
 
 </div>
 </body>
 <script src="./js/jquery-1.10.2.min.js"></script>
-<script>
-    $(function(){
-        $('body').on('click','a',function(){
-            if($(this).attr('href')=='#'){
-                return false;
-            }
-        }).on('focus', 'a', function () {
-            $(this).blur();
-        });
-        if(document.body.clientHeight>595){
-            var ele=$('.wrapper').css({
-                'position':'absolute',
-                'top':'50%',
-                'left':'50%',
-                'marginTop':'-374px',
-                'marginLeft':'-600px'
-            })
-        }
-        $('.website_tab li').eq(4).css('border-right-width',0);
-        $('.module ul').each(function(){
-            $('.module ul').eq(1).css('border-top','1px solid #eee');
-            $(this).find('li').eq(3).css('border-right-width',0);
-        });
-
-        $('.website_tab li a').click(function(){
-            $('.website_tab li a').removeClass('current');
-            $(this).addClass('current');
-            $('.website_list').hide().eq($(this).parent().index()).show();
-        });
-    })
-    function AddFavorite() {
-        try {
-            window.external.addFavorite(location.href, "千兆浏览器首页");
-        }
-        catch (e) {
-            try {
-                window.sidebar.addPanel(title, url, "");
-            }
-            catch (e) {
-                alert("抱歉，您所使用的浏览器无法完成此操作。\n\n加入收藏失败，请使用Ctrl+D进行添加");
-            }
-        }
-    }
-</script>
+<script type="text/javascript" src="/js/jquery.cookie.js"></script>
+<script src="./main/js/index.js"></script>
 </html>
 {{end}}

@@ -94,4 +94,5 @@ func Router(e *echo.Echo) {
 	e.Post("/club/word",(&controller.Club2{}).Gword)
 	e.Get("/club/tun",(&controller.Club2{}).Turntable)
 	e.Post("/club/mrecord",(&controller.Club2{}).Mylist)
+	e.Get("/xx",(&controller.Index{}).XX)
 }

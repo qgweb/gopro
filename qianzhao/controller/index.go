@@ -9,6 +9,8 @@ import (
 	"github.com/astaxie/beego/httplib"
 	"github.com/ngaut/log"
 	"encoding/json"
+	"github.com/qgweb/gopro/qianzhao/common/function"
+	"fmt"
 )
 
 type Index struct {
@@ -70,6 +72,7 @@ func (this *Index) MainPage(ctx echo.Context) error {
 
 // 浏览器首页
 func (this *Index) Index(ctx echo.Context) error {
+	fmt.Println(function.GetBcrypt([]byte("12345678")))
 	var wm model.Word
 	url := config.GetDefault().Key("yljurl").String()
 	data, err := httplib.Get(url).Bytes()
@@ -93,4 +96,37 @@ func (this *Index) Index(ctx echo.Context) error {
 	return ctx.Render(200, "index_index", map[string]interface{}{
 		"Ylj" : yljlist,
 	})
+}
+
+func (this *Index) XX(ctx echo.Context) error {
+	return ctx.HTML(200,`
+	<!DOCTYPE html>
+<html>
+  <head>
+    <script language="JavaScript">
+	function $(o) {return document.getElementById(o);}
+	 function GetHistoryList() {
+        console.log("GetHistoryList");
+        chrome.send("GetHistoryList");
+    }
+	function GetHistoryListDone(entries) {
+	console.log(entries);
+		var list = document.createElement('ul');
+		for (var i = 0; i < entries.length; i++) {
+	      var listItem = document.createElement('li');
+	      var link = document.createElement('img');
+	      link.setAttribute('aa', entries[i].url);
+	      link.setAttribute('src', entries[i].img);
+	      listItem.appendChild(link);
+	      list.appendChild(listItem);
+	    }
+		$('entries-list').appendChild(list);
+	}
+	</script>
+  </head>
+  <body>JS交互demo
+  <button onclick="GetHistoryList()">获取历史记录列表</button>
+  <div id="entries-list"></div>
+  </body>
+</html>`)
 }

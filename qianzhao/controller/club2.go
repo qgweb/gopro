@@ -9,6 +9,7 @@ import (
 	"github.com/qgweb/new/lib/convert"
 	"strings"
 	"github.com/qgweb/new/lib/timestamp"
+	"time"
 )
 
 type Club2 struct {
@@ -20,6 +21,7 @@ const CAN_AWARD = "can_award"
 var (
 	awardChanNum = 50
 	awardChan = make(chan int, awardChanNum)
+	BTime = time.Unix(1472688000, 0)
 )
 
 func (this *Club2) setCanAward(ctx echo.Context) {
@@ -60,6 +62,7 @@ func (this *Club2) Index(ctx echo.Context) error {
 	info["lottery_count"] = 0
 	info["list1"] = map[string]string{}
 	info["list2"] = map[string]string{}
+	info["is_sign"] = false;
 
 	sm.Reset(uid)
 	this.construct(ctx)
@@ -69,6 +72,7 @@ func (this *Club2) Index(ctx echo.Context) error {
 			log.Error(err)
 		} else {
 			info["sign"] = s.History
+			info["is_sign"] = sm.HasSign(uid)
 		}
 		if n, err := um.GetAwardCount(convert.ToString(uid)); err == nil {
 			info["lottery_count"] = n
@@ -77,6 +81,9 @@ func (this *Club2) Index(ctx echo.Context) error {
 		}
 	}
 	if l, err := am.Records("0"); err == nil {
+		if len(l) % 2 > 0 {
+			l = append(l[:], l[:]...)
+		}
 		for k, v := range l {
 			l[k]["tag"] = "0"
 			if k % 2 != 0 {
@@ -87,6 +94,9 @@ func (this *Club2) Index(ctx echo.Context) error {
 		info["list1"] = l
 	}
 	if l, err := am.Records("1"); err == nil {
+		if len(l) % 2 > 0 {
+			l = append(l[:], l[:]...)
+		}
 		for k, v := range l {
 			l[k]["tag"] = "0"
 			if k % 2 != 0 {
@@ -107,6 +117,14 @@ func (this *Club2) Sign(ctx echo.Context) error {
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
 	}
+
+	if (time.Now().Unix() < BTime.Unix()) {
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"ret" : -1,
+			"msg" : "非常抱歉，该活动还未开始，请于9月1日之后前来参与！",
+		})
+	}
+
 	this.construct(ctx)
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
@@ -149,6 +167,12 @@ func (this *Club2) Sign(ctx echo.Context) error {
 func (this *Club2) Gword(ctx echo.Context) error {
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
+	}
+	if (time.Now().Unix() < BTime.Unix()) {
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"ret" : -1,
+			"msg" : "非常抱歉，该活动还未开始，请于9月1日之后前来参与！",
+		})
 	}
 	this.construct(ctx)
 	if !this.canAward(ctx) {
@@ -226,6 +250,13 @@ func (this *Club2) Turntable(ctx echo.Context) error {
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
 	}
+	if (time.Now().Unix() < BTime.Unix()) {
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"ret" : -1,
+			"msg" : "非常抱歉，该活动还未开始，请于9月1日之后前来参与！",
+		})
+	}
+	
 	this.construct(ctx)
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{

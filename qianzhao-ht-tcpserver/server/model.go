@@ -19,18 +19,19 @@ import (
 	"github.com/qgweb/gopro/lib/encrypt"
 	"github.com/qgweb/gopro/qianzhao-ht-tcpserver/model"
 	"github.com/qgweb/gopro/qianzhao/common/config"
+	"github.com/qgweb/new/lib/timestamp"
 )
 
 const (
-	APP_KEY             = "APP_MSB704PU"
-	APP_SECRET          = "mv6oy8f2qo0l0ogvxnm02tM7"
-	EBIT_BASE_URL       = "http://218.85.118.9:8000/api2/"
-	CARD_APPLY_URL      = "http://221.228.17.114:58886/iherbhelper/services/ApplicationCard"
-	CARD_CHECK_URL      = "http://221.228.17.114:58886/iherbhelper/services/CheckCard"
+	APP_KEY = "APP_MSB704PU"
+	APP_SECRET = "mv6oy8f2qo0l0ogvxnm02tM7"
+	EBIT_BASE_URL = "http://218.85.118.9:8000/api2/"
+	CARD_APPLY_URL = "http://221.228.17.114:58886/iherbhelper/services/ApplicationCard"
+	CARD_CHECK_URL = "http://221.228.17.114:58886/iherbhelper/services/CheckCard"
 	CARD_QUERY_TEST_URL = "http://202.102.13.98:7001/services/LcimsForUserInfo"
-	CARD_QUERY_URL      = "http://202.102.13.123:17001/services/LcimsForUserInfo"
-	FREE_CARD           = 0
-	UNFREE_CARD         = 1
+	CARD_QUERY_URL = "http://202.102.13.123:17001/services/LcimsForUserInfo"
+	FREE_CARD = 0
+	UNFREE_CARD = 1
 )
 
 type Card struct {
@@ -60,7 +61,8 @@ func (this *BDInterfaceManager) GetQueryUrl() string {
 
 // 开启
 func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
-	if cardType == 0 { //免费卡
+	if cardType == 0 {
+		//免费卡
 		ht, err := this.freeCard(card.Mobile)
 		r := Respond{}
 		if err != nil {
@@ -73,7 +75,8 @@ func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
 			return r
 		}
 	}
-	if cardType == 1 { //购买卡
+	if cardType == 1 {
+		//购买卡
 		ht, err := this.moneyCard(card)
 		r := Respond{}
 		if err != nil {
@@ -92,10 +95,22 @@ func (this *BDInterfaceManager) Start(card MCard, cardType int) Respond {
 func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err error) {
 	var (
 		hmodel = model.HTCard{}
+		hbrand = model.HTbroadband{}
 		hrmodel = model.HtCardRecord{}
-		date   = function.GetDateUnix()
+		date = function.GetDateUnix()
 	)
-	if h :=hmodel.GetInfoByPhone(phone, date, 0, 3) ;h.Id > 0{
+
+	//验证是否是校园用户
+	if res, err := hbrand.Has(phone); err != nil || !res {
+		return hcard, errors.New("您非校园用户，不能参与")
+	}
+
+	//判断使用人数
+	if n, _ := hmodel.UseCount(convert.ToInt(timestamp.GetDayTimestamp(0))); n > 1000 {
+		return hcard, errors.New("免费名额已发送完毕，请明天再来！")
+	}
+
+	if h := hmodel.GetInfoByPhone(phone, date, 0, 3); h.Id > 0 {
 		return h, errors.New("用户免费体验时间已到")
 	}
 
@@ -130,7 +145,7 @@ func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err 
 			ht.TotalTime = 0
 			return ht, errors.New("用户免费体验时间已到")
 		} else {
-			ht.TotalTime =lesstime
+			ht.TotalTime = lesstime
 		}
 		return ht, nil
 	}
@@ -139,7 +154,7 @@ func (this *BDInterfaceManager) freeCard(phone string) (hcard model.HTCard, err 
 func (this *BDInterfaceManager) moneyCard(card MCard) (hcard model.HTCard, err error) {
 	var (
 		hmodel = model.HTCard{}
-		date   = function.GetDateUnix()
+		date = function.GetDateUnix()
 	)
 	if ht := hmodel.GetMoneyLastCard(card.Mobile); ht.Id > 0 {
 		card.CardNO = ht.CardNum
