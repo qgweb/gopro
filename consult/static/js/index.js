@@ -20,37 +20,28 @@ $(function () {
 $(function () {
     $('.btn_next').click(function () {
         $('.btn_pre').show();
-        var lilen = $('.example_list ul li').length - 3;
-        var px = -330;
-        var mleft = parseInt($('.example_list ul').css("marginLeft").replace('px', ""));
-        var index = Math.floor((mleft - 10) / px);
-        var bj = lilen * px - 10;
-        if ((index + 1) * px + -10 < bj) {
+        var curLeft = parseInt($('.example_list ul').css("marginLeft").replace('px', "")) - 335;
+        if (curLeft <= -1015) {
             return;
         }
-        $('.example_list ul').css("marginLeft", ((index + 1) * px + -10) + "px");
-        if ((index + 1) * px + -10 <= bj) {
+        if (curLeft == -680) {
             $('.btn_next').hide();
         }
+        $(".example_list ul").animate({marginLeft: curLeft + "px"}, "slow");
     });
 })
 
 $(function () {
     $('.btn_pre').click(function () {
         $('.btn_next').show();
-        var px = -330;
-        var mleft = parseInt($('.example_list ul').css("marginLeft").replace('px', ""));
-        var index = Math.floor((mleft - 10) / px);
-
-        if (mleft >= -10) {
+        var curLeft = parseInt($('.example_list ul').css("marginLeft").replace('px', "")) + 335;
+        if (curLeft >= 325) {
             return;
         }
-
-        $('.example_list ul').css("marginLeft", ((index - 1) * px - 10) + "px");
-        if ((index - 1) * px - 10 >= -10) {
+        if (curLeft == -10) {
             $('.btn_pre').hide();
-            return;
         }
+        $(".example_list ul").animate({marginLeft: curLeft + "px"}, "slow");
     });
 })
 //表单提交
@@ -64,6 +55,7 @@ $(function () {
         var phone = $.trim($("#fm_phone").val());
         var qq = $.trim($("#fm_qq").val());
         var industry = $.trim($("#fm_industry").val());
+        var reffer = window.location.href;
 
         if (!name || !phone || !qq || !industry) {
             layer.alert('预约信息填写不完整哦', {icon: 5});
@@ -76,13 +68,15 @@ $(function () {
                 name: name,
                 phone: phone,
                 qq: qq,
-                industry: industry
+                industry: industry,
+                reffer: reffer,
             },
             type: 'post',
             dataType: 'json',
             success: function (data) {
                 if (data.ret == 0) {
                     $('.success').show();
+                    setTimeout("window.location.reload()", 1000);
                 } else {
                     $('.failure').show();
                 }
@@ -94,18 +88,19 @@ $(function () {
 })
 //统计
 $(function () {
-    $("body").append('<img src="/sts?t=3"/>');
+    $("body").append('<img src="/sts?t=3" style="display:none;"/>');
     $("#talkByQQh1,#talkByQQh2,#talkByQQh3").click(function () {
-        $("body").append('<img src="/sts?t=1"/>');
+        $("body").append('<img src="/sts?t=1" style="display:none;"/>');
     })
 })
-$(function(){
+$(function () {
     function changeIMGWidth() {
-        var w=$(window).width()/2+94;
+        var w = $(window).width() / 2 + 94;
         $('.banner').width(w);
         $('.banner li').width(w);
     }
-    $(window).resize(function() {
+
+    $(window).resize(function () {
         changeIMGWidth();
     })
     changeIMGWidth();

@@ -1,0 +1,384 @@
+/*
+        淘宝商品
+  ====  taobao_goods  =========
+  Gid        string         `json:"gid",bson:"gid"`
+  Tagname    string         `json:"tagname",bson:"tagname"`
+  Tagid      string         `json:"tagid",bson:"tagid"`
+  Features   map[string]int `json:"features",bson:"features"`
+  Attrbuites string         `json:"attrbuites",bson:"attrbuites"`
+  Sex        int            `json:"sex",json:"sex"`
+  People     int            `json:"people",bson:"people"`
+  Shop_id    string         `json:"shop_id",bson:"shop_id"`
+  Shop_name  string         `json:"shop_name",bson:"shop_name"`
+  Shop_url   string         `json:"shop_url",bson:"shop_url"`
+  Shop_boss  string         `json:"shop_boss",bson:"shop_boss"`
+  Brand      string         `json:"brand",bson:"brand"`
+  ==============================
+  ID : gid
+ */
+{
+  "mappings": {
+    "goods": {
+      "properties": {
+        "gid": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "tagname": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "tagid": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "features": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "attrbuites": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "sex": {
+          "type": "byte",
+          "index": "not_analyzed"
+        },
+        "people": {
+          "type": "byte",
+          "index": "not_analyzed"
+        },
+        "shop_id": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "shop_name": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "shop_url": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "shop_boss": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "brand": {
+          "type": "string",
+          "analyzer": "ik"
+        }
+      }
+    }
+  }
+}
+
+/*
+        电商-淘宝-标签轨迹
+  ======= zhejiang_tb_ad_trace =======
+  ======= jiangsu_tb_ad_trace =======
+    ID : md5(timestamp+ad+ua)
+ */
+{
+  "mappings": {
+    "ad": {
+      "properties": {
+        "ad": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "ua": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "timestamp": {
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "cids": {
+          "type": "string",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}
+
+/*
+          电商-淘宝-店铺轨迹
+  ======= zhejiang_tb_shop_trace =======
+  ======= jiangsu_tb_shop_trace =======
+  ID : md5(timestamp+ad+ua)
+ */
+{
+  "mappings": {
+    "shop": {
+      "properties": {
+        "ad": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "ua": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "timestamp": {
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "shop": {
+          "type": "string",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}
+
+/*
+        京东商品
+  ====  jd_goods  =========
+  Gid       string   `json:"gid",bson:"gid"`
+  Tagname   string   `json:"cat_name",bson:"cat_name"`
+  Tagid     string   `json:"cat_id",bson:"cat_id"`
+  Brand     string   `json:"brand",bson:"brand"`
+  Attribute []string `json:"attributes",bson:"attributes"`
+  Title     string   `json:"title",bson:"title"`
+  =============================
+  ID : gid
+ */
+{
+  "mappings": {
+    "goods": {
+      "properties": {
+        "gid": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "cat_name": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "cat_id": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "brand": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "attrbuites": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "title": {
+          "type": "string",
+          "analyzer": "ik"
+        }
+      }
+    }
+  }
+}
+
+
+/*
+          地图应用表（准确匹配版）
+  =======  map_trace_search ==========
+  ID :md5(timestamp+ad+b64(ua))
+ */
+{
+  "mappings": {
+    "map": {
+      "properties": {
+        "ad": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "ua": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "timestamp": {
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "tb_tags": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "tb_brand": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "jd_tags": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "jd_brand": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "shopping_search": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "engine_search": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "geo": {
+          "type": "geo_point"
+        }
+      }
+    }
+  }
+}
+
+/*
+          地图应用表（搜索匹配版）
+  =======  map_trace_search ==========
+  ID :md5(timestamp+ad+b64(ua))
+ */
+{
+  "mappings": {
+    "map": {
+      "properties": {
+        "ad": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "ua": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "timestamp": {
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "tb_tags": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "tb_brand": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "jd_tags": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "jd_brand": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "shopping_search": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "engine_search": {
+          "type": "string",
+          "analyzer": "ik"
+        },
+        "geo": {
+          "type": "geo_point"
+        }
+      }
+    }
+  }
+}
+/*
+{
+  "ad": "fffffff",
+  "ua": "xxxxxxxx",
+  "timestamp": 1455667200,
+  "tb_tags": [
+    "连衣裙",
+    "游戏",
+    "裤子"
+  ],
+  "tb_brand": [
+    "来之客",
+    "暴雪",
+    "淘宝库"
+  ],
+  "jd_tags": [
+    "手机",
+    "居家"
+  ],
+  "jd_brand": [
+    "小米",
+    "安居客"
+  ],
+  "shpping_search": [
+    "连衣裙 韩版",
+    "裙子"
+  ],
+  "engine_search": [
+    "游戏"
+  ],
+  "geo": {
+    "lat": 40.722,
+    "lon": 73.989
+  }
+}
+
+ */
+
+
+/*
+          汽车房产表
+  =======  tags_car_house_report_jw ==========
+ */
+{
+  "mappings": {
+    "map": {
+      "properties": {
+        "ad": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "tag_id": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "time": {
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "num": {
+          "type": "integer",
+          "index": "not_analyzed"
+        },
+        "province": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "city": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "district": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "geo": {
+          "type": "geo_point"
+        }
+      }
+    }
+  }
+}
+
+/data/qgbin/tags/store -mdb-put-host 192.168.0.92 \
+-mdb-put-port 10003  \
+-mdb-store-host 192.168.0.68  \
+-mdb-store-port 10003  \
+-nsq-host 192.168.0.72  \
+-nsq-port 4150  \
+-rKey zhejiang_goodsqueue \
+-table_prefixe zhejiang  \
+-mdb-store-uname xu  \
+-mdb-store-upwd xu123net \
+-es-host http://122.225.98.68:9201,http://122.225.98.71:9201 \
+-geo-host http://192.168.0.87:40001 \
+-gtype taobao

@@ -38,6 +38,7 @@ type Infomation struct {
 	QQ       string `form:"qq" bson:"qq" json:"qq"`
 	Industry string `form:"industry" bson:"industry" json:"industry"`
 	Date     int64 `form:"-" bson:"date" json:"date"`
+	Reffer   string `form:"reffer" bson:"reffer" json:"reffer"`
 }
 
 type MainController struct {

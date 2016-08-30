@@ -225,7 +225,7 @@ $(function () {
                     })
                 } else if (d.code == 301) {
                     $('#pmsg').show();
-                    return; 
+                    return;
                 } else if (d.ret == -1) {
                     layer.msg(d.msg, {icon: 5});
                 }
@@ -239,6 +239,12 @@ $(function () {
     $(".precord_c").click(function () {
         return false;
     })
+    $(".precord_c .recharge").click(function () {
+        window.open("http://js.189.cn/pay/recharge.action");
+        return false;
+    })
+
+
     $(".view_record").click(function () {
         $.ajax({
             'url': "/club/mrecord",

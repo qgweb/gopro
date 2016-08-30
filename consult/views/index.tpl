@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="header">
-    <a href="#" class="logo">
+    <a href="http://www.chamspire.com/" target="_blank" class="logo">
         <img src="/static/img/logo.jpg" alt=""/>
     </a>
     <a id="talkByQQh1" href="#" class="kefu"></a>
@@ -167,10 +167,6 @@
                             效果:同比其他渠道提升40%<br/>
                             投资回报: roi1:70
                         </div>
-                        <div class="hover_shade">
-                            <div class="bg_opa"></div>
-                            <i></i>
-                        </div>
                     </li>
                     <li>
                         <img src="/static/images/北京现代.jpg" alt=""/>
@@ -181,10 +177,6 @@
                             总展现:3500万pv<br/>
                             效果：同比其他渠道提升20%
                         </div>
-                        <div class="hover_shade">
-                            <div class="bg_opa"></div>
-                            <i></i>
-                        </div>
                     </li>
                     <li>
                         <img src="/static/images/传奇盛世.jpg" alt=""/>
@@ -194,10 +186,6 @@
                             总展现：6400万pv<br>
                             效果：同比其他渠道提升70%<br>
                             回报：月回本55%
-                        </div>
-                        <div class="hover_shade">
-                            <div class="bg_opa"></div>
-                            <i></i>
                         </div>
                     </li>
                     <li>
@@ -210,10 +198,6 @@
                             效果：同比其他渠道提生35%<br>
                             注册成本：28-45元
                         </div>
-                        <div class="hover_shade">
-                            <div class="bg_opa"></div>
-                            <i></i>
-                        </div>
                     </li>
                     <li>
                         <img src="/static/images/筑家易.jpg" alt=""/>
@@ -224,10 +208,6 @@
                             总展现;100万pv<br>
                             效果:同比其他渠道提升60%<br>
                             注册成本：24元
-                        </div>
-                        <div class="hover_shade">
-                            <div class="bg_opa"></div>
-                            <i></i>
                         </div>
                     </li>
                 </ul>
@@ -306,7 +286,7 @@
         <dl class="footer_contact">
             <dt>联系我们</dt>
             <dd>咨询电话：0571-88171668 ； 0571-88178878</dd>
-            <dd>工作时间： 09:00-22:00（周一至周五）， 09:00-16:40（周六、周日）</dd>
+            <dd>工作时间： 09:00-22:00（周一至周五）</dd>
             <dd>地址： 杭州市拱墅区祥园路108号中国信息智慧产业园3期D栋6楼</dd>
             <dd>
                 <a id="talkByQQh2" href="javascript:void(0);">联系客服</a>
@@ -333,7 +313,9 @@
     <p>预约失败</p>
     <input type="button" value="知道了"/>
 </div>
-
+<div style="display: none">
+    <script src="http://s95.cnzz.com/z_stat.php?id=1260234612&web_id=1260234612" language="JavaScript"></script>
+</div>
 <script charset='utf-8' src='http://wpa.b.qq.com/cgi/wpa.php'></script>
 <script src="http://zhi.9xu.com/js/jquery-1.10.2.min.js"></script>
 <script src="/static/js/layer/layer.js"></script>

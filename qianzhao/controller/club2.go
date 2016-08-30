@@ -10,6 +10,7 @@ import (
 	"strings"
 	"github.com/qgweb/new/lib/timestamp"
 	"time"
+	"github.com/qgweb/gopro/qianzhao/common/config"
 )
 
 type Club2 struct {
@@ -21,7 +22,8 @@ const CAN_AWARD = "can_award"
 var (
 	awardChanNum = 50
 	awardChan = make(chan int, awardChanNum)
-	BTime = time.Unix(1472688000, 0)
+	bt, _ = config.GetDefault().Key("beginTime").Int64()
+	BTime = time.Unix(bt, 0)
 )
 
 func (this *Club2) setCanAward(ctx echo.Context) {
@@ -45,6 +47,22 @@ func (this *Club2) canAward(ctx echo.Context) bool {
 
 func (this *Club2) construct(ctx echo.Context) {
 	this.setCanAward(ctx)
+}
+
+func (this *Club2) PrevIndex(ctx echo.Context) error {
+	return ctx.HTML(200,`
+<html>
+<head>
+<title>惊喜开学季,话费送不停</title>
+<style>
+body {margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom:  0px;overflow: hidden;}
+</style>
+</head>
+<body>
+<iframe src='http://qianzhao.221su.com/club2' width='100%' height='100%'  frameborder='0' name="_blank" id="_blank" ></iframe>
+</body>
+</html>
+	`)
 }
 
 func (this *Club2) Index(ctx echo.Context) error {
@@ -168,6 +186,7 @@ func (this *Club2) Gword(ctx echo.Context) error {
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
 	}
+	fmt.Println(BTime);
 	if (time.Now().Unix() < BTime.Unix()) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
 			"ret" : -1,
@@ -256,7 +275,7 @@ func (this *Club2) Turntable(ctx echo.Context) error {
 			"msg" : "非常抱歉，该活动还未开始，请于9月1日之后前来参与！",
 		})
 	}
-	
+
 	this.construct(ctx)
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{

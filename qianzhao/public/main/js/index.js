@@ -25,8 +25,8 @@ $(function () {
 $(function () {
     //时间
     var h = new Date();
-    var wstr = ["周日","周一","周二","周三","周四","周五","周六"];
-    $('.date').html(h.getMonth()+"月"+h.getDate()+"日&nbsp;"+wstr[h.getDay()]);
+    var wstr = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+    $('.date').html(h.getMonth() + "月" + h.getDate() + "日&nbsp;" + wstr[h.getDay()]);
     $('body').on('click', 'a', function () {
         if ($(this).attr('href') == '#') {
             return false;
@@ -174,4 +174,64 @@ $(function () {
             $('.haibao').fadeOut(1000);
         }, 5000)
     }
+})
+
+// 历史记录
+function parseURL(url) {
+    var a = document.createElement('a');
+    a.href = url;
+    return {
+        source: url,
+        protocol: a.protocol.replace(':', ''),
+        host: a.hostname,
+        port: a.port,
+        query: a.search,
+        params: (function () {
+            var ret = {},
+                seg = a.search.replace(/^\?/, '').split('&'),
+                len = seg.length, i = 0, s;
+            for (; i < len; i++) {
+                if (!seg[i]) {
+                    continue;
+                }
+                s = seg[i].split('=');
+                ret[s[0]] = s[1];
+            }
+            return ret;
+        })(),
+        file: (a.pathname.match(/\/([^\/?#]+)$/i) || [, ''])[1],
+        hash: a.hash.replace('#', ''),
+        path: a.pathname.replace(/^([^\/])/, '/$1'),
+        relative: (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [, ''])[1],
+        segments: a.pathname.replace(/^\//, '').split('/')
+    };
+}
+function GetHistoryList() {
+    console.log("GetHistoryList");
+    chrome.send("GetHistoryList");
+}
+
+function GetHistoryListDone(entries) {
+    var ii = 0;
+    for (var i = 0; i < entries.length; i++) {
+        var et = entries[i];
+        console.log(et)
+        if (et.title == "" || et.title.indexOf("千兆") != -1) {
+            continue;
+        }
+
+        ii++
+        if (ii > 6) {
+            return;
+        }
+        var obj = parseURL(et.url);
+        var html = '<li><a href="' + obj.source +
+            '" target="_blank" title=""><img src="' + (obj.protocol + "://" + obj.host + "/favicon.ico") +
+            '" alt=""><span>' + et.title + '</span></a></li>'
+        $('.often_list').append(html)
+    }
+}
+
+$(function () {
+    GetHistoryList()
 })

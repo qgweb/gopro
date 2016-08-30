@@ -46,25 +46,32 @@ ul {
     _zoom: 1;
 }
 
-.view_record {
-    position: absolute;
-    top: 15px;
-    right: 30px;
-    display: block;
-    width: 130px;
-    height: 31px;
-    line-height: 31px;
-    font-size: 14px;
-    color: #fff;
-    text-align: center;
-    -webkit-border-radius: 31px;
-    -moz-border-radius: 31px;
-    border-radius: 31px;
-    background-color: #7d452c;
-    background-color: rgba(0, 0, 0, .5);
-    *background-color: #7d452c;
+.btn_list{
+    position:absolute;
+    top:15px;
+    right:30px;
 }
-
+.btn_list li{
+    float:left;
+    width:130px;
+    height:31px;
+    margin-left:8px;
+}
+.btn_list li a{
+    display:block;
+    width:130px;
+    height:31px;
+    line-height:31px;
+    font-size:14px;
+    color:#fff;
+    text-align:center;
+    -webkit-border-radius:31px;
+    -moz-border-radius:31px;
+    border-radius:31px;
+    background-color:#7d452c;
+    background-color:rgba(0,0,0,.5);
+    *background-color:#7d452c;
+}
 .description {
     float: left;
     margin-top: 38px;

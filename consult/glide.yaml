@@ -1,0 +1,15 @@
+package: github.com/qgweb/gopro/consult
+import:
+- package: github.com/astaxie/beego
+- package: github.com/ngaut/log
+- package: github.com/qgweb/new
+  subpackages:
+  - lib/convert
+  - lib/timestamp
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson
+testImport:
+- package: github.com/smartystreets/goconvey
+  subpackages:
+  - convey

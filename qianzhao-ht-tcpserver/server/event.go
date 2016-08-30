@@ -21,10 +21,10 @@ type Event struct{}
 // 连接管理
 func (this *Event) Link(conn *net.TCPConn, req *Request) {
 	var (
-		ip      = strings.Split(conn.RemoteAddr().String(), ":")[0]
+		ip = strings.Split(conn.RemoteAddr().String(), ":")[0]
 		content = req.Content
-		resp    = Respond{}
-		repAry  = strings.Split(content, "|")
+		resp = Respond{}
+		repAry = strings.Split(content, "|")
 	)
 
 	if len(repAry) < 5 {
@@ -53,19 +53,21 @@ func (this *Event) Link(conn *net.TCPConn, req *Request) {
 // 开启加速
 func (this *Event) Start(conn *net.TCPConn, req *Request) {
 	var (
-		bd     = &BDInterfaceManager{}
+		bd = &BDInterfaceManager{}
 		reqAry = strings.Split(req.Content, "|")
-		resp   Respond
+		resp Respond
 	)
 
-	if reqAry[0] == "0" { //免费卡
+	if reqAry[0] == "0" {
+		//免费卡
 		mc := MCard{}
 		mc.Mobile = reqAry[1]
 		resp = bd.Start(mc, 0)
 	}
 
 	log.Error(reqAry)
-	if reqAry[0] == "1" { //申请卡
+	if reqAry[0] == "1" {
+		//申请卡
 		if len(reqAry) < 4 {
 			data, _ := MRespond(&Respond{Code: "500", Msg: "参数错误"})
 			conn.Write(ProtocolPack(data))
@@ -78,7 +80,7 @@ func (this *Event) Start(conn *net.TCPConn, req *Request) {
 		mc.Serviceid = "0001"
 		resp = bd.Start(mc, 1)
 	}
-
+	log.Error(resp)
 	if resp.Code != "200" {
 		data, _ := MRespond(&resp)
 		conn.Write(ProtocolPack(data))
@@ -145,7 +147,7 @@ func (this *Event) RepPing(conn *net.TCPConn) {
 
 func (this *Event) HaveCardByPhone(conn *net.TCPConn, req *Request) {
 	var (
-		phone  = req.Content
+		phone = req.Content
 		hmodel = model.HTCard{}
 	)
 

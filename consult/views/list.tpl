@@ -18,13 +18,14 @@
     <div id="myTabContent" class="tab-content">
         <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
             <div>
-                <table class="table" style="width:700px;">
+                <table class="table" style="width:750px;">
                     <tr>
                         <td>时间</td>
                         <td>名称</td>
                         <td>电话</td>
                         <td>QQ</td>
                         <td>行业</td>
+                        <td>来源</td>
                     </tr>
                     {{range $k,$d:=.list1 }}
                     <tr>
@@ -33,6 +34,7 @@
                         <td>{{$d.Phone}}</td>
                         <td>{{$d.QQ}}</td>
                         <td>{{$d.Industry}}</td>
+                        <td>{{$d.Reffer}}</td>
                     </tr>
                     {{end}}
                 </table>
