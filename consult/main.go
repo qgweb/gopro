@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "github.com/qgweb/gopro/consult/routers"
 	"github.com/astaxie/beego"
-	"github.com/qgweb/new/lib/timestamp"
+	_ "github.com/qgweb/gopro/consult/routers"
 	"github.com/qgweb/new/lib/convert"
+	"github.com/qgweb/new/lib/timestamp"
 )
 
 func TimeParse(val interface{}) string {
@@ -15,4 +15,3 @@ func main() {
 	beego.AddFuncMap("unix", TimeParse)
 	beego.Run()
 }
-

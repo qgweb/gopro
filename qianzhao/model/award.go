@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/juju/errors"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/convert"
@@ -9,7 +10,6 @@ import (
 	"github.com/qgweb/new/lib/timestamp"
 	"math/rand"
 	"time"
-	"fmt"
 )
 
 type Award struct {
@@ -23,7 +23,7 @@ type Award struct {
 }
 
 const (
-	AWARD_TABLE_NAME = "221su_award_record"
+	AWARD_TABLE_NAME      = "221su_award_record"
 	AWARD_CODE_TABLE_NAME = "221su_recharge_code"
 )
 
@@ -146,7 +146,7 @@ func (this *Award) getAwardNum(tx *sql.Tx, awardnum map[int]int) (int, error) {
 		}
 		log.Info(count, atype)
 		if v, ok := awardnum[atype]; ok {
-			if v - count <= 0 {
+			if v-count <= 0 {
 				delete(awardnum, atype)
 				awardnum[0] += count
 			} else {
@@ -180,7 +180,7 @@ func (this *Award) getAwardNumClock(tx *sql.Tx, awardnum map[int]int) (int, erro
 		}
 		log.Info(count, atype)
 		if v, ok := awardnum[atype]; ok {
-			if v - count <= 0 {
+			if v-count <= 0 {
 				if v != 0 {
 					delete(awardnum, atype)
 				}
@@ -261,9 +261,9 @@ func (this *Award) Create() {
 func (this *Award) Word(uid string, ok bool) (int, string, error) {
 	if ok {
 		return this.Get(uid, map[int]int{
-			1: 8,
-			2: 1,
-			3: 1,
+			1: 20,
+			2: 0,
+			3: 0,
 		}, 1)
 	} else {
 		// 添加中奖记录

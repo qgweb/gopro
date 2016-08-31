@@ -1,0 +1,17 @@
+version: v1.0
+projects:
+- app_name: qianzhao
+  app_path: /
+  app_build: true
+  app_run: true
+  app_bin: false
+  app_fmt: true
+  app_watcher:
+    preview: true
+    paths:
+    - /
+    ignore_paths:
+    - vendor
+    - bin
+    exts:
+    - .go

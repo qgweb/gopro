@@ -1,14 +1,14 @@
 package model
 
 import (
-	"strings"
-	"github.com/ngaut/log"
-	"github.com/qgweb/gopro/lib/encrypt"
-	"github.com/qgweb/gopro/qianzhao/common/function"
-	"github.com/qgweb/gopro/lib/convert"
-	"time"
 	"errors"
 	"fmt"
+	"github.com/ngaut/log"
+	"github.com/qgweb/gopro/lib/convert"
+	"github.com/qgweb/gopro/lib/encrypt"
+	"github.com/qgweb/gopro/qianzhao/common/function"
+	"strings"
+	"time"
 )
 
 const (
@@ -28,7 +28,7 @@ type User struct {
 	Sid           string `sid`
 	Email         string `email`
 	Phone         string `phone`
-	AwardCount    int `award_count`
+	AwardCount    int    `award_count`
 }
 
 func make_app_uid(bandwith string, bandwith_pwd string, timestamp string) string {
@@ -180,7 +180,7 @@ func (this *User) UserRegister(phone string, email string, password string) bool
 func (this *User) Update(values map[string]interface{}, wheres map[string]interface{}) bool {
 	var (
 		fields = make([]string, 0, len(values))
-		where = make([]string, 0, len(wheres))
+		where  = make([]string, 0, len(wheres))
 		wvlues = make([]interface{}, 0, len(wheres))
 	)
 
@@ -190,7 +190,7 @@ func (this *User) Update(values map[string]interface{}, wheres map[string]interf
 	}
 
 	for k, v := range wheres {
-		where = append(where, k + "=?")
+		where = append(where, k+"=?")
 		wvlues = append(wvlues, v)
 	}
 

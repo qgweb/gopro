@@ -91,8 +91,8 @@ func Router(e *echo.Echo) {
 	//// 新版活动
 	e.Get("/club", (&controller.Club2{}).PrevIndex)
 	e.Get("/club2", (&controller.Club2{}).Index)
-	e.Get("/club/sign",(&controller.Club2{}).Sign)
-	e.Post("/club/word",(&controller.Club2{}).Gword)
-	e.Get("/club/tun",(&controller.Club2{}).Turntable)
-	e.Post("/club/mrecord",(&controller.Club2{}).Mylist)
+	e.Get("/club/sign", (&controller.Club2{}).Sign)
+	e.Post("/club/word", (&controller.Club2{}).Gword)
+	e.Get("/club/tun", (&controller.Club2{}).Turntable)
+	e.Post("/club/mrecord", (&controller.Club2{}).Mylist)
 }

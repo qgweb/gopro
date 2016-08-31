@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
 	"github.com/nfnt/resize"
 	"github.com/ngaut/log"
 	"github.com/qgweb/gopro/lib/convert"
@@ -20,7 +21,6 @@ import (
 	"strings"
 	"text/template"
 	"time"
-	"github.com/labstack/echo/engine/standard"
 )
 
 type FeedBack struct {

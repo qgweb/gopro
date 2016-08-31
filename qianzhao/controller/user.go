@@ -56,7 +56,7 @@ func (this *User) Login(ctx echo.Context) error {
 	var (
 		userName, _ = url.QueryUnescape(ctx.FormValue("username"))
 		password, _ = url.QueryUnescape(ctx.FormValue("password"))
-		umodel = model.User{}
+		umodel      = model.User{}
 	)
 
 	if !umodel.UserNameExist(userName) {
@@ -103,17 +103,17 @@ func (this *User) Register(ctx echo.Context) error {
 	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 
 	var (
-		phone, _ = url.QueryUnescape(ctx.FormValue("phone"))
+		phone, _    = url.QueryUnescape(ctx.FormValue("phone"))
 		password, _ = url.QueryUnescape(ctx.FormValue("password"))
-		email, _ = url.QueryUnescape(ctx.FormValue("email"))
-		pwd, _ = url.QueryUnescape(ctx.FormValue("pwd"))
-		app_uid, _ = url.QueryUnescape(ctx.FormValue("app_uid"))
-		code, _ = url.QueryUnescape(ctx.FormValue("code"))
-		codekey = "REG_CODE_" + phone
-		umodel = model.User{}
-		rdb = redis.Get()
-		rkey = "REGISTER_" + this.getIp(ctx)
-		vcount = 5
+		email, _    = url.QueryUnescape(ctx.FormValue("email"))
+		pwd, _      = url.QueryUnescape(ctx.FormValue("pwd"))
+		app_uid, _  = url.QueryUnescape(ctx.FormValue("app_uid"))
+		code, _     = url.QueryUnescape(ctx.FormValue("code"))
+		codekey     = "REG_CODE_" + phone
+		umodel      = model.User{}
+		rdb         = redis.Get()
+		rkey        = "REGISTER_" + this.getIp(ctx)
+		vcount      = 5
 	)
 
 	defer rdb.Close()
@@ -324,7 +324,7 @@ func (this *User) EditUserpic(ctx echo.Context) error {
 		})
 	}
 
-	log.Error(function.ThumbPic(function.GetBasePath() + "/public/" + pic, 150, 150))
+	log.Error(function.ThumbPic(function.GetBasePath()+"/public/"+pic, 150, 150))
 
 	if umodel.Update(map[string]interface{}{"avatar": pic},
 		map[string]interface{}{"id": this.Base.GetUserInfo(ctx).Id}) {
@@ -441,7 +441,7 @@ func (this *User) EditUserphone(ctx echo.Context) error {
 		})
 	}
 
-	if code != sess.Get("USER_CODE_" + phone).(string) {
+	if code != sess.Get("USER_CODE_"+phone).(string) {
 		return ctx.JSON(200, map[string]string{
 			"code": "300",
 			"msg":  "验证码错误",
@@ -582,7 +582,7 @@ func (this *User) GetUserPhoneCode(ctx echo.Context) error {
 		})
 	}
 
-	Sms.SendMsg(phone, "【千兆浏览器】" + code +
+	Sms.SendMsg(phone, "【千兆浏览器】"+code+
 		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
 
 	rdb.Do("INCR", rkey)
@@ -590,7 +590,7 @@ func (this *User) GetUserPhoneCode(ctx echo.Context) error {
 		rdb.Do("EXPIRE", rkey, 86400)
 	}
 
-	sess.Set("USER_CODE_" + phone, code)
+	sess.Set("USER_CODE_"+phone, code)
 
 	return ctx.JSON(200, map[string]string{
 		"code": "200",
@@ -644,10 +644,10 @@ func (this *User) GetPhoneCode(ctx echo.Context) error {
 		})
 	}
 
-	Sms.SendMsg(phone, "【千兆浏览器】" + code +
+	Sms.SendMsg(phone, "【千兆浏览器】"+code+
 		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
 
-	sess.Set("REG_CODE_" + phone, code)
+	sess.Set("REG_CODE_"+phone, code)
 
 	rdb.Do("INCR", rkey)
 	if num == 0 {
@@ -667,10 +667,10 @@ func (this *User) SpeedTest(ctx echo.Context) error {
 // 验证宽带
 func (this *User) VerifyBandwith(ctx echo.Context) error {
 	var (
-		action = ctx.FormValue("action")
-		bandwith = ctx.FormValue("bandwith")
+		action       = ctx.FormValue("action")
+		bandwith     = ctx.FormValue("bandwith")
 		bandwith_pwd = ctx.FormValue("bandwith_pwd")
-		umodel = model.User{}
+		umodel       = model.User{}
 	)
 
 	if !grab.In_Array([]string{"verify", "fetch"}, action) {
@@ -714,7 +714,7 @@ func (this *User) VerifyBandwith(ctx echo.Context) error {
 func (this *User) GetBandwith(ctx echo.Context) error {
 	var (
 		app_uid = ctx.QueryParam("app_uid")
-		umodel = model.User{}
+		umodel  = model.User{}
 	)
 
 	if app_uid == "" {
@@ -781,7 +781,7 @@ func (this *User) GetPhoneCodeByPwd(ctx echo.Context) error {
 		})
 	}
 
-	Sms.SendMsg(convert.ToString(phone), "【千兆浏览器】" + code +
+	Sms.SendMsg(convert.ToString(phone), "【千兆浏览器】"+code+
 		"（验证码）（千兆浏览器客服绝不会索取此验证码，请勿将此验证码告知他人）")
 
 	sess.Set("PWD_PHONE_CODE", code)
@@ -831,8 +831,8 @@ func (this *User) FindPwd(ctx echo.Context) error {
 
 func (this *User) findPwdOne(ctx echo.Context) error {
 	var (
-		phone = ctx.FormValue("phone")
-		code = ctx.FormValue("code")
+		phone     = ctx.FormValue("phone")
+		code      = ctx.FormValue("code")
 		userModel = model.User{}
 	)
 	sess, err := session.GetSession(ctx)
@@ -881,7 +881,7 @@ func (this *User) findPwdOne(ctx echo.Context) error {
 func (this *User) findPwdTwo(ctx echo.Context) error {
 	var (
 		code = ctx.FormValue("code")
-		rdb = redis.Get()
+		rdb  = redis.Get()
 	)
 	sess, err := session.GetSession(ctx)
 	if err != nil {
@@ -914,7 +914,7 @@ func (this *User) findPwdTwo(ctx echo.Context) error {
 
 	sess.Set("FIND_PWD_STEP", 2)
 	sess.Delete("PWD_PHONE_CODE")
-	rdb.Do("DEL", "GETPWDCODE_" + sess.SessionID())
+	rdb.Do("DEL", "GETPWDCODE_"+sess.SessionID())
 	return ctx.JSON(200, map[string]string{
 		"code": "200",
 		"msg":  "",
@@ -923,8 +923,8 @@ func (this *User) findPwdTwo(ctx echo.Context) error {
 
 func (this *User) findPwdThree(ctx echo.Context) error {
 	var (
-		pwd1 = ctx.FormValue("pwd1")
-		pwd2 = ctx.FormValue("pwd2")
+		pwd1      = ctx.FormValue("pwd1")
+		pwd2      = ctx.FormValue("pwd2")
 		userModel = model.User{}
 	)
 	sess, err := session.GetSession(ctx)
@@ -1009,11 +1009,11 @@ func (this *User) FindPwd1(ctx echo.Context) error {
 	}
 	defer sess.SessionRelease(ctx.Response().(*standard.Response).ResponseWriter)
 	var (
-		phone = ctx.FormValue("phone")
-		code = ctx.FormValue("code")
-		pwd1 = ctx.FormValue("pwd1")
-		pwd2 = ctx.FormValue("pwd2")
-		skey = fmt.Sprintf("PWD_CODE_%s_%s", this.getIp(ctx), phone)
+		phone     = ctx.FormValue("phone")
+		code      = ctx.FormValue("code")
+		pwd1      = ctx.FormValue("pwd1")
+		pwd2      = ctx.FormValue("pwd2")
+		skey      = fmt.Sprintf("PWD_CODE_%s_%s", this.getIp(ctx), phone)
 		userModel = model.User{}
 	)
 

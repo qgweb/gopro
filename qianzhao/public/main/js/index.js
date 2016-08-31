@@ -226,7 +226,7 @@ function GetHistoryListDone(entries) {
         }
         var obj = parseURL(et.url);
         var html = '<li><a href="' + obj.source +
-            '" target="_blank" title=""><img src="' + (obj.protocol + "://" + obj.host + "/favicon.ico") +
+            '" target="_blank" title=""><img onerror="this.src=\'http://qianzhao.221su.com/main/img/ico.png\'" src="' + (obj.protocol + "://" + obj.host + "/favicon.ico") +
             '" alt=""><span>' + et.title + '</span></a></li>'
         $('.often_list').append(html)
     }

@@ -1,16 +1,17 @@
 package controller
 
 import (
-	"github.com/labstack/echo"
-	"github.com/qgweb/gopro/qianzhao/model"
-	"github.com/gobuild/log"
 	"fmt"
-	"net/http"
-	"github.com/qgweb/new/lib/convert"
-	"strings"
-	"github.com/qgweb/new/lib/timestamp"
-	"time"
+	"github.com/gobuild/log"
+	"github.com/labstack/echo"
 	"github.com/qgweb/gopro/qianzhao/common/config"
+	"github.com/qgweb/gopro/qianzhao/model"
+	"github.com/qgweb/new/lib/convert"
+	"github.com/qgweb/new/lib/timestamp"
+	"net/http"
+	"strings"
+	"time"
+	"math/rand"
 )
 
 type Club2 struct {
@@ -41,8 +42,8 @@ func (this *Club2) setCanAward(ctx echo.Context) {
 }
 
 func (this *Club2) canAward(ctx echo.Context) bool {
-	v, _ := this.Base.GetSess(ctx, CAN_AWARD);
-	return v != nil &&  v.(bool)
+	v, _ := this.Base.GetSess(ctx, CAN_AWARD)
+	return v != nil && v.(bool)
 }
 
 func (this *Club2) construct(ctx echo.Context) {
@@ -50,7 +51,7 @@ func (this *Club2) construct(ctx echo.Context) {
 }
 
 func (this *Club2) PrevIndex(ctx echo.Context) error {
-	return ctx.HTML(200,`
+	return ctx.HTML(200, `
 <html>
 <head>
 <title>惊喜开学季,话费送不停</title>
@@ -65,22 +66,50 @@ body {margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom:  0px;ove
 	`)
 }
 
-func (this *Club2) Index(ctx echo.Context) error {
-	var sm model.Sign
-	var um model.User
-	var am model.Award
-	var uid = convert.ToInt(this.GetUserInfo(ctx).Id)
-	var info = make(map[string]interface{})
+func (this *Club2) formatAwardInfo(name string, at int, ist bool) string {
 	var resMsg = []string{
 		"谢谢参与！",
 		"抽中5元话费充值卡！",
 		"抽中10元话费充值卡！",
 		"抽中20元话费充值卡！",
 	}
+	var nameAry = []rune(name)
+
+	for i := 3; i < len(nameAry); i++ {
+		nameAry[i] = []rune("*")[0]
+	}
+	//nameAry[0] = []rune("*")[0]
+	//nameAry[len(nameAry) - 1] = []rune("*")[0]
+
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	na := 0
+	n := r.Int63n(1000)
+	switch  {
+	case n > 0 && n < 800:
+		na = 1
+	case n >= 800 && n < 900:
+		na = 2
+	case n >= 900 && n < 999:
+		na = 3
+	}
+	log.Error(na)
+	if ist {
+		na = at
+	}
+	return "恭喜" + string(nameAry) + resMsg[na]
+}
+
+func (this *Club2) Index(ctx echo.Context) error {
+	var sm model.Sign
+	var um model.User
+	var am model.Award
+	var uid = convert.ToInt(this.GetUserInfo(ctx).Id)
+	var info = make(map[string]interface{})
+
 	info["lottery_count"] = 0
 	info["list1"] = map[string]string{}
 	info["list2"] = map[string]string{}
-	info["is_sign"] = false;
+	info["is_sign"] = false
 
 	sm.Reset(uid)
 	this.construct(ctx)
@@ -107,7 +136,7 @@ func (this *Club2) Index(ctx echo.Context) error {
 			if k % 2 != 0 {
 				l[k]["tag"] = "1"
 			}
-			l[k]["title"] = "恭喜" + v["username"] + resMsg[convert.ToInt(v["awards_type"])]
+			l[k]["title"] = this.formatAwardInfo(v["username"], convert.ToInt(v["awards_type"]),false)
 		}
 		info["list1"] = l
 	}
@@ -120,11 +149,10 @@ func (this *Club2) Index(ctx echo.Context) error {
 			if k % 2 != 0 {
 				l[k]["tag"] = "1"
 			}
-			l[k]["title"] = "恭喜" + v["username"] + resMsg[convert.ToInt(v["awards_type"])]
+			l[k]["title"] = this.formatAwardInfo(v["username"], convert.ToInt(v["awards_type"]),true)
 		}
 		info["list2"] = l
 	}
-
 
 	//info["sign"] = "11000"
 	return ctx.Render(200, "club2", info)
@@ -136,18 +164,11 @@ func (this *Club2) Sign(ctx echo.Context) error {
 		return err
 	}
 
-	if (time.Now().Unix() < BTime.Unix()) {
-		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "非常抱歉，该活动还未开始，请于9月1日之后前来参与！",
-		})
-	}
-
 	this.construct(ctx)
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "您非校园用户，无法参与活动",
+			"ret": -1,
+			"msg": "您非校园用户，无法参与活动",
 		})
 	}
 	var sm model.Sign
@@ -156,8 +177,8 @@ func (this *Club2) Sign(ctx echo.Context) error {
 
 	if sm.HasSign(uid) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "您已经签过了，请明天再试",
+			"ret": -1,
+			"msg": "您已经签过了，请明天再试",
 		})
 	}
 	r, err := sm.Add(uid, func() {
@@ -167,17 +188,17 @@ func (this *Club2) Sign(ctx echo.Context) error {
 	fmt.Println(r, err)
 	if err == nil {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : 0,
-			"msg" : "签到成功",
-			"data" : r,
+			"ret":  0,
+			"msg":  "签到成功",
+			"data": r,
 		})
 	}
 	if err != nil {
 		log.Error(err)
 	}
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"ret" : -1,
-		"msg" : "签到失败，请重试",
+		"ret": -1,
+		"msg": "签到失败，请重试",
 	})
 }
 
@@ -186,18 +207,12 @@ func (this *Club2) Gword(ctx echo.Context) error {
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
 	}
-	fmt.Println(BTime);
-	if (time.Now().Unix() < BTime.Unix()) {
-		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "非常抱歉，该活动还未开始，请于9月1日之后前来参与！",
-		})
-	}
+
 	this.construct(ctx)
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "您非校园用户，无法参与活动",
+			"ret": -1,
+			"msg": "您非校园用户，无法参与活动",
 		})
 	}
 	var wm model.Word
@@ -207,58 +222,58 @@ func (this *Club2) Gword(ctx echo.Context) error {
 	//判断是否猜过
 	if r, _ := wm.Has(uid); r {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "您已经猜过了！",
+			"ret": -1,
+			"msg": "您已经猜过了！",
 		})
 	}
 	wi, err := wm.Get()
 	if err != nil {
 		log.Error(err)
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "系统发生错误！",
+			"ret": -1,
+			"msg": "系统发生错误！",
 		})
 	}
 
 	if wi.Time != convert.ToInt(timestamp.GetHourTimestamp(0)) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "字谜活动还没开始，敬请期待！",
+			"ret": -1,
+			"msg": "字谜活动还没开始，敬请期待！",
 		})
 	}
 
 	if wi.Word == w {
 		log.Info(wi.HasCount())
-		if n, err := wi.HasCount(); err == nil && n < 10 {
+		if n, err := wi.HasCount(); err == nil && n < 20 {
 			n, code, err := am.Word(this.GetUserInfo(ctx).Id, true)
 			if err != nil {
 				log.Error(err)
 				return ctx.JSON(http.StatusOK, map[string]interface{}{
-					"ret" : -1,
-					"msg" : "系统发生错误",
+					"ret": -1,
+					"msg": "系统发生错误",
 				})
 			}
 			return ctx.JSON(http.StatusOK, map[string]interface{}{
-				"ret" : 0,
-				"msg" : "恭喜您猜中了",
-				"data" : map[string]interface{}{
-					"n" :n,
-					"c" :code,
+				"ret": 0,
+				"msg": "恭喜您猜中了",
+				"data": map[string]interface{}{
+					"n": n,
+					"c": code,
 				},
 			})
 		} else {
 			am.Word(this.GetUserInfo(ctx).Id, false)
 			return ctx.JSON(http.StatusOK, map[string]interface{}{
-				"ret" : -1,
-				"msg" : " 本轮话费已抢完，请明日继续",
+				"ret": -1,
+				"msg": " 本轮话费已抢完，请明日继续",
 			})
 		}
 	}
 
 	am.Word(this.GetUserInfo(ctx).Id, false)
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"ret" : -1,
-		"msg" : "非常遗憾，您没有猜中！",
+		"ret": -1,
+		"msg": "非常遗憾，您没有猜中！",
 	})
 	return nil
 }
@@ -269,18 +284,12 @@ func (this *Club2) Turntable(ctx echo.Context) error {
 	if res, err := this.Base.IsLogin(ctx); !res {
 		return err
 	}
-	if (time.Now().Unix() < BTime.Unix()) {
-		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "非常抱歉，该活动还未开始，请于9月1日之后前来参与！",
-		})
-	}
 
 	this.construct(ctx)
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "您非校园用户，无法参与活动",
+			"ret": -1,
+			"msg": "您非校园用户，无法参与活动",
 		})
 	}
 
@@ -288,8 +297,8 @@ func (this *Club2) Turntable(ctx echo.Context) error {
 	var um model.User
 	if c, _ := um.GetAwardCount(this.GetUserInfo(ctx).Id); c == 0 {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"ret" : -1,
-			"msg" : "您目前没有抽奖机会，请参与签到获取",
+			"ret": -1,
+			"msg": "您目前没有抽奖机会，请参与签到获取",
 		})
 	}
 

@@ -3,8 +3,8 @@ package model
 import (
 	"github.com/qgweb/new/lib/convert"
 	"github.com/qgweb/new/lib/timestamp"
-	"time"
 	"strings"
+	"time"
 )
 
 //签到表
@@ -48,7 +48,7 @@ func (this *Sign) setHistory(btime int64, histroy string) (string, int64) {
 	day := int(time.Unix(convert.ToInt64(timestamp.GetDayTimestamp(0)), 0).Sub(time.Unix(btime, 0)).Hours() / 24)
 	hs := strings.Split(histroy, "")
 	hs[day] = "1"
-	if day > 0 && hs[day - 1] == "0" {
+	if day > 0 && hs[day-1] == "0" {
 		return "10000", convert.ToInt64(timestamp.GetDayTimestamp(0))
 	}
 
@@ -64,7 +64,7 @@ func (this *Sign) getHistory(btime int64, histroy string) bool {
 	return hs[day] == "1"
 }
 
-func (this *Sign) HasSign(uid int) (bool) {
+func (this *Sign) HasSign(uid int) bool {
 	info, err := this.GetInfo(uid)
 	if err != nil {
 		return false
@@ -81,7 +81,7 @@ func (this *Sign) Add(uid int, fun func()) (string, error) {
 	if info.Id == 0 {
 		//添加
 		sql := myorm.BSQL().Insert(SIGN_TABLE_NAME).Values("uid", "btime", "history").GetSQL()
-		_, err := myorm.Insert(sql, uid, timestamp.GetDayTimestamp(0), "1" + strings.Repeat("0", 4))
+		_, err := myorm.Insert(sql, uid, timestamp.GetDayTimestamp(0), "1"+strings.Repeat("0", 4))
 		return "10000", err
 	} else {
 		//修改
@@ -109,7 +109,7 @@ func (this *Sign) Reset(uid int) (bool, error) {
 	day := int(time.Unix(convert.ToInt64(timestamp.GetDayTimestamp(0)), 0).Sub(time.Unix(info.Btime, 0)).Hours() / 24)
 	hs := strings.Split(info.History, "")
 
-	if (day > 0 && hs[day - 1] == "0") || (strings.Count(info.History, "1") == 5 && day >= 5) {
+	if (day > 0 && hs[day-1] == "0") || (strings.Count(info.History, "1") == 5 && day >= 5) {
 		his = "00000"
 		bt = convert.ToInt64(timestamp.GetDayTimestamp(0))
 	}
@@ -118,6 +118,3 @@ func (this *Sign) Reset(uid int) (bool, error) {
 	n, err := myorm.Update(sql, bt, his, uid)
 	return n > 0, err
 }
-
-
-

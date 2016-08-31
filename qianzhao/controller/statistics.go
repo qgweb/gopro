@@ -32,7 +32,7 @@ func (this *Statistics) Download(ctx echo.Context) error {
 
 	//解码
 	if q, err = this.decode(q); err != nil || q == "" {
-		fmt.Println(1,err,q)
+		fmt.Println(1, err, q)
 		return ctx.String(404, "")
 	}
 	if v, err = this.decode(v); err != nil || v == "" {

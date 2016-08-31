@@ -7,10 +7,10 @@ import (
 	"github.com/qgweb/gopro/lib/convert"
 
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
 	"github.com/qgweb/gopro/qianzhao/common/global"
 	"github.com/qgweb/gopro/qianzhao/common/session"
 	"github.com/qgweb/gopro/qianzhao/model"
-	"github.com/labstack/echo/engine/standard"
 )
 
 type Base struct {

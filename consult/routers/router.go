@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"github.com/qgweb/gopro/consult/controllers"
 	"github.com/astaxie/beego"
+	"github.com/qgweb/gopro/consult/controllers"
 )
 
 func init() {

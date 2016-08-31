@@ -24,7 +24,7 @@ func (this *Word) Get() (w Word, err error) {
 	if err != nil {
 		return w, err
 	}
-	if (len(info) > 0) {
+	if len(info) > 0 {
 		w.Id = convert.ToInt(info[0]["id"])
 		w.Pic = info[0]["pic"]
 		w.Word = info[0]["word"]

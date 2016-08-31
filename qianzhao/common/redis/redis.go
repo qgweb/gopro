@@ -22,7 +22,7 @@ func init() {
 			MaxIdle:   10,
 			MaxActive: 10, // max number of connections
 			Dial: func() (redis.Conn, error) {
-				c, err := redis.Dial("tcp", host + ":" + port)
+				c, err := redis.Dial("tcp", host+":"+port)
 				if err != nil {
 					log.Fatal(err.Error())
 				}
