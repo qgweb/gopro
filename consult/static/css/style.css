@@ -40,7 +40,7 @@ a{
 	-webkit-border-radius:19px;
 	-moz-border-radius:19px;
 	border-radius:19px;
-	background:url('../img/icon.png') 0 0 no-repeat;
+	background:url('/static/img/icon.png') 0 0 no-repeat;
 }
 .container01{
 	position:relative;
@@ -100,7 +100,7 @@ a{
 	width:354px;
 	height:287px;
 	margin-left:94px;
-	padding-top:58px;
+	padding-top:35px;
 	padding-left:52px;
 }
 .banner_form h4{
@@ -121,8 +121,8 @@ a{
 .banner_form p label{
 	position:relative;
 	display:block;
-	width:218px;
-	height:32px;
+	width:189px;
+	height:30px;
 	padding-left:66px;
 	color:#fff;
 	border:1px solid #fff;
@@ -134,13 +134,13 @@ a{
 	display:block;
 	width:60px;
 	padding-left:6px;
-	line-height:32px;
+	line-height:30px;
 	color:#fff;
 	background-color:#22a0de;
 }
 .banner_form p label input{
-	width:216px;
-	height:20px;
+	width:187px;
+	height:18px;
 	padding:6px 0;
 	color:#fff;
 	border-width:0;
@@ -155,7 +155,7 @@ a{
 	-webkit-border-radius:19px;
 	-moz-border-radius:19px;
 	border-radius:19px;
-	background:url('../img/icon.png') 0 -43px no-repeat;
+	background:url('/static/img/icon.png') 0 -43px no-repeat;
 	cursor:pointer;
 }
 .container02{
@@ -187,7 +187,7 @@ a{
 	height:25px;
 	margin-top:13px;
 	margin-right:8px;
-	background-image:url('../img/icon.png');
+	background-image:url('/static/img/icon.png');
 	background-repeat:no-repeat;
 }
 .yinru{
@@ -281,7 +281,7 @@ a{
 	width:45px;
 	height:52px;
 	margin-right:10px;
-	background-image:url('../img/icon.png');
+	background-image:url('/static/img/icon.png');
 	background-repeat:no-repeat;
 }
 .quanyu{
@@ -378,9 +378,9 @@ a{
 	height:100%;
 	background-color:#000;
 	filter:alpha(opacity=50);
-    -moz-opacity:0.5;
-    -webkit-opacity: 0.5;
-    opacity: 0.5;
+	-moz-opacity:0.5;
+	-webkit-opacity: 0.5;
+	opacity: 0.5;
 }
 .hover_shade i{
 	position:absolute;
@@ -389,7 +389,7 @@ a{
 	display:block;
 	width:32px;
 	height:32px;
-	background:url('../img/icon.png') -225px -299px no-repeat;
+	background:url('/static/img/icon.png') -225px -299px no-repeat;
 }
 .example_c li:hover .hover_shade,
 .example_c li.active .hover_shade{
@@ -415,7 +415,7 @@ a{
 	display:block;
 	width:54px;
 	height:54px;
-	background-image:url('../img/icon.png');
+	background-image:url('/static/img/icon.png');
 	background-repeat:no-repeat;
 }
 .btn_pre{
@@ -455,7 +455,7 @@ a{
 	width:106px;
 	height:106px;
 	margin:0 auto 15px auto;
-	background-image:url('../img/icon.png');
+	background-image:url('/static/img/icon.png');
 	background-repeat:no-repeat;
 }
 .advantage01{
@@ -494,7 +494,7 @@ a{
 .qualification p{
 	width:1000px;
 	height:224px;
-	background:url('../img/qualification.jpg') center no-repeat;
+	background:url('/static/img/qualification.jpg') center no-repeat;
 }
 .sidebar{
 	position:fixed;
@@ -524,6 +524,10 @@ a{
 	margin-bottom:1px;
 	background-color:#7daff1;
 }
+.sidebar_diaoyan{
+	margin-bottom:1px;
+	background-color:#ff9f49;
+}
 .sidebar_jieshao{
 	background-color:#fa5e5e;
 }
@@ -541,61 +545,61 @@ a{
 	margin-top:1px;
 	padding-top:0;
 	text-indent:-99999em;
-	background:url('../img/icon.png') -238px -125px #2e2e2e no-repeat;
+	background:url('/static/img/icon.png') -238px -125px #2e2e2e no-repeat;
 	overflow:hidden;
 }
 /*footer*/
 #footer{
-    font-size:14px;
-    color:#aaacb1;
-    background-color:#262d40;
-    overflow:hidden;
+	font-size:14px;
+	color:#aaacb1;
+	background-color:#262d40;
+	overflow:hidden;
 }
 .footer_list{
-    width:990px;
-    height:235px;
-    padding:45px 115px 0 115px;
-    margin:0 auto;
-    overflow:hidden;
+	width:990px;
+	height:235px;
+	padding:45px 115px 0 115px;
+	margin:0 auto;
+	overflow:hidden;
 }
 .footer_list dl{
-    float:left;
-    width:190px;
+	float:left;
+	width:190px;
 }
 .footer_list dl.footer_other{
-    width:160px;
+	width:160px;
 }
 .footer_list dl.footer_contact{
-    width:450px;
+	width:450px;
 }
 .footer_list dl dt{
-    margin-bottom:34px;
+	margin-bottom:34px;
 }
 .footer_list dl dd{
-    margin-bottom:20px;
+	margin-bottom:20px;
 }
 .footer_list dl dd a{
-    color:#aaacb1;
+	color:#aaacb1;
 }
 .footer_list dl.footer_contact dd a{
-    display:block;
-    width:200px;
-    height:40px;
-    line-height:40px;
-    font-size:16px;
-    color:#fff;
-    text-align:center;
-    background-color:#5783ca;
+	display:block;
+	width:200px;
+	height:40px;
+	line-height:40px;
+	font-size:16px;
+	color:#fff;
+	text-align:center;
+	background-color:#5783ca;
 }
 .footer_list dl.footer_contact dd a:hover{
-    background-color:#4e7bc2;
+	background-color:#4e7bc2;
 }
 #footer p{
-    padding-top:3px;
-    padding-bottom:20px;
-    font-size:12px;
-    color:#aaacb1;
-    text-align:center;
+	padding-top:3px;
+	padding-bottom:20px;
+	font-size:12px;
+	color:#aaacb1;
+	text-align:center;
 }
 .success,
 .failure{
@@ -604,37 +608,65 @@ a{
 	top:50%;
 	left:50%;
 	z-index:9999;
-	width:360px;
-	height:225px;
-	padding:21px;
+	width:402px;
 	margin-top:-133px;
 	margin-left:-201px;
+	font-size:14px;
+	color:#444;
+	text-align:center;
+}
+.popup_t,
+.popup_b{
+	width:100%;
+	height:25px;
+	background-image:url('/static/img/bg_popuptb.png');
+	background-repeat:no-repeat;
+}
+.popup_t{
+	background-position:top center;
+}
+.popup_b{
+	background-position:bottom center;
+}
+.popup_c{
+	position: relative;
+	width:360px;
+	padding:14px 21px;
+	background:url('/static/img/bg_popupm.png') top center repeat-y;
+}
+
+.success h6,
+.failure h6{
+	margin-bottom:7px;
 	font-size:18px;
 	color:#444;
 	font-weight:700;
-	text-align:center;
-	background:url('../img/bg_popup.png') center no-repeat;
 }
-.success i,
+.success i.ico_true,
 .failure i{
 	display:block;
 	width:60px;
 	height:60px;
-	margin:36px auto 12px auto;
-	background-image:url('../img/icon.png');
+	margin:22px auto 12px auto;
+	background-image:url('/static/img/icon.png');
 	background-repeat:no-repeat;
 }
-.success i{
+.success i.ico_true{
 	background-position:-304px -158px;
 }
 .failure i{
 	background-position:-366px -159px;
 }
+.ico_close{
+	display:block;
+	width:9px;
+	height:9px;
+}
 .success input,
 .failure input{
 	width:124px;
 	height:35px;
-	margin:25px auto 0 auto;
+	margin:18px auto 0 auto;
 	line-height:35px;
 	font-family:'微软雅黑';
 	font-size:14px;
@@ -651,4 +683,28 @@ a{
 }
 .failure input{
 	background-color:#da2d2d;
+}
+.success .go {
+	display: block;
+	width: 124px;
+	height: 35px;
+	line-height: 35px;
+	font-family: 微软雅黑;
+	font-size: 14px;
+	color: rgb(255, 255, 255);
+	text-align: center;
+	cursor: pointer;
+	background-color: rgb(93, 184, 91);
+	margin: 18px auto 0px;
+	border-radius: 3px;
+}
+.ico_close {
+	position: absolute;
+	top: 3px;
+	right: 30px;
+	display: block;
+	width: 11px;
+	height: 11px;
+	background: url('/static/img/icon.png') 0 -201px no-repeat;
+	cursor: pointer;
 }

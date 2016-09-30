@@ -31,6 +31,6 @@ func init() {
 		log.Fatal("连接数据库失败：", err)
 	}
 
-	myorm.SetMaxIdleConns(50)
-	myorm.SetMaxOpenConns(100)
+	myorm.SetMaxIdleConns(250)
+	myorm.SetMaxOpenConns(500)
 }

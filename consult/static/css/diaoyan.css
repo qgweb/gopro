@@ -1,0 +1,118 @@
+@charset 'utf-8';
+html,body{
+	width:100%;
+	height:100%;
+	margin:0;
+	font-size:12px;
+	font-family:'微软雅黑';
+	color:#444;
+	background-color:#f8f8f8;
+}
+p,h1,h2,h3,h4,h5,h6,ul,li,dl,dt,dd{
+	padding:0;
+	margin:0;
+}
+ul{
+	list-style-type:none;
+}
+img{
+	display:block;
+	border-width:0;
+}
+a{
+	text-decoration:none;
+}
+textarea,input{
+	font-family:'微软雅黑';
+}
+.wrapper{
+	width:930px;
+	padding-top:77px;
+	padding-bottom:80px;
+	margin:0 auto;
+	overflow:hidden;
+}
+.tit{
+	margin-bottom:18px;
+	font-size:36px;
+	text-align:center;
+	font-weight:400;
+}
+.subhead{
+	font-size:14px;
+	text-align:center;
+	font-weight:400;
+}
+.wrapper hr{
+	border-width:1px 0 0;
+}
+.wrapper h4{
+	margin-top:60px;
+	margin-bottom:35px;
+	font-size:24px;
+	font-weight:400;
+}
+.question{
+	width:612px;
+	height:172px;
+	padding:14px;
+	margin-bottom:32px;
+	font-size:14px;
+	color:#444;
+	border:1px solid #ececec;
+	background-color:#fff;
+	resize:none;
+	outline:none;
+}
+.form_list{
+	height:40px;
+	margin-bottom:17px;
+}
+.form_list label{
+	display:block;
+	float:left;
+	width:72px;
+	height:100%;
+	line-height:40px;
+	font-size:18px;
+}
+.form_list input{
+	float:left;
+	width:264px;
+	height:20px;
+	padding:9px 3px;
+	margin:0 10px;
+	line-height:20px;
+	border:1px solid #ececec;
+	outline:none;
+}
+.form_list i{
+	display:block;
+	float:left;
+	height:100%;
+	line-height:48px;
+	font-size:20px;
+	color:#f00;
+	font-style:normal;
+	overflow:hidden;
+}
+.btn{
+	margin-top:100px;
+	text-align:center;
+}
+.btn input{
+	width:225px;
+	height:48px;
+	margin:0 auto;
+	line-height:48px;
+	font-size:20px;
+	color:#fff;
+	text-align:center;
+	border-width:0;
+	text-shadow:1px 0px 1px #1f8fc7;
+	-moz-text-shadow:1px 0px 1px #1f8fc7;
+	-webkit-text-shadow:1px 0px 1px #1f8fc7;
+	text-shadow:1px 0px 1px #1f8fc7;
+	background-color:#22a0de;
+	cursor:pointer;
+}

@@ -47,6 +47,12 @@
             </p>
             <p>
                 <label>
+                    <span>邮箱</span>
+                    <input type="text" value="" name="email" id="fm_email"/>
+                </label>
+            </p>
+            <p>
+                <label>
                     <span>行业</span>
                     <input type="text" value="" name="industry" id="fm_industry"/>
                 </label>
@@ -297,16 +303,24 @@
 </div>
 <div class="sidebar">
     <a href="#" id="talkByQQh3" class="sidebar_kefu">客服<br/>咨询</a>
+    <a href="/dy" target="_blank" class="sidebar_diaoyan">参与<br>调研</a>
     <a href="#2F" class="sidebar_jieshao">产品<br/>介绍</a>
     <a href="#3F" class="sidebar_anli">行业<br/>案例</a>
     <a href="#4F" class="sidebar_youshi">启冠<br/>优势</a>
     <a href="#5F" class="sidebar_zizhi">公司<br/>资质</a>
     <a href="#header" class="go_top">top</a>
 </div>
-<div class="success">
-    <i></i>
-    <p>预约成功</p>
-    <input type="button" value="知道了"/>
+<div class="success" style="">
+    <div class="popup_t"></div>
+    <div class="popup_c">
+        <i class="ico_close"></i>
+        <i class="ico_true"></i>
+        <h6>预约成功！恭喜您获得测试账号</h6>
+        <p>账号：guest123 </p>
+        <p>密码：test123456</p>
+        <a href="http://zhi.9xu.com/" target="_blank" class="go">立即进入</a>
+    </div>
+    <div class="popup_b"></div>
 </div>
 <div class="failure">
     <i></i>

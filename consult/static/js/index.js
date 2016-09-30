@@ -46,7 +46,8 @@ $(function () {
 })
 //表单提交
 $(function () {
-    $('.success input,.failure input').click(function () {
+    $('.success input,.failure input,.success .ico_close').click(function () {
+        setTimeout("window.location.reload()", 500);
         $(this).parents("div").hide();
     })
 
@@ -55,9 +56,10 @@ $(function () {
         var phone = $.trim($("#fm_phone").val());
         var qq = $.trim($("#fm_qq").val());
         var industry = $.trim($("#fm_industry").val());
+        var email = $.trim($("#fm_email").val());
         var reffer = window.location.href;
 
-        if (!name || !phone || !qq || !industry) {
+        if (!name || !phone || !qq || !industry || !email) {
             layer.alert('预约信息填写不完整哦', {icon: 5});
             return;
         }
@@ -70,20 +72,18 @@ $(function () {
                 qq: qq,
                 industry: industry,
                 reffer: reffer,
+                email: email,
             },
             type: 'post',
             dataType: 'json',
             success: function (data) {
                 if (data.ret == 0) {
                     $('.success').show();
-                    setTimeout("window.location.reload()", 1000);
                 } else {
                     $('.failure').show();
                 }
             }
         })
-
-
     })
 })
 //统计

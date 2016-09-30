@@ -15,6 +15,8 @@ const (
 	USER_TABLE_NAME = "221su_users"
 )
 
+var ERR_Award_NOT_ALLOW = errors.New("非校园用户")
+
 type User struct {
 	Id            string `id`
 	Name          string `username`
@@ -278,5 +280,5 @@ func (this *User) CanAward(phone string) (bool, error) {
 	if len(info) > 0 {
 		return true, nil
 	}
-	return false, errors.New("获取数据失败")
+	return false, ERR_Award_NOT_ALLOW
 }

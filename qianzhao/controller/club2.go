@@ -27,27 +27,37 @@ var (
 	BTime = time.Unix(bt, 0)
 )
 
-func (this *Club2) setCanAward(ctx echo.Context) {
-	if v, _ := this.Base.GetSess(ctx, CAN_AWARD); v == nil {
+func (this *Club2) setCanAward(ctx echo.Context) error {
+	if v, err := this.Base.GetSess(ctx, CAN_AWARD); v == nil {
 		var um model.User
 		ui := this.Base.GetUserInfo(ctx)
 		if ui.Phone != "" {
 			if res, err := um.CanAward(ui.Phone); err == nil && res {
-				this.Base.SetSess(ctx, "can_award", true)
+				return this.Base.SetSess(ctx, "can_award", true)
 			} else {
 				log.Error(err)
+				return err
 			}
 		}
+	} else {
+		return err
 	}
+	return nil
 }
 
 func (this *Club2) canAward(ctx echo.Context) bool {
-	v, _ := this.Base.GetSess(ctx, CAN_AWARD)
-	return v != nil && v.(bool)
+	var um model.User
+	ui := this.Base.GetUserInfo(ctx)
+	if ui.Phone != "" {
+		if res, err := um.CanAward(ui.Phone); err == nil && res {
+			return true
+		}
+	}
+	return false;
 }
 
-func (this *Club2) construct(ctx echo.Context) {
-	this.setCanAward(ctx)
+func (this *Club2) construct(ctx echo.Context) error {
+	return nil
 }
 
 func (this *Club2) PrevIndex(ctx echo.Context) error {
@@ -75,7 +85,7 @@ func (this *Club2) formatAwardInfo(name string, at int, ist bool) string {
 	}
 	var nameAry = []rune(name)
 
-	for i := 3; i < len(nameAry); i++ {
+	for i := 3; i < 7; i++ {
 		nameAry[i] = []rune("*")[0]
 	}
 	//nameAry[0] = []rune("*")[0]
@@ -92,17 +102,47 @@ func (this *Club2) formatAwardInfo(name string, at int, ist bool) string {
 	case n >= 900 && n < 999:
 		na = 3
 	}
-	log.Error(na)
 	if ist {
 		na = at
 	}
 	return "恭喜" + string(nameAry) + resMsg[na]
 }
 
+func (this *Club2) RandomRecord(t string, ist bool) []map[string]string {
+	var list = make([]map[string]string, 0, 20)
+	var am model.Award
+	var dxnums = []string{"133", "153", "180", "181", "189", "177"}
+	if l, err := am.Records(t); err == nil {
+		if len(l) < 20 {
+			for i := 0; i < 20 - len(l); i++ {
+				r := rand.New(rand.NewSource(time.Now().UnixNano()))
+				n1 := r.Int63n(int64(len(dxnums)))
+				var pnum = dxnums[n1]
+				var mapphone = make(map[string]string)
+				for j := 0; j < 8; j++ {
+					pnum += convert.ToString(rand.New(rand.NewSource(time.Now().UnixNano())).Int63n(8) + 1)
+				}
+				mapphone["awards_type"] = "1"
+				mapphone["phone"] = pnum
+				mapphone["username"] = pnum
+				l = append(l[:], mapphone)
+			}
+		}
+		for k, v := range l {
+			l[k]["tag"] = "0"
+			if k % 2 != 0 {
+				l[k]["tag"] = "1"
+			}
+			l[k]["title"] = this.formatAwardInfo(v["phone"], convert.ToInt(v["awards_type"]), ist)
+		}
+		return l
+	}
+	return list
+}
+
 func (this *Club2) Index(ctx echo.Context) error {
 	var sm model.Sign
 	var um model.User
-	var am model.Award
 	var uid = convert.ToInt(this.GetUserInfo(ctx).Id)
 	var info = make(map[string]interface{})
 
@@ -112,7 +152,6 @@ func (this *Club2) Index(ctx echo.Context) error {
 	info["is_sign"] = false
 
 	sm.Reset(uid)
-	this.construct(ctx)
 	if uid != 0 {
 		s, err := sm.GetInfo(uid)
 		if err != nil {
@@ -127,32 +166,8 @@ func (this *Club2) Index(ctx echo.Context) error {
 			log.Error(err)
 		}
 	}
-	if l, err := am.Records("0"); err == nil {
-		if len(l) % 2 > 0 {
-			l = append(l[:], l[:]...)
-		}
-		for k, v := range l {
-			l[k]["tag"] = "0"
-			if k % 2 != 0 {
-				l[k]["tag"] = "1"
-			}
-			l[k]["title"] = this.formatAwardInfo(v["username"], convert.ToInt(v["awards_type"]),false)
-		}
-		info["list1"] = l
-	}
-	if l, err := am.Records("1"); err == nil {
-		if len(l) % 2 > 0 {
-			l = append(l[:], l[:]...)
-		}
-		for k, v := range l {
-			l[k]["tag"] = "0"
-			if k % 2 != 0 {
-				l[k]["tag"] = "1"
-			}
-			l[k]["title"] = this.formatAwardInfo(v["username"], convert.ToInt(v["awards_type"]),true)
-		}
-		info["list2"] = l
-	}
+	info["list1"] = this.RandomRecord("0", false)
+	info["list2"] = this.RandomRecord("1", true)
 
 	//info["sign"] = "11000"
 	return ctx.Render(200, "club2", info)
@@ -164,7 +179,12 @@ func (this *Club2) Sign(ctx echo.Context) error {
 		return err
 	}
 
-	this.construct(ctx)
+	if err := this.construct(ctx); err != nil {
+		if err != model.ERR_Award_NOT_ALLOW {
+			log.Error(err)
+			return err
+		}
+	}
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
 			"ret": -1,
@@ -208,7 +228,12 @@ func (this *Club2) Gword(ctx echo.Context) error {
 		return err
 	}
 
-	this.construct(ctx)
+	if err := this.construct(ctx); err != nil {
+		if err != model.ERR_Award_NOT_ALLOW {
+			log.Error(err)
+			return err
+		}
+	}
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
 			"ret": -1,
@@ -285,7 +310,13 @@ func (this *Club2) Turntable(ctx echo.Context) error {
 		return err
 	}
 
-	this.construct(ctx)
+	if err := this.construct(ctx); err != nil {
+		if err != model.ERR_Award_NOT_ALLOW {
+			log.Error(err)
+			return err
+		}
+	}
+
 	if !this.canAward(ctx) {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
 			"ret": -1,
@@ -295,7 +326,7 @@ func (this *Club2) Turntable(ctx echo.Context) error {
 
 	var uid = convert.ToInt(this.GetUserInfo(ctx).Id)
 	var um model.User
-	if c, _ := um.GetAwardCount(this.GetUserInfo(ctx).Id); c == 0 {
+	if c, _ := um.GetAwardCount(this.GetUserInfo(ctx).Id); c <= 0 {
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
 			"ret": -1,
 			"msg": "您目前没有抽奖机会，请参与签到获取",
@@ -330,7 +361,8 @@ func (this *Club2) Turntable(ctx echo.Context) error {
 			"msg":  "系统发生错误！",
 		})
 	}
-	fmt.Println(um.IncrAwardCount(uid, -1))
+	um.IncrAwardCount(uid, -1)
+	log.Info(ar)
 	n, code, err := aw.Get(ui.Id, map[int]int{
 		0: 1000 - ar.Five - ar.Ten - ar.Twenty,
 		1: ar.Five,

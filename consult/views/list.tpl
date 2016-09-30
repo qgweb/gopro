@@ -14,6 +14,7 @@
     <ul id="myTabs" class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">咨询列表</a></li>
         <li role="presentation" class=""><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">统计列表</a></li>
+        <li role="presentation" class=""><a href="#dy" role="tab" id="dy-tab" data-toggle="tab" aria-controls="dy" aria-expanded="false">调研列表</a></li>
     </ul>
     <div id="myTabContent" class="tab-content">
         <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
@@ -24,6 +25,7 @@
                         <td>名称</td>
                         <td>电话</td>
                         <td>QQ</td>
+                        <td>邮箱</td>
                         <td>行业</td>
                         <td>来源</td>
                     </tr>
@@ -33,8 +35,33 @@
                         <td>{{$d.Name}}</td>
                         <td>{{$d.Phone}}</td>
                         <td>{{$d.QQ}}</td>
+                        <td>{{$d.Email}}</td>
                         <td>{{$d.Industry}}</td>
                         <td>{{$d.Reffer}}</td>
+                    </tr>
+                    {{end}}
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="dy" aria-labelledby="dy-tab">
+            <div>
+                <table class="table" style="width:750px;">
+                    <tr>
+                        <td>时间</td>
+                        <td>姓名</td>
+                        <td>联系方式</td>
+                        <td>公司名称</td>
+                        <td>邮箱</td>
+                        <td>问题</td>
+                    </tr>
+                    {{range $k,$d:=.list3 }}
+                    <tr>
+                        <td>{{$d.Date|unix}}</td>
+                        <td>{{$d.Name}}</td>
+                        <td>{{$d.Phone}}</td>
+                        <td>{{$d.Company}}</td>
+                        <td>{{$d.Email}}</td>
+                        <td>{{$d.Quession}}</td>
                     </tr>
                     {{end}}
                 </table>

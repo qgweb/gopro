@@ -23,7 +23,7 @@ type Award struct {
 }
 
 const (
-	AWARD_TABLE_NAME      = "221su_award_record"
+	AWARD_TABLE_NAME = "221su_award_record"
 	AWARD_CODE_TABLE_NAME = "221su_recharge_code"
 )
 
@@ -82,6 +82,7 @@ func (this *Award) black(tx *sql.Tx, id string) (bool, error) {
 
 func (this *Award) Get(userid string, awardnum map[int]int, source int) (int, string, error) {
 	tx, err := myorm.Begin()
+	defer tx.Commit()
 	if err != nil {
 		return 0, "", err
 	}
@@ -122,9 +123,9 @@ func (this *Award) Get(userid string, awardnum map[int]int, source int) (int, st
 	info.AwardsType = n
 	info.Source = source
 	if this.addReocrd(tx, info) != nil {
+		tx.Rollback()
 		return 0, "", err
 	}
-	tx.Commit()
 	return n, code, nil
 }
 
@@ -146,7 +147,7 @@ func (this *Award) getAwardNum(tx *sql.Tx, awardnum map[int]int) (int, error) {
 		}
 		log.Info(count, atype)
 		if v, ok := awardnum[atype]; ok {
-			if v-count <= 0 {
+			if v - count <= 0 {
 				delete(awardnum, atype)
 				awardnum[0] += count
 			} else {
@@ -180,7 +181,7 @@ func (this *Award) getAwardNumClock(tx *sql.Tx, awardnum map[int]int) (int, erro
 		}
 		log.Info(count, atype)
 		if v, ok := awardnum[atype]; ok {
-			if v-count <= 0 {
+			if v - count <= 0 {
 				if v != 0 {
 					delete(awardnum, atype)
 				}
@@ -288,7 +289,7 @@ func (this *Award) Word(uid string, ok bool) (int, string, error) {
 
 // 获奖记录
 func (this *Award) Records(source string) ([]map[string]string, error) {
-	sql := "SELECT ar.awards_type,u.username from 221su_award_record ar left JOIN 221su_users u on ar.user_id = u.id " +
+	sql := "SELECT ar.awards_type,u.username,u.phone from 221su_award_record ar left JOIN 221su_users u on ar.user_id = u.id " +
 		"where ar.awards_type!=0 and source=? order by ar.time desc limit 30"
 	return myorm.Query(sql, source)
 }

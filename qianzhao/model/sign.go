@@ -109,7 +109,7 @@ func (this *Sign) Reset(uid int) (bool, error) {
 	day := int(time.Unix(convert.ToInt64(timestamp.GetDayTimestamp(0)), 0).Sub(time.Unix(info.Btime, 0)).Hours() / 24)
 	hs := strings.Split(info.History, "")
 
-	if (day > 0 && hs[day-1] == "0") || (strings.Count(info.History, "1") == 5 && day >= 5) {
+	if (day > 5) || (day > 0 && hs[day-1] == "0") || (strings.Count(info.History, "1") == 5 && day >= 5) {
 		his = "00000"
 		bt = convert.ToInt64(timestamp.GetDayTimestamp(0))
 	}

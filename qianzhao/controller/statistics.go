@@ -19,6 +19,7 @@ import (
 type Statistics struct {
 }
 
+
 // 下载统计
 func (this *Statistics) Download(ctx echo.Context) error {
 	var (

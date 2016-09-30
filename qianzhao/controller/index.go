@@ -23,8 +23,8 @@ type YLJData struct {
 //qzbrower-主版本号.次版本号.修订版本号-类型号
 func (this *Index) Update(ctx echo.Context) error {
 	var (
-		version  = ctx.FormValue("version")
-		btype    = ctx.FormValue("type")
+		version = ctx.FormValue("version")
+		btype = ctx.FormValue("type")
 		mversion = model.Version{}
 	)
 
@@ -50,21 +50,35 @@ func (this *Index) Update(ctx echo.Context) error {
 
 // 浏览器首页控制
 func (this *Index) MainPage(ctx echo.Context) error {
+	var htype = ctx.QueryParam("ht")
+	var key = ""
 	conn := redis.Get()
 	defer conn.Close()
 	conn.Do("SELECT", "1")
-	page, err := oredis.String(conn.Do("GET", "QIANZHAO_PAGE"))
-	if err != nil {
+	if htype == "" { //兼容老接口
+		page1, _ := oredis.String(conn.Do("GET", "QIANZHAO_PAGE"))
+		return ctx.JSON(200, map[string]interface{}{
+			"code": "200",
+			"msg":  "",
+			"data": page1,
+		})
+	}
+	switch htype {
+	case "xiaoyuan": key = "QIANZHAO_PAGE_XIAOYUAN_"
+	case "biaozhun": key = "QIANZHAO_PAGE_BIAOZHUN_"
+	default:
 		return ctx.JSON(200, map[string]interface{}{
 			"code": "500",
-			"msg":  "获取首页失败",
+			"msg":  "参数错误",
 			"data": "",
 		})
 	}
+	page1, _ := oredis.String(conn.Do("GET", key + "SHOUYE"))
+	page2, _ := oredis.String(conn.Do("GET", key + "BIAOQIANYE"))
 	return ctx.JSON(200, map[string]interface{}{
 		"code": "200",
 		"msg":  "",
-		"data": page,
+		"data": page1 + "|" + page2,
 	})
 }
 
